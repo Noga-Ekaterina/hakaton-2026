@@ -1,0 +1,42 @@
+{
+  "priorities": [
+    "LOW",
+    "MEDIUM",
+    "HIGH",
+    "CRITICAL"
+  ],
+  "statuses": [
+    "NEW",
+    "IN_PROGRESS",
+    "BLOCKED",
+    "DONE"
+  ],
+  "assignees": [
+    {
+      "id": 2,
+      "name": "Анна Смирнова"
+    },
+    {
+      "id": 3,
+      "name": "Дмитрий Козлов"
+    },
+    {
+      "id": 4,
+      "name": "Елена Орлова"
+    }
+  ],
+  "departments": [
+    {
+      "id": 1,
+      "name": "Операционный отдел"
+    },
+    {
+      "id": 2,
+      "name": "Маркетинг"
+    },
+    {
+      "id": 3,
+      "name": "HR"
+    }
+  ]
+}

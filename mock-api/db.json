@@ -1,0 +1,377 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Иван Петров",
+      "email": "ivan.petrov@company.ru",
+      "role": "MANAGER",
+      "departmentId": 1,
+      "departmentName": "Операционный отдел"
+    },
+    {
+      "id": 2,
+      "name": "Анна Смирнова",
+      "email": "anna.smirnova@company.ru",
+      "role": "EMPLOYEE",
+      "departmentId": 1,
+      "departmentName": "Операционный отдел"
+    },
+    {
+      "id": 3,
+      "name": "Дмитрий Козлов",
+      "email": "dmitry.kozlov@company.ru",
+      "role": "EMPLOYEE",
+      "departmentId": 2,
+      "departmentName": "Маркетинг"
+    },
+    {
+      "id": 4,
+      "name": "Елена Орлова",
+      "email": "elena.orlova@company.ru",
+      "role": "EMPLOYEE",
+      "departmentId": 3,
+      "departmentName": "HR"
+    }
+  ],
+  "departments": [
+    {
+      "id": 1,
+      "name": "Операционный отдел"
+    },
+    {
+      "id": 2,
+      "name": "Маркетинг"
+    },
+    {
+      "id": 3,
+      "name": "HR"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 101,
+      "title": "Подготовить отчет по продажам",
+      "shortDescription": "Собрать данные за март и подготовить презентацию",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "deadline": "2026-04-10T18:00:00",
+      "createdAt": "2026-04-07T09:00:00",
+      "authorId": 1,
+      "authorName": "Иван Петров",
+      "assigneeId": 2,
+      "assigneeName": "Анна Смирнова",
+      "isOverdue": true
+    },
+    {
+      "id": 102,
+      "title": "Обновить лендинг компании",
+      "shortDescription": "Добавить новый блок с акцией",
+      "status": "IN_PROGRESS",
+      "priority": "MEDIUM",
+      "deadline": "2026-04-18T12:00:00",
+      "createdAt": "2026-04-09T10:15:00",
+      "authorId": 1,
+      "authorName": "Иван Петров",
+      "assigneeId": 3,
+      "assigneeName": "Дмитрий Козлов",
+      "isOverdue": false
+    },
+    {
+      "id": 103,
+      "title": "Подготовить договор для клиента ABC",
+      "shortDescription": "Проверить реквизиты и направить на согласование",
+      "status": "NEW",
+      "priority": "HIGH",
+      "deadline": "2026-04-05T12:00:00",
+      "createdAt": "2026-04-02T11:00:00",
+      "authorId": 1,
+      "authorName": "Иван Петров",
+      "assigneeId": 2,
+      "assigneeName": "Анна Смирнова",
+      "isOverdue": true
+    },
+    {
+      "id": 104,
+      "title": "Подготовить welcome-план для нового сотрудника",
+      "shortDescription": "Сформировать план адаптации на первую неделю",
+      "status": "BLOCKED",
+      "priority": "CRITICAL",
+      "deadline": "2026-04-12T15:00:00",
+      "createdAt": "2026-04-08T14:00:00",
+      "authorId": 1,
+      "authorName": "Иван Петров",
+      "assigneeId": 4,
+      "assigneeName": "Елена Орлова",
+      "isOverdue": false
+    },
+    {
+      "id": 105,
+      "title": "Подготовить список закупок на неделю",
+      "shortDescription": "Собрать потребности отделов и сформировать список",
+      "status": "DONE",
+      "priority": "LOW",
+      "deadline": "2026-04-16T13:00:00",
+      "createdAt": "2026-04-11T08:20:00",
+      "authorId": 1,
+      "authorName": "Иван Петров",
+      "assigneeId": 2,
+      "assigneeName": "Анна Смирнова",
+      "isOverdue": false
+    },
+    {
+      "title": "ассм тьъ",
+      "shortDescription": "{\n  \"timestamp\": \"2026-04-14T18:48:24.333416267\",\n  \"status\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"JDBC exception executing SQL [ERROR: relation \\\"tasks\\\" does not exist\\n  Position: 413] [select t1_0.id,t1_0.assignee_id,a2_0.id,a2_0.created_at,a2_0.department_id,a2_0.email,a2_0.is_active,a2_0.name,a2_0.password,a2_0.role,t1_0.author_id,a1_0.id,a1_0.created_at,a1_0.department_id,a1_0.email,a1_0.is_active,a1_0.name,a1_0.password,a1_0.role,t1_0.created_at,t1_0.deadline,t1_0.department_id,d1_0.id,d1_0.description,d1_0.name,t1_0.description,t1_0.priority,t1_0.status,t1_0.title,t1_0.updated_at from tasks t1_0 join users a1_0 on a1_0.id=t1_0.author_id join users a2_0 on a2_0.id=t1_0.assignee_id join departments d1_0 on d1_0.id=t1_0.department_id where (? is null or a2_0.id=?) and (? is null or t1_0.priority=?) and (? is null or lower(t1_0.title) like lower(('%'||?||'%')) escape '') and (? is null or t1_0.deadline>=?) and (? is null or t1_0.deadline<=?) order by t1_0.created_at desc]; SQL [select t1_0.id,t1_0.assignee_id,a2_0.id,a2_0.created_at,a2_0.department_id,a2_0.email,a2_0.is_active,a2_0.name,a2_0.password,a2_0.role,t1_0.author_id,a1_0.id,a1_0.created_at,a1_0.department_id,a1_0.email,a1_0.is_active,a1_0.name,a1_0.password,a1_0.role,t1_0.created_at,t1_0.deadline,t1_0.department_id,d1_0.id,d1_0.description,d1_0.name,t1_0.description,t1_0.priority,t1_0.status,t1_0.title,t1_0.updated_at from tasks t1_0 join users a1_0 on a1_0.id=t1_0.author_id join users a2_0 on a2_0.id=t1_0.assignee_id join departments d1_0 on d1_0.id=t1_0.department_id where (? is null or a2_0.id=?) and (? is null or t1_0.priority=?) and (? is null or lower(t1_0.title) like lower(('%'||?||'%')) escape '') and (? is null or t1_0.deadline>=?) and (? is null or t1_0.deadline<=?) order by t1_0.created_at desc]\",\n  \"path\": \"/api/tasks\"\n}",
+      "status": "IN_PROGRESS",
+      "priority": "MEDIUM",
+      "deadline": "2026-04-15T15:00:00.000Z",
+      "authorId": 1,
+      "authorName": "Иван Петров",
+      "assigneeId": 3,
+      "assigneeName": "Дмитрий Козлов",
+      "departmentId": 1,
+      "createdAt": "2026-04-14T20:38:22.733Z",
+      "isOverdue": false,
+      "id": 106
+    }
+  ],
+  "taskHistory": [
+    {
+      "id": 1,
+      "taskId": 101,
+      "field": "status",
+      "oldValue": "NEW",
+      "newValue": "IN_PROGRESS",
+      "changedByUserId": 2,
+      "changedByUserName": "Анна Смирнова",
+      "changedAt": "2026-04-08T09:45:00"
+    },
+    {
+      "id": 2,
+      "taskId": 101,
+      "field": "deadline",
+      "oldValue": "2026-04-09T18:00:00",
+      "newValue": "2026-04-10T18:00:00",
+      "changedByUserId": 1,
+      "changedByUserName": "Иван Петров",
+      "changedAt": "2026-04-08T12:20:00"
+    },
+    {
+      "id": 3,
+      "taskId": 104,
+      "field": "status",
+      "oldValue": "IN_PROGRESS",
+      "newValue": "BLOCKED",
+      "changedByUserId": 4,
+      "changedByUserName": "Елена Орлова",
+      "changedAt": "2026-04-10T09:20:00"
+    },
+    {
+      "id": 4,
+      "taskId": 103,
+      "field": "status",
+      "oldValue": "IN_PROGRESS",
+      "newValue": "DONE",
+      "changedByUserId": 2,
+      "changedByUserName": "Анна Смирнова",
+      "changedAt": "2026-04-05T11:40:00"
+    }
+  ],
+  "taskComments": [
+    {
+      "id": 1,
+      "taskId": 101,
+      "authorId": 2,
+      "authorName": "Анна Смирнова",
+      "text": "Начала собирать данные по отделам.",
+      "createdAt": "2026-04-08T10:00:00"
+    },
+    {
+      "id": 2,
+      "taskId": 101,
+      "authorId": 1,
+      "authorName": "Иван Петров",
+      "text": "Добавь сравнение с прошлым месяцем.",
+      "createdAt": "2026-04-08T12:00:00"
+    },
+    {
+      "id": 3,
+      "taskId": 104,
+      "authorId": 4,
+      "authorName": "Елена Орлова",
+      "text": "Жду подтверждение даты выхода сотрудника.",
+      "createdAt": "2026-04-10T09:15:00"
+    },
+    {
+      "id": 4,
+      "taskId": 103,
+      "authorId": 2,
+      "authorName": "Анна Смирнова",
+      "text": "Договор согласован и отправлен клиенту.",
+      "createdAt": "2026-04-05T11:30:00"
+    }
+  ],
+  "taskDetails": [
+    {
+      "id": 101,
+      "title": "Подготовить отчет по продажам",
+      "description": "Собрать данные за март, сверить показатели с CRM, подготовить презентацию и отправить руководителю на согласование.",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "deadline": "2026-04-10T18:00:00",
+      "createdAt": "2026-04-07T09:00:00",
+      "author": {
+        "id": 1,
+        "name": "Иван Петров"
+      },
+      "assignee": {
+        "id": 2,
+        "name": "Анна Смирнова"
+      },
+      "department": {
+        "id": 1,
+        "name": "Операционный отдел"
+      },
+      "isOverdue": true
+    },
+    {
+      "id": 102,
+      "title": "Обновить лендинг компании",
+      "description": "Подготовить новый текстовый блок с акцией, обновить CTA и передать изменения на публикацию.",
+      "status": "NEW",
+      "priority": "MEDIUM",
+      "deadline": "2026-04-18T12:00:00",
+      "createdAt": "2026-04-09T10:15:00",
+      "author": {
+        "id": 1,
+        "name": "Иван Петров"
+      },
+      "assignee": {
+        "id": 3,
+        "name": "Дмитрий Козлов"
+      },
+      "department": {
+        "id": 2,
+        "name": "Маркетинг"
+      },
+      "isOverdue": false
+    },
+    {
+      "id": 103,
+      "title": "Подготовить договор для клиента ABC",
+      "description": "Проверить шаблон, внести реквизиты клиента, согласовать с юристом и передать на подпись.",
+      "status": "DONE",
+      "priority": "HIGH",
+      "deadline": "2026-04-05T12:00:00",
+      "createdAt": "2026-04-02T11:00:00",
+      "author": {
+        "id": 1,
+        "name": "Иван Петров"
+      },
+      "assignee": {
+        "id": 2,
+        "name": "Анна Смирнова"
+      },
+      "department": {
+        "id": 1,
+        "name": "Операционный отдел"
+      },
+      "isOverdue": false
+    },
+    {
+      "id": 104,
+      "title": "Подготовить welcome-план для нового сотрудника",
+      "description": "Сформировать программу адаптации на первую неделю, согласовать встречи и подготовить вводные материалы.",
+      "status": "BLOCKED",
+      "priority": "CRITICAL",
+      "deadline": "2026-04-12T15:00:00",
+      "createdAt": "2026-04-08T14:00:00",
+      "author": {
+        "id": 1,
+        "name": "Иван Петров"
+      },
+      "assignee": {
+        "id": 4,
+        "name": "Елена Орлова"
+      },
+      "department": {
+        "id": 3,
+        "name": "HR"
+      },
+      "isOverdue": true
+    },
+    {
+      "id": 105,
+      "title": "Подготовить список закупок на неделю",
+      "description": "Собрать потребности отделов, сверить остатки и сформировать единый список на закупку.",
+      "status": "NEW",
+      "priority": "LOW",
+      "deadline": "2026-04-16T13:00:00",
+      "createdAt": "2026-04-11T08:20:00",
+      "author": {
+        "id": 1,
+        "name": "Иван Петров"
+      },
+      "assignee": {
+        "id": 2,
+        "name": "Анна Смирнова"
+      },
+      "department": {
+        "id": 1,
+        "name": "Операционный отдел"
+      },
+      "isOverdue": false
+    }
+  ],
+  "loginUser": {
+    "id": 1,
+    "name": "Иван Петров",
+    "email": "ivan.petrov@company.ru",
+    "password": "123456",
+    "role": "MANAGER",
+    "departmentId": 1,
+    "departmentName": "Операционный отдел",
+    "token": "mock-token-123"
+  },
+  "createTaskMeta": {
+    "priorities": [
+      "LOW",
+      "MEDIUM",
+      "HIGH",
+      "CRITICAL"
+    ],
+    "statuses": [
+      "NEW",
+      "IN_PROGRESS",
+      "BLOCKED",
+      "DONE"
+    ],
+    "assignees": [
+      {
+        "id": 2,
+        "name": "Анна Смирнова"
+      },
+      {
+        "id": 3,
+        "name": "Дмитрий Козлов"
+      },
+      {
+        "id": 4,
+        "name": "Елена Орлова"
+      }
+    ],
+    "departments": [
+      {
+        "id": 1,
+        "name": "Операционный отдел"
+      },
+      {
+        "id": 2,
+        "name": "Маркетинг"
+      },
+      {
+        "id": 3,
+        "name": "HR"
+      }
+    ]
+  }
+}

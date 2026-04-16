@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "taskId": 101,
+    "field": "status",
+    "oldValue": "NEW",
+    "newValue": "IN_PROGRESS",
+    "changedByUserId": 2,
+    "changedByUserName": "Анна Смирнова",
+    "changedAt": "2026-04-08T09:45:00"
+  },
+  {
+    "id": 2,
+    "taskId": 101,
+    "field": "deadline",
+    "oldValue": "2026-04-09T18:00:00",
+    "newValue": "2026-04-10T18:00:00",
+    "changedByUserId": 1,
+    "changedByUserName": "Иван Петров",
+    "changedAt": "2026-04-08T12:20:00"
+  },
+  {
+    "id": 3,
+    "taskId": 104,
+    "field": "status",
+    "oldValue": "IN_PROGRESS",
+    "newValue": "BLOCKED",
+    "changedByUserId": 4,
+    "changedByUserName": "Елена Орлова",
+    "changedAt": "2026-04-10T09:20:00"
+  },
+  {
+    "id": 4,
+    "taskId": 103,
+    "field": "status",
+    "oldValue": "IN_PROGRESS",
+    "newValue": "DONE",
+    "changedByUserId": 2,
+    "changedByUserName": "Анна Смирнова",
+    "changedAt": "2026-04-05T11:40:00"
+  }
+]

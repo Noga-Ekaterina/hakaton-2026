@@ -1,0 +1,72 @@
+[
+  {
+    "id": 101,
+    "title": "Подготовить отчет по продажам",
+    "shortDescription": "Собрать данные за март и подготовить презентацию",
+    "status": "IN_PROGRESS",
+    "priority": "HIGH",
+    "deadline": "2026-04-10T18:00:00",
+    "createdAt": "2026-04-07T09:00:00",
+    "authorId": 1,
+    "authorName": "Иван Петров",
+    "assigneeId": 2,
+    "assigneeName": "Анна Смирнова",
+    "isOverdue": true
+  },
+  {
+    "id": 102,
+    "title": "Обновить лендинг компании",
+    "shortDescription": "Добавить новый блок с акцией",
+    "status": "NEW",
+    "priority": "MEDIUM",
+    "deadline": "2026-04-18T12:00:00",
+    "createdAt": "2026-04-09T10:15:00",
+    "authorId": 1,
+    "authorName": "Иван Петров",
+    "assigneeId": 3,
+    "assigneeName": "Дмитрий Козлов",
+    "isOverdue": false
+  },
+  {
+    "id": 103,
+    "title": "Подготовить договор для клиента ABC",
+    "shortDescription": "Проверить реквизиты и направить на согласование",
+    "status": "DONE",
+    "priority": "HIGH",
+    "deadline": "2026-04-05T12:00:00",
+    "createdAt": "2026-04-02T11:00:00",
+    "authorId": 1,
+    "authorName": "Иван Петров",
+    "assigneeId": 2,
+    "assigneeName": "Анна Смирнова",
+    "isOverdue": false
+  },
+  {
+    "id": 104,
+    "title": "Подготовить welcome-план для нового сотрудника",
+    "shortDescription": "Сформировать план адаптации на первую неделю",
+    "status": "BLOCKED",
+    "priority": "CRITICAL",
+    "deadline": "2026-04-12T15:00:00",
+    "createdAt": "2026-04-08T14:00:00",
+    "authorId": 1,
+    "authorName": "Иван Петров",
+    "assigneeId": 4,
+    "assigneeName": "Елена Орлова",
+    "isOverdue": true
+  },
+  {
+    "id": 105,
+    "title": "Подготовить список закупок на неделю",
+    "shortDescription": "Собрать потребности отделов и сформировать список",
+    "status": "NEW",
+    "priority": "LOW",
+    "deadline": "2026-04-16T13:00:00",
+    "createdAt": "2026-04-11T08:20:00",
+    "authorId": 1,
+    "authorName": "Иван Петров",
+    "assigneeId": 2,
+    "assigneeName": "Анна Смирнова",
+    "isOverdue": false
+  }
+]

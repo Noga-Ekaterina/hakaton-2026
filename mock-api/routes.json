@@ -1,0 +1,7 @@
+{
+  "/auth/login-user": "/loginUser",
+  "/forms/create-task-meta": "/createTaskMeta",
+  "/tasks/task-history": "/taskHistory",
+  "/tasks/task-comments": "/taskComments",
+  "/tasks/task-details": "/taskDetails"
+}
