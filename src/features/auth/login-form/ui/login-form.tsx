@@ -29,8 +29,8 @@ export function LoginForm() {
     setSubmitError(null);
 
     try {
-      const user = await dispatch(loginUser(data)).unwrap();
-      navigate(user.role === "ADMIN" ? paths.adminUsers : paths.home, { replace: true });
+      const authUser = await dispatch(loginUser(data)).unwrap();
+      navigate(authUser.role === "ADMIN" ? paths.adminUsers : paths.home, { replace: true });
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : String(error));
     }

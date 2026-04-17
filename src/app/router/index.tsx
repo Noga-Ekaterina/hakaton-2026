@@ -4,7 +4,7 @@ import type { RouteObject } from "react-router-dom";
 import { AuthGate } from "@/app/auth/ui/auth-gate";
 import { AppLayout } from "@/app/layout";
 import { paths } from "@/shared/config/routes";
-import { AdminShell } from "@/pages/admin";
+import { AdminAccessGate } from "@/pages/admin";
 import { AdminDepartmentsPage } from "@/pages/admin/departments";
 import { AdminUsersPage } from "@/pages/admin/users";
 import { HomePage } from "@/pages/home";
@@ -33,7 +33,7 @@ const routeObjects: RouteObject[] = [
           },
           {
             path: "admin",
-            element: <AdminShell />,
+            element: <AdminAccessGate />,
             children: [
               {
                 index: true,

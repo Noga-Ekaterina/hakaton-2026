@@ -1,11 +1,6 @@
 import type { CreateTaskMeta, CreateTaskInput } from "@/app/store/api/tasks-api";
 import type { CreateTaskValues } from "./create-task-schema";
 
-export const defaultAuthor = {
-  id: 1,
-  name: "Иван Петров",
-};
-
 export function getDefaultDeadline() {
   const value = new Date();
   value.setDate(value.getDate() + 1);
@@ -21,11 +16,10 @@ export function getDefaultDeadline() {
 export function getDefaultCreateTaskValues(meta?: CreateTaskMeta): CreateTaskValues {
   return {
     title: "",
-    shortDescription: "",
-    status: "NEW",
+    description: "",
     priority: "MEDIUM",
     deadline: getDefaultDeadline(),
-    assigneeId: String(meta?.assignees[0]?.id ?? ""),
+    assigneeId: String(meta?.users[0]?.id ?? ""),
     departmentId: String(meta?.departments[0]?.id ?? ""),
   };
 }
@@ -35,7 +29,7 @@ function toIsoFromDateTimeLocal(value: string) {
 }
 
 export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskMeta): CreateTaskInput | null {
-  const assignee = meta.assignees.find((item) => String(item.id) === values.assigneeId);
+  const assignee = meta.users.find((item) => String(item.id) === values.assigneeId);
 
   if (!assignee) {
     return null;
@@ -43,16 +37,10 @@ export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskM
 
   return {
     title: values.title.trim(),
-    shortDescription: values.shortDescription.trim(),
-    status: values.status,
+    description: values.description.trim(),
     priority: values.priority,
     deadline: toIsoFromDateTimeLocal(values.deadline),
-    authorId: defaultAuthor.id,
-    authorName: defaultAuthor.name,
     assigneeId: assignee.id,
-    assigneeName: assignee.name,
     departmentId: Number(values.departmentId),
-    createdAt: new Date().toISOString(),
-    isOverdue: values.status !== "DONE" && new Date(values.deadline).getTime() < Date.now(),
   };
 }

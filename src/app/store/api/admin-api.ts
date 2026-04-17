@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { Department } from "@/entities/department";
 import type { User, UserRole } from "@/entities/user";
+import { API_URL } from "@/shared/config/api";
 
 export type CreateDepartmentInput = {
   name: string;
@@ -14,25 +15,27 @@ export type UpdateDepartmentInput = {
 export type CreateUserInput = {
   name: string;
   email: string;
+  password: string;
   role: UserRole;
-  departmentId: number;
-  departmentName: string;
+  departmentId: number | null;
+  departmentName: string | null;
 };
 
-export type UpdateUserInput = {
+export type ChangeUserRoleInput = {
   id: number;
-  name: string;
-  email: string;
   role: UserRole;
+};
+
+export type AssignUserDepartmentInput = {
+  id: number;
   departmentId: number;
-  departmentName: string;
 };
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
   tagTypes: ["Users", "Departments"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://backend-hackathon-production-faa2.up.railway.app/api",
+    baseUrl: API_URL,
   }),
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
@@ -100,18 +103,29 @@ export const adminApi = createApi({
       ],
     }),
     createUser: builder.mutation<User, CreateUserInput>({
-      query: (body) => ({
-        url: "/users",
+      query: (params) => ({
+        url: "/users/register",
         method: "POST",
-        body,
+        params,
       }),
       invalidatesTags: [{ type: "Users", id: "LIST" }],
     }),
-    updateUser: builder.mutation<User, UpdateUserInput>({
-      query: ({ id, ...body }) => ({
-        url: `/users/${id}`,
-        method: "PATCH",
-        body,
+    changeUserRole: builder.mutation<User, ChangeUserRoleInput>({
+      query: ({ id, role }) => ({
+        url: `/users/${id}/change-role`,
+        method: "POST",
+        params: { role },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Users", id },
+        { type: "Users", id: "LIST" },
+      ],
+    }),
+    assignUserDepartment: builder.mutation<User, AssignUserDepartmentInput>({
+      query: ({ id, departmentId }) => ({
+        url: `/users/${id}/assign-department`,
+        method: "POST",
+        params: { departmentId },
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Users", id },
@@ -127,5 +141,6 @@ export const {
   useCreateDepartmentMutation,
   useUpdateDepartmentMutation,
   useCreateUserMutation,
-  useUpdateUserMutation,
+  useChangeUserRoleMutation,
+  useAssignUserDepartmentMutation,
 } = adminApi;

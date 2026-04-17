@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { useGetDepartmentsQuery, useGetUsersQuery } from "@/app/store/api/admin-api";
-import { UserCard } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
 import { UserModal } from "@/features/user/manage-user";
+import { UserUpdateCard } from "@/features/user/update-user";
 
 export function AdminUsersPage() {
   const { data: users, isLoading: usersLoading, isError: usersError, error: usersFetchError } = useGetUsersQuery();
   const { data: departments, isLoading: departmentsLoading } = useGetDepartmentsQuery();
-  const [activeUserId, setActiveUserId] = useState<number | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-
-  const activeUser = users?.find((user) => user.id === activeUserId) ?? null;
 
   return (
     <section className="space-y-6">
@@ -40,21 +37,11 @@ export function AdminUsersPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {users?.map((user) => (
-          <UserCard key={user.id} user={user} onClick={() => setActiveUserId(user.id)} />
+          <UserUpdateCard key={user.id} user={user} departments={departments ?? []} />
         ))}
       </div>
 
-      <UserModal
-        open={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        departments={departments ?? []}
-      />
-      <UserModal
-        open={Boolean(activeUser)}
-        onClose={() => setActiveUserId(null)}
-        departments={departments ?? []}
-        user={activeUser}
-      />
+      <UserModal open={isCreateOpen} onClose={() => setIsCreateOpen(false)} departments={departments ?? []} />
     </section>
   );
 }

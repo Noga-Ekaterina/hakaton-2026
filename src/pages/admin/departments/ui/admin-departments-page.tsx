@@ -14,7 +14,11 @@ export function AdminDepartmentsPage() {
   const activeDepartment = departments?.find((department) => department.id === activeDepartmentId) ?? null;
   const memberCounts = useMemo(() => {
     const counts = new Map<number, number>();
-    users?.forEach((user) => counts.set(user.departmentId, (counts.get(user.departmentId) ?? 0) + 1));
+    users?.forEach((user) => {
+      if (user.departmentId != null) {
+        counts.set(user.departmentId, (counts.get(user.departmentId) ?? 0) + 1);
+      }
+    });
     return counts;
   }, [users]);
 

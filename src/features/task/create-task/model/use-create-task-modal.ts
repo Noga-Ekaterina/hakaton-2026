@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useAppSelector } from "@/app/store/hooks";
 import { useCreateTaskMutation, useGetCreateTaskMetaQuery } from "@/app/store/api/tasks-api";
 import { buildCreateTaskInput, getDefaultCreateTaskValues } from "./create-task-form";
 import { createTaskSchema, type CreateTaskValues } from "./create-task-schema";
@@ -11,6 +12,7 @@ type UseCreateTaskModalParams = {
 };
 
 export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) {
+  const currentUser = useAppSelector((state) => state.auth.user);
   const { data: meta, isLoading, isError } = useGetCreateTaskMetaQuery(undefined, { skip: !open });
   const [createTask, { isLoading: isSubmitting }] = useCreateTaskMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -45,7 +47,7 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
     }
 
     if (!getValues("assigneeId")) {
-      setValue("assigneeId", String(meta.assignees[0]?.id ?? ""), { shouldValidate: true });
+      setValue("assigneeId", String(meta.users[0]?.id ?? ""), { shouldValidate: true });
     }
 
     if (!getValues("departmentId")) {
@@ -81,6 +83,11 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
       return;
     }
 
+    if (!currentUser) {
+      setSubmitError("Не удалось определить текущего пользователя.");
+      return;
+    }
+
     const input = buildCreateTaskInput(values, meta);
 
     if (!input) {
@@ -89,7 +96,7 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
     }
 
     try {
-      await createTask(input).unwrap();
+      await createTask({ authorId: currentUser.id, body: input }).unwrap();
       onClose();
     } catch {
       setSubmitError("Не удалось создать задачу. Попробуйте еще раз.");

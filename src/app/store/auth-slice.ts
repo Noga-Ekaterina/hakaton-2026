@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import type { AuthUser } from "@/entities/auth";
+import type { User } from "@/entities/user";
 import type { LoginValues } from "@/features/auth/login-form/model/login-schema";
+import { AUTH_LOGIN_URL, AUTH_LOGOUT_URL, AUTH_ME_URL } from "@/shared/config/api";
 
 type AuthState = {
-  user: AuthUser | null;
+  user: User | null;
   status: "idle" | "checking" | "loading" | "authenticated" | "unauthenticated";
   error: string | null;
 };
@@ -13,9 +14,6 @@ const initialState: AuthState = {
   status: "idle",
   error: null,
 };
-
-const AUTH_URL = "https://backend-hackathon-production-faa2.up.railway.app//api/auth/login";
-const AUTH_ME_URL = "https://backend-hackathon-production-faa2.up.railway.app/api/auth/me";
 
 function getErrorMessage(data: unknown, fallback: string) {
   if (typeof data === "string" && data.trim()) {
@@ -35,7 +33,7 @@ function getErrorMessage(data: unknown, fallback: string) {
   return fallback;
 }
 
-function isAuthUser(value: unknown): value is AuthUser {
+function isAuthUser(value: unknown): value is User {
   if (typeof value !== "object" || value === null) {
     return false;
   }
@@ -52,11 +50,11 @@ function isAuthUser(value: unknown): value is AuthUser {
   );
 }
 
-export const loginUser = createAsyncThunk<AuthUser, LoginValues, { rejectValue: string }>(
+export const loginUser = createAsyncThunk<User, LoginValues, { rejectValue: string }>(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await fetch(AUTH_URL, {
+      const response = await fetch(AUTH_LOGIN_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +80,7 @@ export const loginUser = createAsyncThunk<AuthUser, LoginValues, { rejectValue: 
   },
 );
 
-export const fetchCurrentUser = createAsyncThunk<AuthUser, void, { rejectValue: string }>(
+export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: string }>(
   "auth/fetchCurrentUser",
   async (_arg, { rejectWithValue }) => {
     try {
@@ -108,13 +106,32 @@ export const fetchCurrentUser = createAsyncThunk<AuthUser, void, { rejectValue: 
   },
 );
 
+export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
+  "auth/logout",
+  async (_arg, { rejectWithValue }) => {
+    try {
+      const response = await fetch(AUTH_LOGOUT_URL, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const payload: unknown = await response.json().catch(() => null);
+        return rejectWithValue(getErrorMessage(payload, `Не удалось выйти. Сервер вернул статус ${response.status}.`));
+      }
+    } catch {
+      return rejectWithValue("Не удалось выполнить выход. Проверьте подключение к сети.");
+    }
+  },
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout(state) {
+    clearAuth(state) {
       state.user = null;
-      state.status = "idle";
+      state.status = "unauthenticated";
       state.error = null;
     },
   },
@@ -146,10 +163,23 @@ const authSlice = createSlice({
         state.status = "unauthenticated";
         state.user = null;
         state.error = action.payload ?? null;
+      })
+      .addCase(logout.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.status = "unauthenticated";
+        state.error = null;
+      })
+      .addCase(logout.rejected, (state) => {
+        state.user = null;
+        state.status = "unauthenticated";
+        state.error = null;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { clearAuth } = authSlice.actions;
 export const authReducer = authSlice.reducer;
-

@@ -28,28 +28,39 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
     defaultValues: {
       name: "",
       email: "",
-      role: "EMPLOYEE",
+      password: "",
+      role: "USER",
       departmentId: "",
     },
   });
 
   const selectedDepartmentId = watch("departmentId");
+  const selectedRole = watch("role");
 
   useEffect(() => {
+    if (selectedRole === "ADMIN") {
+      if (selectedDepartmentId) {
+        setValue("departmentId", "", { shouldValidate: true });
+      }
+      return;
+    }
+
     if (!selectedDepartmentId && departments[0]?.id) {
       setValue("departmentId", String(departments[0].id), { shouldValidate: true });
     }
-  }, [departments, selectedDepartmentId, setValue]);
+  }, [departments, selectedDepartmentId, selectedRole, setValue]);
 
   const onSubmit = handleSubmit(async (values) => {
     setSubmitError(null);
-    const departmentId = Number(values.departmentId);
-    const departmentName = departments.find((department) => department.id === departmentId)?.name ?? "";
+    const departmentId = values.role === "ADMIN" ? null : Number(values.departmentId);
+    const departmentName =
+      values.role === "ADMIN" ? null : departments.find((department) => department.id === departmentId)?.name ?? "";
 
     try {
       await createUser({
         name: values.name.trim(),
         email: values.email.trim(),
+        password: values.password,
         role: values.role,
         departmentId,
         departmentName,
@@ -57,7 +68,8 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
       reset({
         name: "",
         email: "",
-        role: "EMPLOYEE",
+        password: "",
+        role: "USER",
         departmentId: String(departments[0]?.id ?? ""),
       });
     } catch {
@@ -101,6 +113,19 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="user-password">Пароль</Label>
+          <Input
+            id="user-password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Минимум 6 символов"
+            aria-invalid={Boolean(errors.password)}
+            {...register("password")}
+          />
+          {errors.password ? <p className="text-sm text-rose-600">{errors.password.message}</p> : null}
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="user-role">Роль</Label>
           <select
             id="user-role"
@@ -108,29 +133,31 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
             aria-invalid={Boolean(errors.role)}
             {...register("role")}
           >
-            <option value="EMPLOYEE">Сотрудник</option>
-            <option value="MANAGER">Менеджер</option>
+            <option value="USER">Пользователь</option>
+            <option value="ADMIN">Администратор</option>
           </select>
           {errors.role ? <p className="text-sm text-rose-600">{errors.role.message}</p> : null}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="user-department">Отдел</Label>
-          <select
-            id="user-department"
-            className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-            aria-invalid={Boolean(errors.departmentId)}
-            {...register("departmentId")}
-          >
-            <option value="">Выберите отдел</option>
-            {departments.map((department) => (
-              <option key={department.id} value={department.id}>
-                {department.name}
-              </option>
-            ))}
-          </select>
-          {errors.departmentId ? <p className="text-sm text-rose-600">{errors.departmentId.message}</p> : null}
-        </div>
+        {selectedRole === "ADMIN" ? null : (
+          <div className="space-y-2">
+            <Label htmlFor="user-department">Отдел</Label>
+            <select
+              id="user-department"
+              className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              aria-invalid={Boolean(errors.departmentId)}
+              {...register("departmentId")}
+            >
+              <option value="">Выберите отдел</option>
+              {departments.map((department) => (
+                <option key={department.id} value={department.id}>
+                  {department.name}
+                </option>
+              ))}
+            </select>
+            {errors.departmentId ? <p className="text-sm text-rose-600">{errors.departmentId.message}</p> : null}
+          </div>
+        )}
       </div>
 
       <Button type="submit" disabled={isSubmitting || isLoading} className="w-full">

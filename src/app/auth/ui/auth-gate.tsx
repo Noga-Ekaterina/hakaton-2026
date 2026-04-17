@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { fetchCurrentUser } from "@/app/store/auth-slice";
+import type { User } from "@/entities/user";
 import { paths } from "@/shared/config/routes";
 
-function getDashboardPath(role: "USER" | "ADMIN") {
+function getDashboardPath(role: User["role"]) {
   return role === "ADMIN" ? paths.adminUsers : paths.home;
 }
 
@@ -43,4 +44,3 @@ export function AuthGate() {
 
   return <Outlet />;
 }
-

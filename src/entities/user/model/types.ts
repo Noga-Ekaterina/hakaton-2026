@@ -1,10 +1,10 @@
-export type UserRole = "MANAGER" | "EMPLOYEE";
+export type UserRole = "USER" | "ADMIN";
 
 export type User = {
   id: number;
   name: string;
   email: string;
   role: UserRole;
-  departmentId: number;
-  departmentName: string;
+  departmentId: number | null;
+  departmentName: string | null;
 };

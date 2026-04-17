@@ -43,7 +43,7 @@ export function useTaskFiltersPanel() {
 
   return {
     filters,
-    assigneeOptions: meta?.assignees ?? [],
+    assigneeOptions: meta?.users ?? [],
     priorityOptions,
     priorityLabels,
     hasActiveFilters: hasActiveTaskFilters(filters),

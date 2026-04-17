@@ -1,8 +1,12 @@
 import { z } from "zod";
 
-export const updateUserSchema = z.object({
-  role: z.enum(["MANAGER", "EMPLOYEE"]),
+export const updateUserRoleSchema = z.object({
+  role: z.enum(["USER", "ADMIN"]),
+});
+
+export const updateUserDepartmentSchema = z.object({
   departmentId: z.string().min(1, "Выберите отдел"),
 });
 
-export type UpdateUserValues = z.infer<typeof updateUserSchema>;
+export type UpdateUserRoleValues = z.infer<typeof updateUserRoleSchema>;
+export type UpdateUserDepartmentValues = z.infer<typeof updateUserDepartmentSchema>;

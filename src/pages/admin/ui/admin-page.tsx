@@ -25,14 +25,16 @@ export function AdminPage() {
   const memberCounts = useMemo(() => {
     const counts = new Map<number, number>();
     users?.forEach((user) => {
-      counts.set(user.departmentId, (counts.get(user.departmentId) ?? 0) + 1);
+      if (user.departmentId != null) {
+        counts.set(user.departmentId, (counts.get(user.departmentId) ?? 0) + 1);
+      }
     });
     return counts;
   }, [users]);
 
   const totalUsers = users?.length ?? 0;
   const totalDepartments = departments?.length ?? 0;
-  const managerCount = users?.filter((user) => user.role === "MANAGER").length ?? 0;
+  const adminCount = users?.filter((user) => user.role === "ADMIN").length ?? 0;
 
   return (
     <section className="space-y-8">
@@ -55,7 +57,7 @@ export function AdminPage() {
           </div>
           <div className="rounded-3xl bg-slate-50 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Менеджеры</p>
-            <p className="mt-3 text-3xl font-black text-slate-950">{managerCount}</p>
+            <p className="mt-3 text-3xl font-black text-slate-950">{adminCount}</p>
           </div>
         </div>
       </div>

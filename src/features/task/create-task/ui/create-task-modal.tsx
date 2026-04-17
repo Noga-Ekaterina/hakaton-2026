@@ -1,4 +1,5 @@
 import { createPortal } from "react-dom";
+import { UserSelect } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -75,34 +76,10 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
                 id="task-description"
                 className="min-h-28 w-full rounded-2xl border border-border bg-white px-4 py-3 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
                 placeholder="Несколько слов о сути задачи"
-                aria-invalid={Boolean(errors.shortDescription)}
-                {...register("shortDescription")}
+                aria-invalid={Boolean(errors.description)}
+                {...register("description")}
               />
-              {errors.shortDescription ? <p className="text-sm text-rose-600">{errors.shortDescription.message}</p> : null}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="task-status">Статус</Label>
-              <select
-                id="task-status"
-                className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                aria-invalid={Boolean(errors.status)}
-                {...register("status")}
-              >
-                {meta?.statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                )) ?? (
-                  <>
-                    <option value="NEW">NEW</option>
-                    <option value="IN_PROGRESS">IN_PROGRESS</option>
-                    <option value="BLOCKED">BLOCKED</option>
-                    <option value="DONE">DONE</option>
-                  </>
-                )}
-              </select>
-              {errors.status ? <p className="text-sm text-rose-600">{errors.status.message}</p> : null}
+              {errors.description ? <p className="text-sm text-rose-600">{errors.description.message}</p> : null}
             </div>
 
             <div className="space-y-2">
@@ -113,7 +90,7 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
                 aria-invalid={Boolean(errors.priority)}
                 {...register("priority")}
               >
-                {meta?.priorities.map((priority) => (
+                {meta?.taskPriorities.map((priority) => (
                   <option key={priority} value={priority}>
                     {priority}
                   </option>
@@ -137,19 +114,7 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
 
             <div className="space-y-2">
               <Label htmlFor="task-assignee">Исполнитель</Label>
-              <select
-                id="task-assignee"
-                className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                aria-invalid={Boolean(errors.assigneeId)}
-                {...register("assigneeId")}
-              >
-                <option value="">Выберите исполнителя</option>
-                {meta?.assignees.map((assignee) => (
-                  <option key={assignee.id} value={assignee.id}>
-                    {assignee.name}
-                  </option>
-                ))}
-              </select>
+              <UserSelect id="task-assignee" users={meta?.users ?? []} {...register("assigneeId")} />
               {errors.assigneeId ? <p className="text-sm text-rose-600">{errors.assigneeId.message}</p> : null}
             </div>
 

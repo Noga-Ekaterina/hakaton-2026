@@ -2,13 +2,13 @@ import type { KeyboardEvent, ReactNode } from "react";
 import type { User } from "../model/types";
 
 const roleMeta: Record<User["role"], { label: string; className: string }> = {
-  MANAGER: {
-    label: "Менеджер",
-    className: "bg-amber-100 text-amber-900",
-  },
-  EMPLOYEE: {
-    label: "Сотрудник",
+  USER: {
+    label: "Пользователь",
     className: "bg-slate-100 text-slate-700",
+  },
+  ADMIN: {
+    label: "Администратор",
+    className: "bg-emerald-100 text-emerald-900",
   },
 };
 
@@ -55,7 +55,7 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl bg-slate-50 p-4">
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Отдел</dt>
-          <dd className="mt-2 text-sm font-medium text-slate-900">{user.departmentName}</dd>
+          <dd className="mt-2 text-sm font-medium text-slate-900">{user.departmentName ?? "Не указан"}</dd>
         </div>
         <div className="rounded-2xl bg-slate-50 p-4">
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Роль</dt>
@@ -67,3 +67,4 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
     </article>
   );
 }
+

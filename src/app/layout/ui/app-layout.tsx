@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { logout } from "@/app/store/auth-slice";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { CreateTaskModal } from "@/features/task/create-task";
 import { paths } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
@@ -10,10 +12,21 @@ const linkBaseClass =
 
 export function AppLayout() {
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
+  const currentUser = useAppSelector((state) => state.auth.user);
   const routeWithSearch = (pathname: string) => ({ pathname, search: location.search });
   const isAdminPage = location.pathname.startsWith(paths.admin);
   const shouldShowTaskFilters = location.pathname === paths.home || location.pathname === paths.overdue;
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logout()).unwrap();
+    } finally {
+      navigate(paths.login, { replace: true });
+    }
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(192,86,33,0.16),_transparent_28%),linear-gradient(135deg,_#f8f1e7,_#f0e1c8)] text-foreground">
@@ -25,7 +38,12 @@ export function AppLayout() {
         <header>
           <div className="flex items-start justify-between gap-4">
             <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary">hakaton-2026</p>
+              <p
+                className="text-sm font-semibold uppercase tracking-[0.35em] text-primary"
+                style={{ fontFamily: '"Libre Baskerville", serif' }}
+              >
+                QiTask
+              </p>
               <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">Рабочее пространство</h1>
               <p className="mt-4 max-w-2xl text-lg text-slate-600">
                 Задачи, просрочка и админские операции живут в одном приложении. Переключайтесь между разделами через
@@ -34,40 +52,59 @@ export function AppLayout() {
             </div>
 
             <div className="shrink-0 pt-1">
-              {isAdminPage ? (
-                <NavLink
-                  to={routeWithSearch(paths.home)}
-                  end
-                  className={({ isActive }) =>
-                    `${linkBaseClass} ${isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"}`
-                  }
-                >
-                  Доска
-                </NavLink>
-              ) : (
-                <NavLink
-                  to={paths.adminUsers}
-                  className={({ isActive }) =>
-                    `${linkBaseClass} ${isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "bg-white/70 text-slate-700 hover:bg-white"}`
-                  }
-                >
-                  Админка
-                </NavLink>
-              )}
+              <div className="flex flex-wrap items-center justify-end gap-3">
+                {isAdminPage ? (
+                  <NavLink
+                    to={routeWithSearch(paths.home)}
+                    end
+                    className={({ isActive }) =>
+                      `${linkBaseClass} ${
+                        isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"
+                      }`
+                    }
+                  >
+                    Доска
+                  </NavLink>
+                ) : currentUser?.role === "ADMIN" ? (
+                  <NavLink
+                    to={paths.adminUsers}
+                    className={({ isActive }) =>
+                      `${linkBaseClass} ${
+                        isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "bg-white/70 text-slate-700 hover:bg-white"
+                      }`
+                    }
+                  >
+                    Админка
+                  </NavLink>
+                ) : null}
+
+                {currentUser ? (
+                  <>
+                    <div className="rounded-full border border-slate-200/80 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur">
+                      {currentUser.name}
+                    </div>
+                    <Button type="button" variant="secondary" onClick={handleLogout}>
+                      Выход
+                    </Button>
+                  </>
+                ) : null}
+              </div>
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col-reverse gap-6 border-b border-slate-200/70 pb-8 lg:flex-row lg:items-start lg:justify-between flex-wrap-reverse">
+          <div className="mt-5 flex flex-col-reverse flex-wrap-reverse gap-6 border-b border-slate-200/70 pb-8 lg:flex-row lg:items-start lg:justify-between">
             {shouldShowTaskFilters ? <TaskFiltersPanel /> : null}
 
             {!isAdminPage ? (
-              <div className="flex flex-col gap-3 lg:items-end pb-[0.4rem]">
+              <div className="flex flex-col gap-3 pb-[0.4rem] lg:items-end">
                 <nav className="flex flex-wrap gap-3">
                   <NavLink
                     to={routeWithSearch(paths.home)}
                     end
                     className={({ isActive }) =>
-                      `${linkBaseClass} ${isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"}`
+                      `${linkBaseClass} ${
+                        isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"
+                      }`
                     }
                   >
                     Доска
@@ -75,7 +112,9 @@ export function AppLayout() {
                   <NavLink
                     to={routeWithSearch(paths.overdue)}
                     className={({ isActive }) =>
-                      `${linkBaseClass} ${isActive ? "bg-rose-600 text-white shadow-lg shadow-rose-600/20" : "bg-white/70 text-slate-700 hover:bg-white"}`
+                      `${linkBaseClass} ${
+                        isActive ? "bg-rose-600 text-white shadow-lg shadow-rose-600/20" : "bg-white/70 text-slate-700 hover:bg-white"
+                      }`
                     }
                   >
                     Просроченные

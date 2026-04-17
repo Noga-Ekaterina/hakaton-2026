@@ -1,39 +1,46 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Task, TaskStatus } from "@/entities/task";
+import type { Department } from "@/entities/department";
+import type { Task, TaskPriority, TaskStatus } from "@/entities/task";
+import type { UserRole } from "@/entities/user";
+import { API_URL } from "@/shared/config/api";
+
+export type CreateTaskDepartment = Department & {
+  description: string | null;
+};
+
+export type CreateTaskUser = {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  department: CreateTaskDepartment | null;
+  createdAt: string;
+  active: boolean;
+};
 
 export type CreateTaskMeta = {
-  priorities: Task["priority"][];
-  statuses: TaskStatus[];
-  assignees: Array<{
-    id: number;
-    name: string;
-  }>;
-  departments: Array<{
-    id: number;
-    name: string;
-  }>;
+  departments: CreateTaskDepartment[];
+  users: CreateTaskUser[];
+  roles: UserRole[];
+  taskStatuses: TaskStatus[];
+  taskPriorities: TaskPriority[];
 };
 
 export type CreateTaskInput = {
   title: string;
-  shortDescription: string;
-  status: TaskStatus;
-  priority: Task["priority"];
+  description: string;
+  priority: TaskPriority;
   deadline: string;
-  authorId: number;
-  authorName: string;
   assigneeId: number;
-  assigneeName: string;
   departmentId: number;
-  createdAt: string;
-  isOverdue: boolean;
 };
 
 export const tasksApi = createApi({
   reducerPath: "tasksApi",
   tagTypes: ["Tasks"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://backend-hackathon-production-faa2.up.railway.app/api",
+    baseUrl: API_URL,
   }),
   endpoints: (builder) => ({
     getTasks: builder.query<Task[], void>({
@@ -44,12 +51,13 @@ export const tasksApi = createApi({
           : [{ type: "Tasks" as const, id: "LIST" }],
     }),
     getCreateTaskMeta: builder.query<CreateTaskMeta, void>({
-      query: () => "/forms/create-task-meta",
+      query: () => "/meta",
     }),
     
-    createTask: builder.mutation<Task, CreateTaskInput>({
-      query: (body) => ({
+    createTask: builder.mutation<Task, { authorId: number; body: CreateTaskInput }>({
+      query: ({ authorId, body }) => ({
         url: "/tasks",
+        params: { authorId },
         method: "POST",
         body,
       }),
