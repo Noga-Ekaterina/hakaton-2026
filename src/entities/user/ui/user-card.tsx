@@ -57,10 +57,10 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
           <dd className="mt-2 text-sm font-medium text-slate-900">{role.label}</dd>
         </div>
 
-        {user.departmentName && (
+        {user.department && (
           <div className="rounded-2xl bg-slate-100 p-4">
             <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Отдел</dt>
-            <dd className="mt-2 text-sm font-medium text-slate-900">{user.departmentName}</dd>
+            <dd className="mt-2 text-sm font-medium text-slate-900">{user.department.name || "Не назначен"}</dd>
           </div>
         ) }
       </dl>

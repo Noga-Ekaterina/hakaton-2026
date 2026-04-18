@@ -7,4 +7,10 @@ export type User = {
   role: UserRole;
   departmentId: number | null;
   departmentName: string | null;
+  department?: Department;
+};
+
+export type Department = {
+  id: number;
+  name: string | null;
 };
