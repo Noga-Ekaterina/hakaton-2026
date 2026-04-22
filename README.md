@@ -1,41 +1,37 @@
 # hakaton-2026
 
-Starter project on `React + TypeScript + Redux Toolkit + Zod + React Hook Form + Tailwind CSS + Radix UI`.
+Monorepo for the QITask app:
+
+- `apps/web/src/` - Vite + React frontend
+- `apps/server/` - Express API with Prisma
+- `packages/shared/` - shared domain types and `zod` schemas
 
 ## Scripts
 
-- `npm run dev` - start the local development server
-- `npm run build` - build the project for production
-- `npm run preview` - preview the production build
+- `npm run dev` - start the frontend only
+- `npm run dev:all` - start the full monorepo with Turbo
+- `npm run build` - build the frontend only
+- `npm run build:all` - run builds across workspaces
+- `npm run dev:server` - start only the API server
+- `npm run db:push` - sync Prisma schema to MySQL
+- `npm run db:seed` - seed the local `qitask` database
 
-## Security note
+## Local setup
 
-`npm audit` currently reports 2 moderate vulnerabilities in the dev toolchain:
+1. Start MySQL and create a database named `qitask`.
+2. Set `apps/server/.env` with your local `DATABASE_URL`.
+3. Run `npm install`.
+4. Run `npm run db:push`.
+5. Run `npm run db:seed`.
+6. Start everything with `npm run dev:all`.
 
-- `vite@5.4.21`
-- `esbuild@0.21.5` (transitive dependency from Vite)
+## API
 
-These issues affect local development tooling rather than the shipped React bundle.
+- Frontend API base URL defaults to `http://localhost:4000`
+- Auth uses an HTTP-only cookie
+- The server exposes `/api/auth`, `/api/users`, `/api/projects`, `/api/tasks`, and `/api/meta`
 
-## Why not upgrade to Vite 8 right now
+## Deployment
 
-The currently available fix suggested by `npm audit` is `vite@8.0.8`, but it requires a newer Node.js version:
-
-- required: `^20.19.0 || >=22.12.0`
-- current in this environment: `v20.11.0`
-
-The same Node.js requirement applies to the latest `@vitejs/plugin-react`.
-
-## Recommended upgrade path
-
-1. Update Node.js to `20.19+` or `22.12+`.
-2. Upgrade `vite` to `8.x`.
-3. Upgrade `@vitejs/plugin-react` to the version compatible with `vite@8`.
-4. Run `npm install`.
-5. Verify with `npm run build` and `npm audit`.
-
-## Temporary risk reduction
-
-- keep the dev server on `localhost`
-- avoid exposing it with `--host` unless really needed
-- do not keep the dev server open while browsing untrusted sites
+- Vercel should use `apps/web` as the root directory
+- The frontend production build is emitted to `apps/web/dist`
