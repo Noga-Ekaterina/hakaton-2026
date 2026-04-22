@@ -45,8 +45,8 @@ function isAuthUser(value: unknown): value is User {
     typeof candidate.name === "string" &&
     typeof candidate.email === "string" &&
     (candidate.role === "USER" || candidate.role === "ADMIN") &&
-    (candidate.departmentId === null || typeof candidate.departmentId === "number") &&
-    (candidate.departmentName === null || typeof candidate.departmentName === "string")
+    (candidate.projectId === null || typeof candidate.projectId === "number") &&
+    (candidate.projectName === null || typeof candidate.projectName === "string")
   );
 }
 

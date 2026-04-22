@@ -12,9 +12,9 @@ export function AdminShell() {
     <section className="space-y-8">
       <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
         <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary">Администрирование</p>
-        <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">Пользователи и отделы</h2>
+        <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">Пользователи и проекты</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-          Пользователи и отделы разнесены по отдельным страницам. Создание и редактирование выполняются в модальных
+          Пользователи и проекты разнесены по отдельным страницам. Создание и редактирование выполняются в модальных
           окнах.
         </p>
 
@@ -28,12 +28,12 @@ export function AdminShell() {
             Пользователи
           </NavLink>
           <NavLink
-            to={routeWithSearch(paths.adminDepartments)}
+            to={routeWithSearch(paths.adminProjects)}
             className={({ isActive }) =>
               `${tabClass} ${isActive ? "bg-amber-600 text-white shadow-lg shadow-amber-600/20" : "bg-white/70 text-slate-700 hover:bg-white"}`
             }
           >
-            Отделы
+            Проекты
           </NavLink>
         </div>
       </div>

@@ -4,7 +4,7 @@ export const userBaseSchema = z.object({
   name: z.string().trim().min(2, "Имя должно быть не короче 2 символов"),
   email: z.string().trim().email("Введите корректный email"),
   role: z.enum(["USER", "ADMIN"]),
-  departmentId: z.string().optional(),
+  projectId: z.string().optional(),
 });
 
 export const createUserSchema = userBaseSchema
@@ -12,11 +12,11 @@ export const createUserSchema = userBaseSchema
     password: z.string().trim().min(6, "Минимум 6 символов"),
   })
   .superRefine((values, ctx) => {
-    if (values.role === "USER" && !values.departmentId) {
+    if (values.role === "USER" && !values.projectId) {
       ctx.addIssue({
         code: "custom",
-        path: ["departmentId"],
-        message: "Выберите отдел",
+        path: ["projectId"],
+        message: "Выберите проект",
       });
     }
   });

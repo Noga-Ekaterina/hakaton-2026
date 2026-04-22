@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Department } from "@/entities/department";
+import type { Project } from "@/entities/project";
 import type { User, UserRole } from "@/entities/user";
 import { API_URL } from "@/shared/config/api";
 
-export type CreateDepartmentInput = {
+export type CreateProjectInput = {
   name: string;
 };
 
-export type UpdateDepartmentInput = {
+export type UpdateProjectInput = {
   id: number;
   name: string;
 };
@@ -17,8 +17,8 @@ export type CreateUserInput = {
   email: string;
   password: string;
   role: UserRole;
-  departmentId: number | null;
-  departmentName: string | null;
+  projectId: number | null;
+  projectName: string | null;
 };
 
 export type ChangeUserRoleInput = {
@@ -26,14 +26,14 @@ export type ChangeUserRoleInput = {
   role: UserRole;
 };
 
-export type AssignUserDepartmentInput = {
+export type AssignUserProjectInput = {
   id: number;
-  departmentId: number;
+  projectId: number;
 };
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
-  tagTypes: ["Users", "Departments"],
+  tagTypes: ["Users", "Projects"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
   }),
@@ -45,36 +45,33 @@ export const adminApi = createApi({
           ? [...result.map(({ id }) => ({ type: "Users" as const, id })), { type: "Users" as const, id: "LIST" }]
           : [{ type: "Users" as const, id: "LIST" }],
     }),
-    getDepartments: builder.query<Department[], void>({
-      query: () => "/departments",
+    getProjects: builder.query<Project[], void>({
+      query: () => "/projects",
       providesTags: (result) =>
         result
-          ? [
-              ...result.map(({ id }) => ({ type: "Departments" as const, id })),
-              { type: "Departments" as const, id: "LIST" },
-            ]
-          : [{ type: "Departments" as const, id: "LIST" }],
+          ? [...result.map(({ id }) => ({ type: "Projects" as const, id })), { type: "Projects" as const, id: "LIST" }]
+          : [{ type: "Projects" as const, id: "LIST" }],
     }),
-    createDepartment: builder.mutation<Department, CreateDepartmentInput>({
+    createProject: builder.mutation<Project, CreateProjectInput>({
       query: (body) => ({
-        url: "/departments",
+        url: "/projects",
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Departments", id: "LIST" }],
+      invalidatesTags: [{ type: "Projects", id: "LIST" }],
     }),
-    updateDepartment: builder.mutation<Department, UpdateDepartmentInput>({
+    updateProject: builder.mutation<Project, UpdateProjectInput>({
       query: ({ id, ...body }) => ({
-        url: `/departments/${id}`,
+        url: `/projects/${id}`,
         method: "PATCH",
         body,
       }),
       async onQueryStarted({ id, name }, { dispatch, queryFulfilled }) {
-        const patchDepartments = dispatch(
-          adminApi.util.updateQueryData("getDepartments", undefined, (draft) => {
-            const department = draft.find((item) => item.id === id);
-            if (department) {
-              department.name = name;
+        const patchProjects = dispatch(
+          adminApi.util.updateQueryData("getProjects", undefined, (draft) => {
+            const project = draft.find((item) => item.id === id);
+            if (project) {
+              project.name = name;
             }
           }),
         );
@@ -82,8 +79,8 @@ export const adminApi = createApi({
         const patchUsers = dispatch(
           adminApi.util.updateQueryData("getUsers", undefined, (draft) => {
             draft.forEach((user) => {
-              if (user.departmentId === id) {
-                user.departmentName = name;
+              if (user.projectId === id) {
+                user.projectName = name;
               }
             });
           }),
@@ -92,13 +89,13 @@ export const adminApi = createApi({
         try {
           await queryFulfilled;
         } catch {
-          patchDepartments.undo();
+          patchProjects.undo();
           patchUsers.undo();
         }
       },
       invalidatesTags: (_result, _error, { id }) => [
-        { type: "Departments", id },
-        { type: "Departments", id: "LIST" },
+        { type: "Projects", id },
+        { type: "Projects", id: "LIST" },
         { type: "Users", id: "LIST" },
       ],
     }),
@@ -121,11 +118,11 @@ export const adminApi = createApi({
         { type: "Users", id: "LIST" },
       ],
     }),
-    assignUserDepartment: builder.mutation<User, AssignUserDepartmentInput>({
-      query: ({ id, departmentId }) => ({
-        url: `/users/${id}/assign-department`,
+    assignUserProject: builder.mutation<User, AssignUserProjectInput>({
+      query: ({ id, projectId }) => ({
+        url: `/users/${id}/assign-project`,
         method: "POST",
-        params: { departmentId },
+        params: { projectId },
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Users", id },
@@ -137,10 +134,10 @@ export const adminApi = createApi({
 
 export const {
   useGetUsersQuery,
-  useGetDepartmentsQuery,
-  useCreateDepartmentMutation,
-  useUpdateDepartmentMutation,
+  useGetProjectsQuery,
+  useCreateProjectMutation,
+  useUpdateProjectMutation,
   useCreateUserMutation,
   useChangeUserRoleMutation,
-  useAssignUserDepartmentMutation,
+  useAssignUserProjectMutation,
 } = adminApi;

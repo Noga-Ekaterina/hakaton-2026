@@ -1,22 +1,22 @@
-import type { Department } from "@/entities/department";
+import type { Project } from "@/entities/project";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Modal } from "@/shared/ui/modal";
-import { useDepartmentModalForm } from "../model/use-department-modal-form";
+import { useProjectModalForm } from "../model/use-project-modal-form";
 
-type DepartmentModalProps = {
+type ProjectModalProps = {
   open: boolean;
   onClose: () => void;
-  department?: Department | null;
+  project?: Project | null;
 };
 
-export function DepartmentModal({ open, onClose, department }: DepartmentModalProps) {
+export function ProjectModal({ open, onClose, project }: ProjectModalProps) {
   const { register, errors, submit, submitError, isPending, title, description, primaryLabel } =
-    useDepartmentModalForm({
+    useProjectModalForm({
       open,
       onClose,
-      department,
+      project,
     });
 
   return (
@@ -30,20 +30,20 @@ export function DepartmentModal({ open, onClose, department }: DepartmentModalPr
           <Button type="button" variant="secondary" onClick={onClose}>
             Отмена
           </Button>
-          <Button type="submit" form="department-modal-form" disabled={isPending}>
+          <Button type="submit" form="project-modal-form" disabled={isPending}>
             {isPending ? "Сохраняем..." : primaryLabel}
           </Button>
         </div>
       }
     >
-      <form id="department-modal-form" className="space-y-5" onSubmit={submit} noValidate>
+      <form id="project-modal-form" className="space-y-5" onSubmit={submit} noValidate>
         {submitError ? <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{submitError}</p> : null}
 
         <div className="space-y-2">
-          <Label htmlFor="department-name">Название отдела</Label>
+          <Label htmlFor="project-name">Название проекта</Label>
           <Input
-            id="department-name"
-            placeholder="Например, Финансы"
+            id="project-name"
+            placeholder="Например, Операционный"
             aria-invalid={Boolean(errors.name)}
             {...register("name")}
           />

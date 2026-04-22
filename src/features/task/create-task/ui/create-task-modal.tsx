@@ -119,21 +119,21 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="task-department">Подразделение</Label>
+              <Label htmlFor="task-project">Проект</Label>
               <select
-                id="task-department"
+                id="task-project"
                 className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                aria-invalid={Boolean(errors.departmentId)}
-                {...register("departmentId")}
+                aria-invalid={Boolean(errors.projectId)}
+                {...register("projectId")}
               >
-                <option value="">Выберите подразделение</option>
-                {meta?.departments.map((department) => (
-                  <option key={department.id} value={department.id}>
-                    {department.name}
+                <option value="">Выберите проект</option>
+                {meta?.projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
                   </option>
                 ))}
               </select>
-              {errors.departmentId ? <p className="text-sm text-rose-600">{errors.departmentId.message}</p> : null}
+              {errors.projectId ? <p className="text-sm text-rose-600">{errors.projectId.message}</p> : null}
             </div>
           </div>
 

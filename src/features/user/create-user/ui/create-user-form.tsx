@@ -2,17 +2,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateUserMutation } from "@/app/store/api/admin-api";
-import type { Department } from "@/entities/department";
+import type { Project } from "@/entities/project";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { createUserSchema, type CreateUserValues } from "../model/create-user-schema";
 
 type CreateUserFormProps = {
-  departments: Department[];
+  projects: Project[];
 };
 
-export function CreateUserForm({ departments }: CreateUserFormProps) {
+export function CreateUserForm({ projects }: CreateUserFormProps) {
   const [createUser, { isLoading }] = useCreateUserMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -30,31 +30,30 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
       email: "",
       password: "",
       role: "USER",
-      departmentId: "",
+      projectId: "",
     },
   });
 
-  const selectedDepartmentId = watch("departmentId");
+  const selectedProjectId = watch("projectId");
   const selectedRole = watch("role");
 
   useEffect(() => {
     if (selectedRole === "ADMIN") {
-      if (selectedDepartmentId) {
-        setValue("departmentId", "", { shouldValidate: true });
+      if (selectedProjectId) {
+        setValue("projectId", "", { shouldValidate: true });
       }
       return;
     }
 
-    if (!selectedDepartmentId && departments[0]?.id) {
-      setValue("departmentId", String(departments[0].id), { shouldValidate: true });
+    if (!selectedProjectId && projects[0]?.id) {
+      setValue("projectId", String(projects[0].id), { shouldValidate: true });
     }
-  }, [departments, selectedDepartmentId, selectedRole, setValue]);
+  }, [projects, selectedProjectId, selectedRole, setValue]);
 
   const onSubmit = handleSubmit(async (values) => {
     setSubmitError(null);
-    const departmentId = values.role === "ADMIN" ? null : Number(values.departmentId);
-    const departmentName =
-      values.role === "ADMIN" ? null : departments.find((department) => department.id === departmentId)?.name ?? "";
+    const projectId = values.role === "ADMIN" ? null : Number(values.projectId);
+    const projectName = values.role === "ADMIN" ? null : projects.find((project) => project.id === projectId)?.name ?? "";
 
     try {
       await createUser({
@@ -62,15 +61,15 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
         email: values.email.trim(),
         password: values.password,
         role: values.role,
-        departmentId,
-        departmentName,
+        projectId,
+        projectName,
       }).unwrap();
       reset({
         name: "",
         email: "",
         password: "",
         role: "USER",
-        departmentId: String(departments[0]?.id ?? ""),
+        projectId: String(projects[0]?.id ?? ""),
       });
     } catch {
       setSubmitError("Не удалось создать пользователя. Проверьте соединение с mock-API.");
@@ -87,7 +86,7 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Новый пользователь</p>
         <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">Создать пользователя</h2>
         <p className="mt-2 text-sm text-slate-600">
-          Пользователь попадет в выбранный отдел и сразу будет доступен для редактирования.
+          Пользователь попадет в выбранный проект и сразу будет доступен для редактирования.
         </p>
       </div>
 
@@ -141,21 +140,21 @@ export function CreateUserForm({ departments }: CreateUserFormProps) {
 
         {selectedRole === "ADMIN" ? null : (
           <div className="space-y-2">
-            <Label htmlFor="user-department">Отдел</Label>
+            <Label htmlFor="user-project">Проект</Label>
             <select
-              id="user-department"
+              id="user-project"
               className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              aria-invalid={Boolean(errors.departmentId)}
-              {...register("departmentId")}
+              aria-invalid={Boolean(errors.projectId)}
+              {...register("projectId")}
             >
-              <option value="">Выберите отдел</option>
-              {departments.map((department) => (
-                <option key={department.id} value={department.id}>
-                  {department.name}
+              <option value="">Выберите проект</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
                 </option>
               ))}
             </select>
-            {errors.departmentId ? <p className="text-sm text-rose-600">{errors.departmentId.message}</p> : null}
+            {errors.projectId ? <p className="text-sm text-rose-600">{errors.projectId.message}</p> : null}
           </div>
         )}
       </div>

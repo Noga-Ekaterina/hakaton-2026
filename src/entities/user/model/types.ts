@@ -5,12 +5,12 @@ export type User = {
   name: string;
   email: string;
   role: UserRole;
-  departmentId: number | null;
-  departmentName: string | null;
-  department?: Department;
+  projectId: number | null;
+  projectName: string | null;
+  project?: Project;
 };
 
-export type Department = {
+export type Project = {
   id: number;
   name: string | null;
 };

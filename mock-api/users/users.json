@@ -1,34 +1,35 @@
-[
+﻿[
   {
     "id": 1,
-    "name": "Иван Петров",
+    "name": "РРІР°РЅ РџРµС‚СЂРѕРІ",
     "email": "ivan.petrov@company.ru",
     "role": "MANAGER",
-    "departmentId": 1,
-    "departmentName": "Операционный отдел"
+    "projectId": 1,
+    "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
   },
   {
     "id": 2,
-    "name": "Анна Смирнова",
+    "name": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
     "email": "anna.smirnova@company.ru",
     "role": "EMPLOYEE",
-    "departmentId": 1,
-    "departmentName": "Операционный отдел"
+    "projectId": 1,
+    "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
   },
   {
     "id": 3,
-    "name": "Дмитрий Козлов",
+    "name": "Р”РјРёС‚СЂРёР№ РљРѕР·Р»РѕРІ",
     "email": "dmitry.kozlov@company.ru",
     "role": "EMPLOYEE",
-    "departmentId": 2,
-    "departmentName": "Маркетинг"
+    "projectId": 2,
+    "projectName": "РњР°СЂРєРµС‚РёРЅРі"
   },
   {
     "id": 4,
-    "name": "Елена Орлова",
+    "name": "Р•Р»РµРЅР° РћСЂР»РѕРІР°",
     "email": "elena.orlova@company.ru",
     "role": "EMPLOYEE",
-    "departmentId": 3,
-    "departmentName": "HR"
+    "projectId": 3,
+    "projectName": "HR"
   }
 ]
+

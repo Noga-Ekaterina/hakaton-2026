@@ -4,7 +4,7 @@ export const paths = {
   login: "/login",
   admin: "/admin",
   adminUsers: "/admin/users",
-  adminDepartments: "/admin/departments",
+  adminProjects: "/admin/projects",
 } as const;
 
 export type AppPathKey = keyof typeof paths;

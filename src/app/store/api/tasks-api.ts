@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Department } from "@/entities/department";
+import type { Project } from "@/entities/project";
 import type { Task, TaskPriority, TaskStatus } from "@/entities/task";
 import type { UserRole } from "@/entities/user";
 import { API_URL } from "@/shared/config/api";
 
-export type CreateTaskDepartment = Department & {
+export type CreateTaskProject = Project & {
   description: string | null;
 };
 
@@ -14,13 +14,13 @@ export type CreateTaskUser = {
   email: string;
   password: string;
   role: UserRole;
-  department: CreateTaskDepartment | null;
+  project: CreateTaskProject | null;
   createdAt: string;
   active: boolean;
 };
 
 export type CreateTaskMeta = {
-  departments: CreateTaskDepartment[];
+  projects: CreateTaskProject[];
   users: CreateTaskUser[];
   roles: UserRole[];
   taskStatuses: TaskStatus[];
@@ -33,7 +33,7 @@ export type CreateTaskInput = {
   priority: TaskPriority;
   deadline: string;
   assigneeId: number;
-  departmentId: number;
+  projectId: number;
 };
 
 export const tasksApi = createApi({
@@ -53,7 +53,6 @@ export const tasksApi = createApi({
     getCreateTaskMeta: builder.query<CreateTaskMeta, void>({
       query: () => "/meta",
     }),
-    
     createTask: builder.mutation<Task, { authorId: number; body: CreateTaskInput }>({
       query: ({ authorId, body }) => ({
         url: "/tasks",
@@ -63,7 +62,6 @@ export const tasksApi = createApi({
       }),
       invalidatesTags: [{ type: "Tasks", id: "LIST" }],
     }),
-    
     updateTaskStatus: builder.mutation<Task, { id: number; status: TaskStatus }>({
       query: ({ id, status }) => ({
         url: `/tasks/${id}`,
@@ -94,9 +92,5 @@ export const tasksApi = createApi({
   }),
 });
 
-export const {
-  useGetTasksQuery,
-  useGetCreateTaskMetaQuery,
-  useCreateTaskMutation,
-  useUpdateTaskStatusMutation,
-} = tasksApi;
+export const { useGetTasksQuery, useGetCreateTaskMetaQuery, useCreateTaskMutation, useUpdateTaskStatusMutation } =
+  tasksApi;

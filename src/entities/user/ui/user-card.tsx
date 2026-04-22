@@ -48,25 +48,23 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
           <h3 className="mt-3 text-xl font-bold tracking-tight text-slate-950">{user.name}</h3>
           <p className="mt-1 text-sm text-slate-600">{user.email}</p>
         </div>
-
       </div>
 
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className= {`rounded-2xl ${role.className} p-4`}>
+        <div className={`rounded-2xl ${role.className} p-4`}>
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Роль</dt>
           <dd className="mt-2 text-sm font-medium text-slate-900">{role.label}</dd>
         </div>
 
-        {(user.department && user.role !== "ADMIN") && (
+        {user.project && user.role !== "ADMIN" ? (
           <div className="rounded-2xl bg-slate-100 p-4">
-            <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Отдел</dt>
-            <dd className="mt-2 text-sm font-medium text-slate-900">{user.department.name || "Не назначен"}</dd>
+            <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Проект</dt>
+            <dd className="mt-2 text-sm font-medium text-slate-900">{user.project.name || "Не назначен"}</dd>
           </div>
-        ) }
+        ) : null}
       </dl>
 
       {children ? <div className="mt-5 border-t border-slate-200 pt-5">{children}</div> : null}
     </article>
   );
 }
-

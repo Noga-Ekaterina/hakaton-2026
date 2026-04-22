@@ -10,7 +10,7 @@ export const createTaskSchema = z.object({
     .refine((value) => !Number.isNaN(new Date(value).getTime()), "Укажите корректную дату")
     .refine((value) => new Date(value).getTime() > Date.now() - 60_000, "Дедлайн не может быть в прошлом"),
   assigneeId: z.string().min(1, "Выберите исполнителя"),
-  departmentId: z.string().min(1, "Выберите подразделение"),
+  projectId: z.string().min(1, "Выберите проект"),
 });
 
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;

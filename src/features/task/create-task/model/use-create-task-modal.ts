@@ -50,8 +50,8 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
       setValue("assigneeId", String(meta.users[0]?.id ?? ""), { shouldValidate: true });
     }
 
-    if (!getValues("departmentId")) {
-      setValue("departmentId", String(meta.departments[0]?.id ?? ""), { shouldValidate: true });
+    if (!getValues("projectId")) {
+      setValue("projectId", String(meta.projects[0]?.id ?? ""), { shouldValidate: true });
     }
   }, [getValues, meta, open, setValue]);
 

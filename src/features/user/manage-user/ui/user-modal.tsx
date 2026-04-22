@@ -2,20 +2,20 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Modal } from "@/shared/ui/modal";
-import type { Department } from "@/entities/department";
+import type { Project } from "@/entities/project";
 import { useUserModalForm } from "../model/use-user-modal-form";
 
 type UserModalProps = {
   open: boolean;
   onClose: () => void;
-  departments: Department[];
+  projects: Project[];
 };
 
-export function UserModal({ open, onClose, departments }: UserModalProps) {
+export function UserModal({ open, onClose, projects }: UserModalProps) {
   const { register, errors, submit, submitError, isPending, selectedRole } = useUserModalForm({
     open,
     onClose,
-    departments,
+    projects,
   });
 
   return (
@@ -23,7 +23,7 @@ export function UserModal({ open, onClose, departments }: UserModalProps) {
       open={open}
       onClose={onClose}
       title="Создать пользователя"
-      description="Можно указать имя, email, пароль, роль и отдел в одном окне."
+      description="Можно указать имя, email, пароль, роль и проект в одном окне."
       actions={
         <div className="flex flex-wrap justify-end gap-3">
           <Button type="button" variant="secondary" onClick={onClose}>
@@ -85,21 +85,21 @@ export function UserModal({ open, onClose, departments }: UserModalProps) {
 
         {selectedRole === "ADMIN" ? null : (
           <div className="space-y-2">
-            <Label htmlFor="user-department">Отдел</Label>
+            <Label htmlFor="user-project">Проект</Label>
             <select
-              id="user-department"
+              id="user-project"
               className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              aria-invalid={Boolean(errors.departmentId)}
-              {...register("departmentId")}
+              aria-invalid={Boolean(errors.projectId)}
+              {...register("projectId")}
             >
-              <option value="">Выберите отдел</option>
-              {departments.map((department) => (
-                <option key={department.id} value={department.id}>
-                  {department.name}
+              <option value="">Выберите проект</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
                 </option>
               ))}
             </select>
-            {errors.departmentId ? <p className="text-sm text-rose-600">{errors.departmentId.message}</p> : null}
+            {errors.projectId ? <p className="text-sm text-rose-600">{errors.projectId.message}</p> : null}
           </div>
         )}
       </form>

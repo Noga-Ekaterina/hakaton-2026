@@ -2,16 +2,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateUserMutation } from "@/app/store/api/admin-api";
-import type { Department } from "@/entities/department";
+import type { Project } from "@/entities/project";
 import { createUserSchema, type CreateUserValues } from "../../create-user/model/create-user-schema";
 
 type UseUserModalFormParams = {
   open: boolean;
   onClose: () => void;
-  departments: Department[];
+  projects: Project[];
 };
 
-export function useUserModalForm({ open, onClose, departments }: UseUserModalFormParams) {
+export function useUserModalForm({ open, onClose, projects }: UseUserModalFormParams) {
   const [createUser, { isLoading }] = useCreateUserMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -29,11 +29,11 @@ export function useUserModalForm({ open, onClose, departments }: UseUserModalFor
       email: "",
       password: "",
       role: "USER",
-      departmentId: "",
+      projectId: "",
     },
   });
 
-  const selectedDepartmentId = watch("departmentId");
+  const selectedProjectId = watch("projectId");
   const selectedRole = watch("role");
 
   useEffect(() => {
@@ -47,28 +47,27 @@ export function useUserModalForm({ open, onClose, departments }: UseUserModalFor
       email: "",
       password: "",
       role: "USER",
-      departmentId: departments[0]?.id ? String(departments[0].id) : "",
+      projectId: projects[0]?.id ? String(projects[0].id) : "",
     });
-  }, [departments, open, reset]);
+  }, [open, projects, reset]);
 
   useEffect(() => {
     if (selectedRole === "ADMIN") {
-      if (selectedDepartmentId) {
-        setValue("departmentId", "", { shouldValidate: true });
+      if (selectedProjectId) {
+        setValue("projectId", "", { shouldValidate: true });
       }
       return;
     }
 
-    if (!selectedDepartmentId && departments[0]?.id) {
-      setValue("departmentId", String(departments[0].id), { shouldValidate: true });
+    if (!selectedProjectId && projects[0]?.id) {
+      setValue("projectId", String(projects[0].id), { shouldValidate: true });
     }
-  }, [departments, selectedDepartmentId, selectedRole, setValue]);
+  }, [projects, selectedProjectId, selectedRole, setValue]);
 
   const submit = handleSubmit(async (values) => {
     setSubmitError(null);
-    const departmentId = values.role === "ADMIN" ? null : Number(values.departmentId);
-    const departmentName =
-      values.role === "ADMIN" ? null : departments.find((department) => department.id === departmentId)?.name ?? "";
+    const projectId = values.role === "ADMIN" ? null : Number(values.projectId);
+    const projectName = values.role === "ADMIN" ? null : projects.find((project) => project.id === projectId)?.name ?? "";
 
     try {
       await createUser({
@@ -76,8 +75,8 @@ export function useUserModalForm({ open, onClose, departments }: UseUserModalFor
         email: values.email.trim(),
         password: values.password,
         role: values.role,
-        departmentId,
-        departmentName,
+        projectId,
+        projectName,
       }).unwrap();
 
       onClose();
@@ -96,7 +95,7 @@ export function useUserModalForm({ open, onClose, departments }: UseUserModalFor
     isPending,
     selectedRole,
     title: "Создать пользователя",
-    description: "Можно указать имя, email, пароль, роль и отдел в одном окне.",
+    description: "Можно указать имя, email, пароль, роль и проект в одном окне.",
     primaryLabel: "Создать пользователя",
   };
 }

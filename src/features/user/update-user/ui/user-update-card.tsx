@@ -1,19 +1,19 @@
 import { useState } from "react";
-import type { Department } from "@/entities/department";
+import type { Project } from "@/entities/project";
 import { UserCard } from "@/entities/user";
 import type { User } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
-import { AssignUserDepartmentModal } from "@/features/user/assign-department/ui/assign-user-department-modal";
+import { AssignUserProjectModal } from "@/features/user/assign-project/ui/assign-user-project-modal";
 import { ChangeUserRoleModal } from "@/features/user/change-role/ui/change-user-role-modal";
 
 type UserUpdateCardProps = {
   user: User;
-  departments: Department[];
+  projects: Project[];
 };
 
-export function UserUpdateCard({ user, departments }: UserUpdateCardProps) {
+export function UserUpdateCard({ user, projects }: UserUpdateCardProps) {
   const [isRoleOpen, setIsRoleOpen] = useState(false);
-  const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
+  const [isProjectOpen, setIsProjectOpen] = useState(false);
 
   return (
     <>
@@ -23,8 +23,8 @@ export function UserUpdateCard({ user, departments }: UserUpdateCardProps) {
             Изменить роль
           </Button>
           {user.role === "ADMIN" ? null : (
-            <Button type="button" variant="secondary" onClick={() => setIsDepartmentOpen(true)}>
-              Изменить отдел
+            <Button type="button" variant="secondary" onClick={() => setIsProjectOpen(true)}>
+              Изменить проект
             </Button>
           )}
         </div>
@@ -32,11 +32,11 @@ export function UserUpdateCard({ user, departments }: UserUpdateCardProps) {
 
       <ChangeUserRoleModal open={isRoleOpen} onClose={() => setIsRoleOpen(false)} user={user} />
       {user.role === "ADMIN" ? null : (
-        <AssignUserDepartmentModal
-          open={isDepartmentOpen}
-          onClose={() => setIsDepartmentOpen(false)}
+        <AssignUserProjectModal
+          open={isProjectOpen}
+          onClose={() => setIsProjectOpen(false)}
           user={user}
-          departments={departments}
+          projects={projects}
         />
       )}
     </>

@@ -5,7 +5,7 @@ import { AuthGate } from "@/app/auth/ui/auth-gate";
 import { AppLayout } from "@/app/layout";
 import { paths } from "@/shared/config/routes";
 import { AdminAccessGate } from "@/pages/admin";
-import { AdminDepartmentsPage } from "@/pages/admin/departments";
+import { AdminProjectsPage } from "@/pages/admin/projects";
 import { AdminUsersPage } from "@/pages/admin/users";
 import { HomePage } from "@/pages/home";
 import { OverduePage } from "@/pages/overdue";
@@ -44,8 +44,8 @@ const routeObjects: RouteObject[] = [
                 element: <AdminUsersPage />,
               },
               {
-                path: "departments",
-                element: <AdminDepartmentsPage />,
+                path: "projects",
+                element: <AdminProjectsPage />,
               },
             ],
           },

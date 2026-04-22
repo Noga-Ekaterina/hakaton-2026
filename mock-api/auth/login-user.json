@@ -1,10 +1,11 @@
-{
+﻿{
   "id": 1,
-  "name": "Иван Петров",
+  "name": "РРІР°РЅ РџРµС‚СЂРѕРІ",
   "email": "ivan.petrov@company.ru",
   "password": "123456",
   "role": "MANAGER",
-  "departmentId": 1,
-  "departmentName": "Операционный отдел",
+  "projectId": 1,
+  "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»",
   "token": "mock-token-123"
 }
+

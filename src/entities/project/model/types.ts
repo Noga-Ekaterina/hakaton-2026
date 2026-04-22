@@ -1,5 +1,4 @@
-export type Department = {
+export type Project = {
   id: number;
   name: string;
 };
-

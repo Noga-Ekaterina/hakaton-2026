@@ -1,4 +1,4 @@
-import type { CreateTaskMeta, CreateTaskInput } from "@/app/store/api/tasks-api";
+import type { CreateTaskInput, CreateTaskMeta } from "@/app/store/api/tasks-api";
 import type { CreateTaskValues } from "./create-task-schema";
 
 export function getDefaultDeadline() {
@@ -20,7 +20,7 @@ export function getDefaultCreateTaskValues(meta?: CreateTaskMeta): CreateTaskVal
     priority: "MEDIUM",
     deadline: getDefaultDeadline(),
     assigneeId: String(meta?.users[0]?.id ?? ""),
-    departmentId: String(meta?.departments[0]?.id ?? ""),
+    projectId: String(meta?.projects[0]?.id ?? ""),
   };
 }
 
@@ -41,6 +41,6 @@ export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskM
     priority: values.priority,
     deadline: toIsoFromDateTimeLocal(values.deadline),
     assigneeId: assignee.id,
-    departmentId: Number(values.departmentId),
+    projectId: Number(values.projectId),
   };
 }
