@@ -15,9 +15,9 @@ export function AdminProjectsPage() {
   const memberCounts = useMemo(() => {
     const counts = new Map<number, number>();
     users?.forEach((user) => {
-      if (user.projectId != null) {
-        counts.set(user.projectId, (counts.get(user.projectId) ?? 0) + 1);
-      }
+      user.projects?.forEach((project) => {
+        counts.set(project.id, (counts.get(project.id) ?? 0) + 1);
+      });
     });
     return counts;
   }, [users]);

@@ -1,5 +1,7 @@
 import { PrismaClient, UserRole, TaskPriority, TaskStatus } from "@prisma/client";
 
+import { hashPassword } from "../src/lib/auth.js";
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -17,7 +19,7 @@ async function main() {
     data: {
       name: "Алексей Орлов",
       email: "admin@qitask.local",
-      password: "admin123",
+      password: await hashPassword("admin123"),
       role: UserRole.ADMIN,
     },
   });
@@ -27,36 +29,44 @@ async function main() {
       data: {
         name: "Иван Петров",
         email: "ivan.petrov@qitask.local",
-        password: "123456",
+        password: await hashPassword("123456"),
         role: UserRole.USER,
-        projectId: projects[0]!.id,
+        projects: {
+          connect: { id: projects[0]!.id },
+        },
       },
     }),
     prisma.user.create({
       data: {
         name: "Анна Смирнова",
         email: "anna.smirnova@qitask.local",
-        password: "123456",
+        password: await hashPassword("123456"),
         role: UserRole.USER,
-        projectId: projects[0]!.id,
+        projects: {
+          connect: { id: projects[0]!.id },
+        },
       },
     }),
     prisma.user.create({
       data: {
         name: "Дмитрий Козлов",
         email: "dmitry.kozlov@qitask.local",
-        password: "123456",
+        password: await hashPassword("123456"),
         role: UserRole.USER,
-        projectId: projects[1]!.id,
+        projects: {
+          connect: { id: projects[1]!.id },
+        },
       },
     }),
     prisma.user.create({
       data: {
         name: "Елена Орлова",
         email: "elena.orlova@qitask.local",
-        password: "123456",
+        password: await hashPassword("123456"),
         role: UserRole.USER,
-        projectId: projects[2]!.id,
+        projects: {
+          connect: { id: projects[2]!.id },
+        },
       },
     }),
   ]);

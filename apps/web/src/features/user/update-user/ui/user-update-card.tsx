@@ -24,7 +24,7 @@ export function UserUpdateCard({ user, projects }: UserUpdateCardProps) {
           </Button>
           {user.role === "ADMIN" ? null : (
             <Button type="button" variant="secondary" onClick={() => setIsProjectOpen(true)}>
-              Изменить проект
+              Добавить проект
             </Button>
           )}
         </div>

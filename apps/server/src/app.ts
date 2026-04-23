@@ -1,0 +1,46 @@
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
+
+import { allowedOrigins } from "./lib/constants.js";
+import { authRouter } from "./routes/auth.js";
+import { metaRouter } from "./routes/meta.js";
+import { projectsRouter } from "./routes/projects.js";
+import { tasksRouter } from "./routes/tasks.js";
+import { usersRouter } from "./routes/users.js";
+
+export function createApp() {
+  const app = express();
+
+  app.use(
+    cors({
+      origin(origin, callback) {
+        if (!origin || allowedOrigins.has(origin)) {
+          callback(null, true);
+          return;
+        }
+
+        callback(new Error(`Origin ${origin} is not allowed`));
+      },
+      credentials: true,
+    }),
+  );
+  app.use(express.json());
+  app.use(cookieParser());
+
+  app.get("/health", (_req, res) => {
+    res.json({ status: "ok" });
+  });
+
+  app.use("/api/auth", authRouter);
+  app.use("/api/users", usersRouter);
+  app.use("/api/projects", projectsRouter);
+  app.use("/api/tasks", tasksRouter);
+  app.use("/api", metaRouter);
+
+  app.use((_req, res) => {
+    res.status(404).json({ message: "Маршрут не найден." });
+  });
+
+  return app;
+}

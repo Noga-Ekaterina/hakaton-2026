@@ -46,7 +46,16 @@ function isAuthUser(value: unknown): value is User {
     typeof candidate.email === "string" &&
     (candidate.role === "USER" || candidate.role === "ADMIN") &&
     (candidate.projectId === null || typeof candidate.projectId === "number") &&
-    (candidate.projectName === null || typeof candidate.projectName === "string")
+    (candidate.projectName === null || typeof candidate.projectName === "string") &&
+    (candidate.projects === undefined ||
+      (Array.isArray(candidate.projects) &&
+        candidate.projects.every(
+          (project) =>
+            typeof project === "object" &&
+            project !== null &&
+            typeof (project as { id?: unknown }).id === "number" &&
+            typeof (project as { name?: unknown }).name === "string",
+        )))
   );
 }
 

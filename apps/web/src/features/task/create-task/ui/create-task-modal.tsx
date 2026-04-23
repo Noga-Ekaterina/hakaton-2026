@@ -114,7 +114,13 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
 
             <div className="space-y-2">
               <Label htmlFor="task-assignee">Исполнитель</Label>
-              <UserSelect id="task-assignee" users={meta?.users ?? []} {...register("assigneeId")} />
+              <UserSelect
+                id="task-assignee"
+                users={meta?.users ?? []}
+                {...register("assigneeId", {
+                  setValueAs: (value) => (value === "" ? 0 : Number(value)),
+                })}
+              />
               {errors.assigneeId ? <p className="text-sm text-rose-600">{errors.assigneeId.message}</p> : null}
             </div>
 
@@ -124,7 +130,9 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
                 id="task-project"
                 className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 aria-invalid={Boolean(errors.projectId)}
-                {...register("projectId")}
+                {...register("projectId", {
+                  setValueAs: (value) => (value === "" ? 0 : Number(value)),
+                })}
               >
                 <option value="">Выберите проект</option>
                 {meta?.projects.map((project) => (

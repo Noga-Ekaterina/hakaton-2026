@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAssignUserProjectMutation } from "@/app/store/api/admin-api";
 import type { Project } from "@/entities/project";
@@ -15,6 +15,10 @@ type UseAssignUserProjectFormParams = {
 export function useAssignUserProjectForm({ user, projects, onClose }: UseAssignUserProjectFormParams) {
   const [assignUserProject, { isLoading }] = useAssignUserProjectMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const availableProjects = useMemo(() => {
+    const assignedProjectIds = new Set(user.projects?.map((project) => project.id) ?? []);
+    return projects.filter((project) => !assignedProjectIds.has(project.id));
+  }, [projects, user.projects]);
 
   const {
     register,
@@ -24,15 +28,15 @@ export function useAssignUserProjectForm({ user, projects, onClose }: UseAssignU
   } = useForm<AssignUserProjectValues>({
     resolver: zodResolver(assignUserProjectSchema),
     defaultValues: {
-      projectId: user.projectId != null ? String(user.projectId) : String(projects[0]?.id ?? ""),
+      projectId: String(availableProjects[0]?.id ?? ""),
     },
   });
 
   useEffect(() => {
     reset({
-      projectId: user.projectId != null ? String(user.projectId) : String(projects[0]?.id ?? ""),
+      projectId: String(availableProjects[0]?.id ?? ""),
     });
-  }, [projects, reset, user.projectId]);
+  }, [availableProjects, reset]);
 
   const submit = handleSubmit(async (values) => {
     setSubmitError(null);
@@ -54,5 +58,6 @@ export function useAssignUserProjectForm({ user, projects, onClose }: UseAssignU
     submit,
     submitError,
     isPending: isSubmitting || isLoading,
+    availableProjects,
   };
 }

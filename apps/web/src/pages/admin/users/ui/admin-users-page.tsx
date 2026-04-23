@@ -35,7 +35,7 @@ export function AdminUsersPage() {
 
       {usersLoading || projectsLoading ? <p className="text-sm text-slate-600">Загружаем данные...</p> : null}
 
-      <div className="grid gap-4">
+      <div className="grid gap-4 md:grid-cols-3">
         {users?.map((user) => <UserUpdateCard key={user.id} user={user} projects={projects ?? []} />)}
       </div>
 

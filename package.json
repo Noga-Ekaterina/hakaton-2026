@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "npm@11.12.1",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -16,6 +17,7 @@
     "dev:web": "npm run dev --prefix apps/web",
     "dev:server": "npm run dev --prefix apps/server",
     "db:push": "npm run db:push --prefix apps/server",
+    "db:generate": "npm run db:generate --prefix apps/server",
     "db:seed": "npm run db:seed --prefix apps/server"
   },
   "devDependencies": {

@@ -19,8 +19,8 @@ export function getDefaultCreateTaskValues(meta?: CreateTaskMeta): CreateTaskVal
     description: "",
     priority: "MEDIUM",
     deadline: getDefaultDeadline(),
-    assigneeId: String(meta?.users[0]?.id ?? ""),
-    projectId: String(meta?.projects[0]?.id ?? ""),
+    assigneeId: meta?.users[0]?.id ?? 0,
+    projectId: meta?.projects[0]?.id ?? 0,
   };
 }
 
@@ -29,9 +29,10 @@ function toIsoFromDateTimeLocal(value: string) {
 }
 
 export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskMeta): CreateTaskInput | null {
-  const assignee = meta.users.find((item) => String(item.id) === values.assigneeId);
+  const assignee = meta.users.find((item) => item.id === values.assigneeId);
+  const project = meta.projects.find((item) => item.id === values.projectId);
 
-  if (!assignee) {
+  if (!assignee || !project) {
     return null;
   }
 
@@ -41,6 +42,6 @@ export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskM
     priority: values.priority,
     deadline: toIsoFromDateTimeLocal(values.deadline),
     assigneeId: assignee.id,
-    projectId: Number(values.projectId),
+    projectId: project.id,
   };
 }

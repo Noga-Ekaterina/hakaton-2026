@@ -38,8 +38,8 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
     }
 
     setSubmitError(null);
-    reset(getDefaultCreateTaskValues());
-  }, [open, reset]);
+    reset(getDefaultCreateTaskValues(meta));
+  }, [meta, open, reset]);
 
   useEffect(() => {
     if (!open || !meta) {
@@ -47,11 +47,11 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
     }
 
     if (!getValues("assigneeId")) {
-      setValue("assigneeId", String(meta.users[0]?.id ?? ""), { shouldValidate: true });
+      setValue("assigneeId", meta.users[0]?.id ?? 0, { shouldValidate: true });
     }
 
     if (!getValues("projectId")) {
-      setValue("projectId", String(meta.projects[0]?.id ?? ""), { shouldValidate: true });
+      setValue("projectId", meta.projects[0]?.id ?? 0, { shouldValidate: true });
     }
   }, [getValues, meta, open, setValue]);
 

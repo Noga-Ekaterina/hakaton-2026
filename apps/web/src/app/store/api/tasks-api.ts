@@ -12,7 +12,6 @@ export type CreateTaskUser = {
   id: number;
   name: string;
   email: string;
-  password: string;
   role: UserRole;
   project: CreateTaskProject | null;
   createdAt: string;
@@ -56,9 +55,11 @@ export const tasksApi = createApi({
     createTask: builder.mutation<Task, { authorId: number; body: CreateTaskInput }>({
       query: ({ authorId, body }) => ({
         url: "/tasks",
-        params: { authorId },
         method: "POST",
-        body,
+        body: {
+          authorId,
+          ...body,
+        },
       }),
       invalidatesTags: [{ type: "Tasks", id: "LIST" }],
     }),

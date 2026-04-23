@@ -66,7 +66,7 @@ export const adminApi = createApi({
         method: "PATCH",
         body,
       }),
-      async onQueryStarted({ id, name }, { dispatch, queryFulfilled }) {
+  async onQueryStarted({ id, name }, { dispatch, queryFulfilled }) {
         const patchProjects = dispatch(
           adminApi.util.updateQueryData("getProjects", undefined, (draft) => {
             const project = draft.find((item) => item.id === id);
@@ -77,14 +77,20 @@ export const adminApi = createApi({
         );
 
         const patchUsers = dispatch(
-          adminApi.util.updateQueryData("getUsers", undefined, (draft) => {
-            draft.forEach((user) => {
+        adminApi.util.updateQueryData("getUsers", undefined, (draft) => {
+          draft.forEach((user) => {
               if (user.projectId === id) {
                 user.projectName = name;
               }
+
+              user.projects?.forEach((project) => {
+                if (project.id === id) {
+                  project.name = name;
+                }
+              });
             });
-          }),
-        );
+        }),
+      );
 
         try {
           await queryFulfilled;
@@ -100,10 +106,13 @@ export const adminApi = createApi({
       ],
     }),
     createUser: builder.mutation<User, CreateUserInput>({
-      query: (params) => ({
+      query: ({ projectId, ...body }) => ({
         url: "/users/register",
         method: "POST",
-        params,
+        body: {
+          ...body,
+          projectId: projectId == null ? undefined : String(projectId),
+        },
       }),
       invalidatesTags: [{ type: "Users", id: "LIST" }],
     }),
@@ -111,7 +120,7 @@ export const adminApi = createApi({
       query: ({ id, role }) => ({
         url: `/users/${id}/change-role`,
         method: "POST",
-        params: { role },
+        body: { role },
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Users", id },
@@ -122,7 +131,7 @@ export const adminApi = createApi({
       query: ({ id, projectId }) => ({
         url: `/users/${id}/assign-project`,
         method: "POST",
-        params: { projectId },
+        body: { projectId: String(projectId) },
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Users", id },

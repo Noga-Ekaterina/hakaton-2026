@@ -20,6 +20,7 @@ type UserCardProps = {
 
 export function UserCard({ user, children, onClick }: UserCardProps) {
   const role = roleMeta[user.role];
+  const projects = user.projects ?? [];
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (!onClick) {
@@ -56,12 +57,22 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
           <dd className="mt-2 text-sm font-medium text-slate-900">{role.label}</dd>
         </div>
 
-        {user.project && user.role !== "ADMIN" ? (
-          <div className="rounded-2xl bg-slate-100 p-4">
-            <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Проект</dt>
-            <dd className="mt-2 text-sm font-medium text-slate-900">{user.project.name || "Не назначен"}</dd>
-          </div>
-        ) : null}
+        <div className="rounded-2xl bg-slate-100 p-4 sm:col-span-2">
+          <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Проекты</dt>
+          <dd className="mt-2">
+            {projects.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {projects.map((project) => (
+                  <span key={project.id} className="rounded-full bg-white px-3 py-1 text-sm font-medium text-slate-900 shadow-sm">
+                    {project.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="text-sm font-medium text-slate-500">Не назначен</span>
+            )}
+          </dd>
+        </div>
       </dl>
 
       {children ? <div className="mt-5 border-t border-slate-200 pt-5">{children}</div> : null}
