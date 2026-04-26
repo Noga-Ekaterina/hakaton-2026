@@ -3,12 +3,13 @@ import { Navigate } from "react-router-dom";
 import type { RouteObject } from "react-router-dom";
 import { AuthGate } from "@/app/auth/ui/auth-gate";
 import { AppLayout } from "@/app/layout";
+import { ProjectLayout } from "@/app/layout/ui/project-layout";
 import { paths } from "@/shared/config/routes";
 import { AdminAccessGate } from "@/pages/admin";
-import { AdminProjectsPage } from "@/pages/admin/projects";
 import { AdminUsersPage } from "@/pages/admin/users";
 import { HomePage } from "@/pages/home";
 import { OverduePage } from "@/pages/overdue";
+import { ProjectPage } from "@/pages/project";
 import { LoginPage } from "@/pages/login";
 
 const routeObjects: RouteObject[] = [
@@ -32,6 +33,20 @@ const routeObjects: RouteObject[] = [
             element: <OverduePage />,
           },
           {
+            path: paths.projects,
+            element: <ProjectLayout />,
+            children: [
+              {
+                path: ":projectId",
+                element: <ProjectPage />,
+              },
+              {
+                path: ":projectId/overdue",
+                element: <OverduePage />,
+              },
+            ],
+          },
+          {
             path: "admin",
             element: <AdminAccessGate />,
             children: [
@@ -42,10 +57,6 @@ const routeObjects: RouteObject[] = [
               {
                 path: "users",
                 element: <AdminUsersPage />,
-              },
-              {
-                path: "projects",
-                element: <AdminProjectsPage />,
               },
             ],
           },

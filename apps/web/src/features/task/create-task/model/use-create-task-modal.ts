@@ -9,9 +9,10 @@ import { createTaskSchema, type CreateTaskValues } from "./create-task-schema";
 type UseCreateTaskModalParams = {
   open: boolean;
   onClose: () => void;
+  projectId?: number | null;
 };
 
-export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) {
+export function useCreateTaskModal({ open, onClose, projectId }: UseCreateTaskModalParams) {
   const currentUser = useAppSelector((state) => state.auth.user);
   const { data: meta, isLoading, isError } = useGetCreateTaskMetaQuery(undefined, { skip: !open });
   const [createTask, { isLoading: isSubmitting }] = useCreateTaskMutation();
@@ -38,8 +39,8 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
     }
 
     setSubmitError(null);
-    reset(getDefaultCreateTaskValues(meta));
-  }, [meta, open, reset]);
+    reset(getDefaultCreateTaskValues(meta, projectId));
+  }, [meta, open, projectId, reset]);
 
   useEffect(() => {
     if (!open || !meta) {
@@ -51,9 +52,11 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
     }
 
     if (!getValues("projectId")) {
-      setValue("projectId", meta.projects[0]?.id ?? 0, { shouldValidate: true });
+      const defaultProjectId =
+        projectId != null && meta.projects.some((item) => item.id === projectId) ? projectId : meta.projects[0]?.id ?? 0;
+      setValue("projectId", defaultProjectId, { shouldValidate: true });
     }
-  }, [getValues, meta, open, setValue]);
+  }, [getValues, meta, open, projectId, setValue]);
 
   useEffect(() => {
     if (!open || typeof document === "undefined") {

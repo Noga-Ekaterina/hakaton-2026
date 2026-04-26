@@ -8,12 +8,14 @@ import { useCreateTaskModal } from "../model/use-create-task-modal";
 type CreateTaskModalProps = {
   open: boolean;
   onClose: () => void;
+  projectId?: number | null;
 };
 
-export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
+export function CreateTaskModal({ open, onClose, projectId }: CreateTaskModalProps) {
   const { meta, register, errors, isLoading, isError, isSubmitting, submitError, submit } = useCreateTaskModal({
     open,
     onClose,
+    projectId,
   });
 
   if (!open || typeof document === "undefined") {

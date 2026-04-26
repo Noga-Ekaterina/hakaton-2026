@@ -1,24 +1,19 @@
-import { useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "@/app/store/auth-slice";
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { CreateTaskModal } from "@/features/task/create-task";
 import { paths } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
-import { TaskFiltersPanel } from "@/widgets/task-filters";
 
 const linkBaseClass =
   "rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-primary/40";
 
 export function AppLayout() {
-  const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const currentUser = useAppSelector((state) => state.auth.user);
+
   const routeWithSearch = (pathname: string) => ({ pathname, search: location.search });
-  const isAdminPage = location.pathname.startsWith(paths.admin);
-  const shouldShowTaskFilters = location.pathname === paths.home || location.pathname === paths.overdue;
 
   const handleLogout = async () => {
     try {
@@ -36,7 +31,7 @@ export function AppLayout() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <header>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-baseline justify-between gap-4">
             <div className="max-w-3xl">
               <p
                 className="text-sm font-semibold uppercase tracking-[0.35em] text-primary"
@@ -44,28 +39,11 @@ export function AppLayout() {
               >
                 QiTask
               </p>
-              <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">Рабочее пространство</h1>
-              <p className="mt-4 max-w-2xl text-lg text-slate-600">
-                Задачи, просрочка и админские операции живут в одном приложении. Переключайтесь между разделами через
-                верхнее меню.
-              </p>
             </div>
 
             <div className="shrink-0 pt-1">
               <div className="flex flex-wrap items-center justify-end gap-3">
-                {isAdminPage ? (
-                  <NavLink
-                    to={routeWithSearch(paths.home)}
-                    end
-                    className={({ isActive }) =>
-                      `${linkBaseClass} ${
-                        isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"
-                      }`
-                    }
-                  >
-                    Доска
-                  </NavLink>
-                ) : currentUser?.role === "ADMIN" ? (
+                {currentUser?.role === "ADMIN" ? (
                   <NavLink
                     to={paths.adminUsers}
                     className={({ isActive }) =>
@@ -77,6 +55,18 @@ export function AppLayout() {
                     Админка
                   </NavLink>
                 ) : null}
+
+                <NavLink
+                  to={routeWithSearch(paths.home)}
+                  end
+                  className={({ isActive }) =>
+                    `${linkBaseClass} ${
+                      isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"
+                    }`
+                  }
+                >
+                  Проекты
+                </NavLink>
 
                 {currentUser ? (
                   <>
@@ -91,50 +81,12 @@ export function AppLayout() {
               </div>
             </div>
           </div>
-
-          <div className="mt-5 flex flex-col-reverse flex-wrap-reverse gap-6 border-b border-slate-200/70 pb-8 lg:flex-row lg:items-start lg:justify-between">
-            {shouldShowTaskFilters ? <TaskFiltersPanel /> : null}
-
-            {!isAdminPage ? (
-              <div className="flex flex-col gap-3 pb-[0.4rem] lg:items-end">
-                <nav className="flex flex-wrap gap-3">
-                  <NavLink
-                    to={routeWithSearch(paths.home)}
-                    end
-                    className={({ isActive }) =>
-                      `${linkBaseClass} ${
-                        isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"
-                      }`
-                    }
-                  >
-                    Доска
-                  </NavLink>
-                  <NavLink
-                    to={routeWithSearch(paths.overdue)}
-                    className={({ isActive }) =>
-                      `${linkBaseClass} ${
-                        isActive ? "bg-rose-600 text-white shadow-lg shadow-rose-600/20" : "bg-white/70 text-slate-700 hover:bg-white"
-                      }`
-                    }
-                  >
-                    Просроченные
-                  </NavLink>
-
-                  <Button type="button" onClick={() => setIsCreateTaskOpen(true)}>
-                    Создать задачу
-                  </Button>
-                </nav>
-              </div>
-            ) : null}
-          </div>
         </header>
 
         <main className="pb-16 pt-8">
           <Outlet />
         </main>
       </div>
-
-      <CreateTaskModal open={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
     </div>
   );
 }

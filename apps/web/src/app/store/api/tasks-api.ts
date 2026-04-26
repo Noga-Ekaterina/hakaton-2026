@@ -42,8 +42,8 @@ export const tasksApi = createApi({
     baseUrl: API_URL,
   }),
   endpoints: (builder) => ({
-    getTasks: builder.query<Task[], void>({
-      query: () => "/tasks",
+    getTasks: builder.query<Task[], number>({
+      query: (projectId) => `/tasks?projectId=${projectId}`,
       providesTags: (result) =>
         result
           ? [...result.map(({ id }) => ({ type: "Tasks" as const, id })), { type: "Tasks" as const, id: "LIST" }]
@@ -63,15 +63,15 @@ export const tasksApi = createApi({
       }),
       invalidatesTags: [{ type: "Tasks", id: "LIST" }],
     }),
-    updateTaskStatus: builder.mutation<Task, { id: number; status: TaskStatus }>({
+    updateTaskStatus: builder.mutation<Task, { id: number; status: TaskStatus; projectId: number }>({
       query: ({ id, status }) => ({
         url: `/tasks/${id}`,
         method: "PATCH",
         body: { status },
       }),
-      async onQueryStarted({ id, status }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ id, status, projectId }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
-          tasksApi.util.updateQueryData("getTasks", undefined, (draft) => {
+          tasksApi.util.updateQueryData("getTasks", projectId, (draft) => {
             const task = draft.find((item) => item.id === id);
             if (task) {
               task.status = status;

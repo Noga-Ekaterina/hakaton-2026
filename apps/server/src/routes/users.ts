@@ -180,3 +180,47 @@ usersRouter.post("/:id/assign-project", async (req, res) => {
 
   res.json(serializeUser(updated));
 });
+
+usersRouter.delete("/:id/projects/:projectId", async (req, res) => {
+  const userId = Number(req.params.id);
+  const projectId = Number(req.params.projectId);
+
+  if (!Number.isInteger(userId)) {
+    res.status(400).json({ message: "Некорректный идентификатор пользователя." });
+    return;
+  }
+
+  if (!Number.isInteger(projectId)) {
+    res.status(400).json({ message: "Некорректный идентификатор проекта." });
+    return;
+  }
+
+  const existing = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { projects: true },
+  });
+
+  if (!existing) {
+    res.status(404).json({ message: "Пользователь не найден." });
+    return;
+  }
+
+  const projectExists = existing.projects.some((project) => project.id === projectId);
+
+  if (!projectExists) {
+    res.status(404).json({ message: "Пользователь не привязан к этому проекту." });
+    return;
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      projects: {
+        disconnect: { id: projectId },
+      },
+    },
+    include: { projects: true },
+  });
+
+  res.json(serializeUser(updated));
+});

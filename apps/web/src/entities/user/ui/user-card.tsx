@@ -44,19 +44,18 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
       }`}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Сотрудник #{user.id}</p>
-          <h3 className="mt-3 text-xl font-bold tracking-tight text-slate-950">{user.name}</h3>
-          <p className="mt-1 text-sm text-slate-600">{user.email}</p>
-        </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Сотрудник #{user.id}</p>
+        <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${role.className}`}>
+          {role.label}
+        </span>
+      </div>
+
+      <div>
+        <h3 className="mt-3 text-xl font-bold tracking-tight text-slate-950">{user.name}</h3>
+        <p className="mt-1 text-sm text-slate-600">{user.email}</p>
       </div>
 
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className={`rounded-2xl ${role.className} p-4`}>
-          <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Роль</dt>
-          <dd className="mt-2 text-sm font-medium text-slate-900">{role.label}</dd>
-        </div>
-
         <div className="rounded-2xl bg-slate-100 p-4 sm:col-span-2">
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Проекты</dt>
           <dd className="mt-2">

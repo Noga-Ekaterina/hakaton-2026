@@ -13,14 +13,19 @@ export function getDefaultDeadline() {
   )}`;
 }
 
-export function getDefaultCreateTaskValues(meta?: CreateTaskMeta): CreateTaskValues {
+export function getDefaultCreateTaskValues(meta?: CreateTaskMeta, projectId?: number | null): CreateTaskValues {
+  const defaultProjectId =
+    projectId != null && meta?.projects.some((project) => project.id === projectId)
+      ? projectId
+      : meta?.projects[0]?.id ?? 0;
+
   return {
     title: "",
     description: "",
     priority: "MEDIUM",
     deadline: getDefaultDeadline(),
     assigneeId: meta?.users[0]?.id ?? 0,
-    projectId: meta?.projects[0]?.id ?? 0,
+    projectId: defaultProjectId,
   };
 }
 

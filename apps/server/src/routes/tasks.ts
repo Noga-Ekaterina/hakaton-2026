@@ -15,8 +15,26 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
 
 export const tasksRouter = Router();
 
-tasksRouter.get("/", async (_req, res) => {
+tasksRouter.get("/", async (req, res) => {
+  const projectId = Number(req.query.projectId);
+
+  if (!Number.isInteger(projectId)) {
+    res.status(400).json({ message: "Некорректный идентификатор проекта." });
+    return;
+  }
+
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { id: true },
+  });
+
+  if (!project) {
+    res.status(404).json({ message: "Проект не найден." });
+    return;
+  }
+
   const tasks = await prisma.task.findMany({
+    where: { projectId },
     orderBy: { createdAt: "desc" },
     include: {
       author: true,

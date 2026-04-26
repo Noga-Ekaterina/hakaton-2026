@@ -7,14 +7,18 @@ import { getColumnTasks } from "../model/get-column-tasks";
 import { TaskColumn } from "./task-column";
 import { useSearchParams } from "react-router-dom";
 
-export function TaskBoard() {
-  const { data: tasks, isLoading, isError, error } = useGetTasksQuery();
+type TaskBoardProps = {
+  projectId: number;
+};
+
+export function TaskBoard({ projectId }: TaskBoardProps) {
+  const { data: tasks, isLoading, isError, error } = useGetTasksQuery(projectId);
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
   const [searchParams] = useSearchParams();
   const filters = useMemo(() => getTaskFilters(searchParams), [searchParams]);
 
   const handleMoveTask = (taskId: number, status: TaskStatus) => {
-    updateTaskStatus({ id: taskId, status });
+    updateTaskStatus({ id: taskId, status, projectId });
   };
 
   return (

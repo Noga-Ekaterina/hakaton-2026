@@ -31,6 +31,11 @@ export type AssignUserProjectInput = {
   projectId: number;
 };
 
+export type RemoveUserProjectInput = {
+  id: number;
+  projectId: number;
+};
+
 export const adminApi = createApi({
   reducerPath: "adminApi",
   tagTypes: ["Users", "Projects"],
@@ -138,6 +143,16 @@ export const adminApi = createApi({
         { type: "Users", id: "LIST" },
       ],
     }),
+    removeUserProject: builder.mutation<User, RemoveUserProjectInput>({
+      query: ({ id, projectId }) => ({
+        url: `/users/${id}/projects/${projectId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Users", id },
+        { type: "Users", id: "LIST" },
+      ],
+    }),
   }),
 });
 
@@ -149,4 +164,5 @@ export const {
   useCreateUserMutation,
   useChangeUserRoleMutation,
   useAssignUserProjectMutation,
+  useRemoveUserProjectMutation,
 } = adminApi;

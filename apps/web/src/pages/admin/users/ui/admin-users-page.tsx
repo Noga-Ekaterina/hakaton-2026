@@ -15,14 +15,20 @@ export function AdminUsersPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4 rounded-[2rem] border border-slate-200/80 bg-white/85 p-5 shadow-[0_20px_80px_rgba(15,23,42,0.08)]">
-        <div>
-          <h3 className="text-2xl font-black tracking-tight text-slate-950">Пользователи</h3>
-          <p className="mt-2 text-sm text-slate-600">Создавайте сотрудников и меняйте их роль и проект.</p>
+      <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary">Администрирование</p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">Пользователи</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+              Здесь можно управлять сотрудниками, их ролями и привязкой к проектам.
+            </p>
+          </div>
+
+          <Button type="button" onClick={() => setIsCreateOpen(true)}>
+            Создать пользователя
+          </Button>
         </div>
-        <Button type="button" onClick={() => setIsCreateOpen(true)}>
-          Создать пользователя
-        </Button>
       </div>
 
       {usersError || projectsError ? (
