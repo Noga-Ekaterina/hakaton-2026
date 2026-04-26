@@ -3,7 +3,8 @@ import { Router } from "express";
 
 import { changeUserRoleSchema, createUserSchema } from "@hakaton/shared";
 
-import { hashPassword, isSessionAdmin } from "../lib/auth.js";
+import { hashPassword } from "../lib/auth.js";
+import { isSessionAdmin } from "../middleware/auth.js";
 import { prisma } from "../lib/prisma.js";
 import { serializeUser } from "../lib/serialization.js";
 

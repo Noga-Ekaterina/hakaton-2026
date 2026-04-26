@@ -7,7 +7,6 @@ import { prisma } from "./prisma.js";
 import { sessionCookieName } from "./constants.js";
 
 const sessionTokenTtl = "7d";
-const adminRole = "ADMIN";
 
 function getJwtSecret() {
   return process.env.JWT_SECRET ?? process.env.SESSION_JWT_SECRET ?? "qitask-dev-jwt-secret";
@@ -31,8 +30,8 @@ export async function verifyPassword(password: string, storedPassword: string) {
   return bcrypt.compare(password, storedPassword);
 }
 
-export function createSessionToken(userId: number, role: UserRole) {
-  return jwt.sign({ role }, getJwtSecret(), {
+export function createSessionToken(userId: number, role: UserRole, projectIds: number[]) {
+  return jwt.sign({ role, projectIds }, getJwtSecret(), {
     subject: String(userId),
     expiresIn: sessionTokenTtl,
   });
@@ -77,22 +76,6 @@ export function getSessionUserRole(req: express.Request) {
   }
 
   return payload.role as UserRole;
-}
-
-export function isSessionAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
-  const role = getSessionUserRole(req);
-
-  if (!role) {
-    res.status(401).json({ message: "Сессия не найдена." });
-    return;
-  }
-
-  if (role !== adminRole) {
-    res.status(403).json({ message: "Доступ запрещен." });
-    return;
-  }
-
-  next();
 }
 
 export async function requireSessionUser(req: express.Request, res: express.Response) {

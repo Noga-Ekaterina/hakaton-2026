@@ -3,11 +3,12 @@ import { createProjectSchema } from "@hakaton/shared";
 
 import { prisma } from "../lib/prisma.js";
 import { serializeProject } from "../lib/serialization.js";
-import { isSessionAdmin } from "../lib/auth.js";
+import { isSessionAdmin } from "../middleware/auth.js";
+import { requireSessionAuth } from "../middleware/auth.js";
 
 export const projectsRouter = Router();
 
-projectsRouter.get("/", async (_req, res) => {
+projectsRouter.get("/", requireSessionAuth, async (_req, res) => {
   const projects = await prisma.project.findMany({
     orderBy: { id: "asc" },
   });

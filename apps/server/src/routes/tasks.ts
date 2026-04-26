@@ -4,6 +4,8 @@ import { createTaskSchema, taskStatusSchema } from "@hakaton/shared";
 
 import { prisma } from "../lib/prisma.js";
 import { buildShortDescription, serializeTask } from "../lib/serialization.js";
+import { requireSessionAuth } from "../middleware/auth.js";
+import { requireSessionAdminOrProjectAccess } from "../middleware/projectAccess.js";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
   include: {
@@ -15,7 +17,7 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
 
 export const tasksRouter = Router();
 
-tasksRouter.get("/", async (req, res) => {
+tasksRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) => {
   const projectId = Number(req.query.projectId);
 
   if (!Number.isInteger(projectId)) {
@@ -46,7 +48,7 @@ tasksRouter.get("/", async (req, res) => {
   res.json(tasks.map(serializeTask));
 });
 
-tasksRouter.post("/", async (req, res) => {
+tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
   const parsedBody = createTaskSchema.safeParse(req.body);
   const authorId = Number(req.body.authorId);
 
@@ -111,7 +113,7 @@ tasksRouter.post("/", async (req, res) => {
   res.status(201).json(serializeTask(task));
 });
 
-tasksRouter.patch("/:id", async (req, res) => {
+tasksRouter.patch("/:id", requireSessionAuth,  async (req, res) => {
   const taskId = Number(req.params.id);
 
   if (!Number.isInteger(taskId)) {

@@ -3,6 +3,7 @@ import { Router } from "express";
 import { loginSchema } from "@hakaton/shared";
 
 import { createSessionToken, requireSessionUser, verifyPassword } from "../lib/auth.js";
+import { requireSessionAuth } from "../middleware/auth.js";
 import { sessionCookieName } from "../lib/constants.js";
 import { prisma } from "../lib/prisma.js";
 import { serializeUser } from "../lib/serialization.js";
@@ -35,14 +36,16 @@ authRouter.post("/login", async (req, res) => {
     return;
   }
 
-  const token = createSessionToken(user.id, user.role);
+  const projectIds = user.projects.map((project) => project.id);  
+
+  const token = createSessionToken(user.id, user.role, projectIds);
 
   res.cookie(sessionCookieName, token, sessionCookieOptions);
   res.json(serializeUser(user));
 });
 
-authRouter.get("/me", async (req, res) => {
-  const user = await requireSessionUser(req, res);
+authRouter.get("/me", requireSessionAuth, async (req, res) => {
+  const user = res.locals.sessionUser ?? (await requireSessionUser(req, res));
 
   if (!user) {
     return;
