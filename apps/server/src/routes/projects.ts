@@ -3,6 +3,7 @@ import { createProjectSchema } from "@hakaton/shared";
 
 import { prisma } from "../lib/prisma.js";
 import { serializeProject } from "../lib/serialization.js";
+import { isSessionAdmin } from "../lib/auth.js";
 
 export const projectsRouter = Router();
 
@@ -14,7 +15,7 @@ projectsRouter.get("/", async (_req, res) => {
   res.json(projects.map(serializeProject));
 });
 
-projectsRouter.post("/", async (req, res) => {
+projectsRouter.post("/", isSessionAdmin, async (req, res) => {
   const parsed = createProjectSchema.safeParse(req.body);
 
   if (!parsed.success) {
@@ -29,7 +30,7 @@ projectsRouter.post("/", async (req, res) => {
   res.status(201).json(serializeProject(project));
 });
 
-projectsRouter.patch("/:id", async (req, res) => {
+projectsRouter.patch("/:id", isSessionAdmin, async (req, res) => {
   const projectId = Number(req.params.id);
 
   if (!Number.isInteger(projectId)) {

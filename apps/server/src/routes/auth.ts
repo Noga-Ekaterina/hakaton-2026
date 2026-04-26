@@ -35,7 +35,7 @@ authRouter.post("/login", async (req, res) => {
     return;
   }
 
-  const token = createSessionToken(user.id);
+  const token = createSessionToken(user.id, user.role);
 
   res.cookie(sessionCookieName, token, sessionCookieOptions);
   res.json(serializeUser(user));

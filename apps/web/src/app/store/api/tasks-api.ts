@@ -40,6 +40,7 @@ export const tasksApi = createApi({
   tagTypes: ["Tasks"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     getTasks: builder.query<Task[], number>({

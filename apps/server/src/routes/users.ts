@@ -3,7 +3,7 @@ import { Router } from "express";
 
 import { changeUserRoleSchema, createUserSchema } from "@hakaton/shared";
 
-import { hashPassword } from "../lib/auth.js";
+import { hashPassword, isSessionAdmin } from "../lib/auth.js";
 import { prisma } from "../lib/prisma.js";
 import { serializeUser } from "../lib/serialization.js";
 
@@ -39,7 +39,7 @@ usersRouter.get("/", async (_req, res) => {
   res.json(users.map(serializeUser));
 });
 
-usersRouter.post("/register", async (req, res) => {
+usersRouter.post("/register", isSessionAdmin, async (req, res) => {
   const parsed = createUserSchema.safeParse(req.body);
 
   if (!parsed.success) {
@@ -97,7 +97,7 @@ usersRouter.post("/register", async (req, res) => {
   res.status(201).json(serializeUser(createdUser));
 });
 
-usersRouter.post("/:id/change-role", async (req, res) => {
+usersRouter.post("/:id/change-role", isSessionAdmin, async (req, res) => {
   const parsedParams = changeUserRoleSchema.safeParse(req.body);
   const userId = Number(req.params.id);
 
@@ -133,7 +133,7 @@ usersRouter.post("/:id/change-role", async (req, res) => {
   res.json(serializeUser(updated));
 });
 
-usersRouter.post("/:id/assign-project", async (req, res) => {
+usersRouter.post("/:id/assign-project", isSessionAdmin, async (req, res) => {
   const userId = Number(req.params.id);
 
   if (!Number.isInteger(userId)) {
@@ -181,7 +181,7 @@ usersRouter.post("/:id/assign-project", async (req, res) => {
   res.json(serializeUser(updated));
 });
 
-usersRouter.delete("/:id/projects/:projectId", async (req, res) => {
+usersRouter.delete("/:id/projects/:projectId", isSessionAdmin, async (req, res) => {
   const userId = Number(req.params.id);
   const projectId = Number(req.params.projectId);
 

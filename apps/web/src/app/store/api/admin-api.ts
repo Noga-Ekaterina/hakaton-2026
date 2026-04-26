@@ -41,6 +41,7 @@ export const adminApi = createApi({
   tagTypes: ["Users", "Projects"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
