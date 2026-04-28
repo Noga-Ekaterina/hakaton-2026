@@ -1,25 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Project } from "@/entities/project";
 import type { Task, TaskPriority, TaskStatus } from "@/entities/task";
 import type { UserRole } from "@/entities/user";
 import { API_URL } from "@/shared/config/api";
-
-export type CreateTaskProject = Project & {
-  description: string | null;
-};
 
 export type CreateTaskUser = {
   id: number;
   name: string;
   email: string;
   role: UserRole;
-  project: CreateTaskProject | null;
+  projectId?: number | null;
+  projectName?: string | null;
   createdAt: string;
   active: boolean;
 };
 
 export type CreateTaskMeta = {
-  projects: CreateTaskProject[];
   users: CreateTaskUser[];
   roles: UserRole[];
   taskStatuses: TaskStatus[];
@@ -50,8 +45,8 @@ export const tasksApi = createApi({
           ? [...result.map(({ id }) => ({ type: "Tasks" as const, id })), { type: "Tasks" as const, id: "LIST" }]
           : [{ type: "Tasks" as const, id: "LIST" }],
     }),
-    getCreateTaskMeta: builder.query<CreateTaskMeta, void>({
-      query: () => "/meta",
+    getCreateTaskMeta: builder.query<CreateTaskMeta, number>({
+      query: (projectId) => `/meta?projectId=${projectId}`,
     }),
     createTask: builder.mutation<Task, { authorId: number; body: CreateTaskInput }>({
       query: ({ authorId, body }) => ({

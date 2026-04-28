@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useGetCreateTaskMetaQuery } from "@/app/store/api/tasks-api";
 import type { TaskFilters } from "@/entities/task";
 import { getTaskFilters, hasActiveTaskFilters, taskFilterParamNames } from "./task-filters";
@@ -15,7 +15,9 @@ const priorityLabels: Record<(typeof priorityOptions)[number], string> = {
 
 export function useTaskFiltersPanel() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data: meta } = useGetCreateTaskMetaQuery();
+  const { projectId } = useParams();
+  const projectIdNumber = Number(projectId);
+  const { data: meta } = useGetCreateTaskMetaQuery(projectIdNumber, { skip: !Number.isInteger(projectIdNumber) });
 
   const filters = useMemo<TaskFilters>(() => getTaskFilters(searchParams), [searchParams]);
 

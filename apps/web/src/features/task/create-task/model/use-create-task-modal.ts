@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { useAppSelector } from "@/app/store/hooks";
 import { useCreateTaskMutation, useGetCreateTaskMetaQuery } from "@/app/store/api/tasks-api";
+import { useAppSelector } from "@/app/store/hooks";
 import { buildCreateTaskInput, getDefaultCreateTaskValues } from "./create-task-form";
 import { createTaskSchema, type CreateTaskValues } from "./create-task-schema";
 
@@ -16,7 +16,8 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
   const currentUser = useAppSelector((state) => state.auth.user);
   const { projectId } = useParams();
   const projectIdNumber = Number(projectId);
-  const { data: meta, isLoading, isError } = useGetCreateTaskMetaQuery(undefined, { skip: !open });
+  const hasProjectId = Number.isInteger(projectIdNumber);
+  const { data: meta, isLoading, isError } = useGetCreateTaskMetaQuery(projectIdNumber, { skip: !open || !hasProjectId });
   const [createTask, { isLoading: isSubmitting }] = useCreateTaskMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
 

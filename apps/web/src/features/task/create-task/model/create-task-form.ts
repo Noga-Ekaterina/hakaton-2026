@@ -29,9 +29,8 @@ function toIsoFromDateTimeLocal(value: string) {
 
 export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskMeta, projectId: number): CreateTaskInput | null {
   const assignee = meta.users.find((item) => item.id === values.assigneeId);
-  const project = meta.projects.find((item) => item.id === projectId);
 
-  if (!assignee || !project) {
+  if (!assignee || !Number.isInteger(projectId)) {
     return null;
   }
 
@@ -41,6 +40,6 @@ export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskM
     priority: values.priority,
     deadline: toIsoFromDateTimeLocal(values.deadline),
     assigneeId: assignee.id,
-    projectId: project.id,
+    projectId,
   };
 }

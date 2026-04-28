@@ -3,6 +3,5 @@ dist/
 apps/web/dist/
 *.log
 *.tsbuildinfo
-.vscode/*
-!.vscode/tasks.json
+.vscode/
 .env
