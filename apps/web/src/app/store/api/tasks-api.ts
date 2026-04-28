@@ -25,7 +25,6 @@ export type CreateTaskInput = {
   title: string;
   description: string;
   priority: TaskPriority;
-  deadline: string;
   assigneeId: number;
   projectId: number;
 };

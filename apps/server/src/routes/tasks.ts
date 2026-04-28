@@ -93,7 +93,6 @@ tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
       description: parsedBody.data.description,
       shortDescription: buildShortDescription(parsedBody.data.description),
       priority: parsedBody.data.priority as TaskPriority,
-      deadline: new Date(parsedBody.data.deadline),
       authorId,
       assigneeId,
       projectId,

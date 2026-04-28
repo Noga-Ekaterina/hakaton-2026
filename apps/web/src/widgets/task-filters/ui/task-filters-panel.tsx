@@ -1,5 +1,4 @@
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { UserSelect } from "@/entities/user";
 import { useTaskFiltersPanel } from "../model";
@@ -10,12 +9,7 @@ export function TaskFiltersPanel() {
 
   return (
     <>
-      <div className=" grid gap-4 grid-cols-4 items-end">
-        <div className="space-y-2">
-          <Label htmlFor="task-filter-date">Дата</Label>
-          <Input id="task-filter-date" type="date" value={filters.date} onChange={(event) => updateFilter("date", event.target.value)} />
-        </div>
-
+      <div className=" grid gap-4 grid-cols-3 items-end">
         <div className="space-y-2">
           <Label htmlFor="task-filter-priority">Приоритет</Label>
           <select

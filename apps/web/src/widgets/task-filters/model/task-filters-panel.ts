@@ -36,7 +36,6 @@ export function useTaskFiltersPanel() {
   const clearFilters = () => {
     const nextSearchParams = new URLSearchParams(searchParams);
 
-    nextSearchParams.delete(taskFilterParamNames.date);
     nextSearchParams.delete(taskFilterParamNames.priority);
     nextSearchParams.delete(taskFilterParamNames.assigneeId);
 

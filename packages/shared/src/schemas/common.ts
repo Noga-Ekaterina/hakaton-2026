@@ -3,7 +3,7 @@ import { z } from "zod";
 export const userRoleSchema = z.enum(["USER", "ADMIN"]);
 export type UserRole = z.infer<typeof userRoleSchema>;
 
-export const taskStatusSchema = z.enum(["NEW", "IN_PROGRESS", "DONE", "BLOCKED"]);
+export const taskStatusSchema = z.enum(["NEW", "IN_PROGRESS", "AWAITING_INSPECTION", "DONE"]);
 export type TaskStatus = z.infer<typeof taskStatusSchema>;
 
 export const taskPrioritySchema = z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]);

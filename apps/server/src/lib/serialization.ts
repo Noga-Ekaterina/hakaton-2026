@@ -1,4 +1,4 @@
-import { Prisma, TaskStatus, UserRole } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import type { Project, Task, TaskPriority as SharedTaskPriority, TaskStatus as SharedTaskStatus, User, UserRole as SharedUserRole } from "@hakaton/shared";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
@@ -54,13 +54,12 @@ export function serializeTask(task: TaskWithRelations): Task {
     shortDescription: task.shortDescription,
     status: task.status as SharedTaskStatus,
     priority: task.priority as SharedTaskPriority,
-    deadline: task.deadline.toISOString(),
+    storyPoints: task.storyPoints,
     createdAt: toIso(task.createdAt),
     authorId: task.authorId,
     authorName: task.author.name,
     assigneeId: task.assigneeId,
     assigneeName: task.assignee.name,
     projectId: task.projectId,
-    isOverdue: task.status !== TaskStatus.DONE && task.deadline.getTime() < Date.now(),
   };
 }

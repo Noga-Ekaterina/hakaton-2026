@@ -8,7 +8,7 @@ import { paths } from "@/shared/config/routes";
 import { AdminAccessGate } from "@/pages/admin";
 import { AdminUsersPage } from "@/pages/admin/users";
 import { HomePage } from "@/pages/home";
-import { OverduePage } from "@/pages/overdue";
+import { DonePage } from "@/pages/done";
 import { ProjectPage } from "@/pages/project";
 import { LoginPage } from "@/pages/login";
 
@@ -29,10 +29,6 @@ const routeObjects: RouteObject[] = [
             element: <HomePage />,
           },
           {
-            path: "overdue",
-            element: <OverduePage />,
-          },
-          {
             path: paths.projects,
             element: <ProjectLayout />,
             children: [
@@ -41,8 +37,8 @@ const routeObjects: RouteObject[] = [
                 element: <ProjectPage />,
               },
               {
-                path: ":projectId/overdue",
-                element: <OverduePage />,
+                path: ":projectId/done",
+                element: <DonePage />,
               },
             ],
           },

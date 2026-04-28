@@ -107,12 +107,6 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="task-deadline">Дедлайн</Label>
-              <Input id="task-deadline" type="datetime-local" aria-invalid={Boolean(errors.deadline)} {...register("deadline")} />
-              {errors.deadline ? <p className="text-sm text-rose-600">{errors.deadline.message}</p> : null}
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="task-assignee">Исполнитель</Label>
               <UserSelect
                 id="task-assignee"

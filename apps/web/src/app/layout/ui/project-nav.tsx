@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { paths, projectOverduePath, projectPath } from "@/shared/config/routes";
+import { paths, projectDonePath, projectPath } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
 
 const linkBaseClass =
@@ -28,16 +28,18 @@ export function ProjectNav({ currentProjectId, onCreateTask }: ProjectNavProps) 
         >
           Доска
         </NavLink>
-        <NavLink
-          to={currentProjectId ? routeWithSearch(projectOverduePath(currentProjectId)) : routeWithSearch(paths.overdue)}
-          className={({ isActive }) =>
-            `${linkBaseClass} ${
-              isActive ? "bg-rose-600 text-white shadow-lg shadow-rose-600/20" : "bg-white/70 text-slate-700 hover:bg-white"
-            }`
-          }
-        >
-          Просрочка
-        </NavLink>
+        {currentProjectId ? (
+          <NavLink
+            to={routeWithSearch(projectDonePath(currentProjectId))}
+            className={({ isActive }) =>
+              `${linkBaseClass} ${
+                isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "bg-white/70 text-slate-700 hover:bg-white"
+              }`
+            }
+          >
+            Сделаны
+          </NavLink>
+        ) : null}
 
         <Button type="button" onClick={onCreateTask}>
           Создать задачу

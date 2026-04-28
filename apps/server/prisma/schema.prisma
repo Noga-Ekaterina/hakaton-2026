@@ -15,8 +15,8 @@ enum UserRole {
 enum TaskStatus {
   NEW
   IN_PROGRESS
+  AWAITING_INSPECTION
   DONE
-  BLOCKED
 }
 
 enum TaskPriority {
@@ -55,7 +55,7 @@ model Task {
   shortDescription  String        @db.Text
   status           TaskStatus    @default(NEW)
   priority         TaskPriority   @default(MEDIUM)
-  deadline         DateTime
+  storyPoints      Int?
   authorId         Int
   assigneeId       Int
   projectId        Int

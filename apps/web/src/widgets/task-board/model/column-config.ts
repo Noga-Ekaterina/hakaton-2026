@@ -17,13 +17,13 @@ export const columnConfig: TaskBoardColumn[] = [
   {
     title: "В процессе",
     description: "Задачи, над которыми уже работают.",
-    statuses: ["IN_PROGRESS", "BLOCKED"],
+    statuses: ["IN_PROGRESS"],
     accent: "from-amber-500 to-orange-500",
   },
   {
-    title: "Сделаны",
-    description: "Задачи, которые уже закрыты.",
-    statuses: ["DONE"],
+    title: "Ожидает проверки",
+    description: "Задачи, которые готовы к проверке.",
+    statuses: ["AWAITING_INSPECTION"],
     accent: "from-emerald-500 to-teal-500",
   },
 ];
