@@ -104,7 +104,7 @@ export function ProjectLayout() {
         <Outlet />
       </main>
 
-      <CreateTaskModal open={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} projectId={projectId} />
+      <CreateTaskModal open={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
       <ProjectModal open={isRenameOpen} onClose={() => setIsRenameOpen(false)} project={project} />
       <ProjectMembersModal open={isMembersOpen} onClose={() => setIsMembersOpen(false)} project={project} users={users ?? []} />
     </>

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Prisma, TaskPriority, TaskStatus } from "@prisma/client";
-import { createTaskSchema, taskStatusSchema } from "@hakaton/shared";
+import { createTaskSchema, createTaskServerSchema, taskStatusSchema } from "@hakaton/shared";
 
 import { prisma } from "../lib/prisma.js";
 import { buildShortDescription, serializeTask } from "../lib/serialization.js";
@@ -49,24 +49,20 @@ tasksRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) => {
 });
 
 tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
-  const parsedBody = createTaskSchema.safeParse(req.body);
-  const authorId = Number(req.body.authorId);
+  const parsedBody = createTaskServerSchema.safeParse(req.body);
 
   if (!parsedBody.success) {
     res.status(400).json({ message: parsedBody.error.issues[0]?.message ?? "Некорректные данные" });
     return;
   }
 
-  if (!Number.isInteger(authorId)) {
-    res.status(400).json({ message: "Некорректный идентификатор автора." });
-    return;
-  }
 
   const assigneeId = Number(parsedBody.data.assigneeId);
   const projectId = Number(parsedBody.data.projectId);
+  const authorId = Number(parsedBody.data.authorId);
 
-  if (!Number.isInteger(assigneeId) || !Number.isInteger(projectId)) {
-    res.status(400).json({ message: "Некорректные идентификаторы проекта или исполнителя." });
+  if (!Number.isInteger(assigneeId) || !Number.isInteger(projectId) || !Number.isInteger(authorId)) {
+    res.status(400).json({ message: "Некорректные идентификаторы проекта, исполнителя или автора." });
     return;
   }
 
@@ -113,7 +109,7 @@ tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
   res.status(201).json(serializeTask(task));
 });
 
-tasksRouter.patch("/:id", requireSessionAuth,  async (req, res) => {
+tasksRouter.patch("/:id", requireSessionAdminOrProjectAccess,  async (req, res) => {
   const taskId = Number(req.params.id);
 
   if (!Number.isInteger(taskId)) {

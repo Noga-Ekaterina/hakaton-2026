@@ -8,14 +8,12 @@ import { useCreateTaskModal } from "../model/use-create-task-modal";
 type CreateTaskModalProps = {
   open: boolean;
   onClose: () => void;
-  projectId?: number | null;
 };
 
-export function CreateTaskModal({ open, onClose, projectId }: CreateTaskModalProps) {
+export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
   const { meta, register, errors, isLoading, isError, isSubmitting, submitError, submit } = useCreateTaskModal({
     open,
     onClose,
-    projectId,
   });
 
   if (!open || typeof document === "undefined") {
@@ -124,26 +122,6 @@ export function CreateTaskModal({ open, onClose, projectId }: CreateTaskModalPro
                 })}
               />
               {errors.assigneeId ? <p className="text-sm text-rose-600">{errors.assigneeId.message}</p> : null}
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="task-project">Проект</Label>
-              <select
-                id="task-project"
-                className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                aria-invalid={Boolean(errors.projectId)}
-                {...register("projectId", {
-                  setValueAs: (value) => (value === "" ? 0 : Number(value)),
-                })}
-              >
-                <option value="">Выберите проект</option>
-                {meta?.projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.name}
-                  </option>
-                ))}
-              </select>
-              {errors.projectId ? <p className="text-sm text-rose-600">{errors.projectId.message}</p> : null}
             </div>
           </div>
 

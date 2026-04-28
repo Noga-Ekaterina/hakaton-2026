@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { useAppSelector } from "@/app/store/hooks";
 import { useCreateTaskMutation, useGetCreateTaskMetaQuery } from "@/app/store/api/tasks-api";
 import { buildCreateTaskInput, getDefaultCreateTaskValues } from "./create-task-form";
@@ -9,11 +10,12 @@ import { createTaskSchema, type CreateTaskValues } from "./create-task-schema";
 type UseCreateTaskModalParams = {
   open: boolean;
   onClose: () => void;
-  projectId?: number | null;
 };
 
-export function useCreateTaskModal({ open, onClose, projectId }: UseCreateTaskModalParams) {
+export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) {
   const currentUser = useAppSelector((state) => state.auth.user);
+  const { projectId } = useParams();
+  const projectIdNumber = Number(projectId);
   const { data: meta, isLoading, isError } = useGetCreateTaskMetaQuery(undefined, { skip: !open });
   const [createTask, { isLoading: isSubmitting }] = useCreateTaskMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -39,8 +41,8 @@ export function useCreateTaskModal({ open, onClose, projectId }: UseCreateTaskMo
     }
 
     setSubmitError(null);
-    reset(getDefaultCreateTaskValues(meta, projectId));
-  }, [meta, open, projectId, reset]);
+    reset(getDefaultCreateTaskValues(meta));
+  }, [meta, open, reset]);
 
   useEffect(() => {
     if (!open || !meta) {
@@ -50,13 +52,7 @@ export function useCreateTaskModal({ open, onClose, projectId }: UseCreateTaskMo
     if (!getValues("assigneeId")) {
       setValue("assigneeId", meta.users[0]?.id ?? 0, { shouldValidate: true });
     }
-
-    if (!getValues("projectId")) {
-      const defaultProjectId =
-        projectId != null && meta.projects.some((item) => item.id === projectId) ? projectId : meta.projects[0]?.id ?? 0;
-      setValue("projectId", defaultProjectId, { shouldValidate: true });
-    }
-  }, [getValues, meta, open, projectId, setValue]);
+  }, [getValues, meta, open, setValue]);
 
   useEffect(() => {
     if (!open || typeof document === "undefined") {
@@ -91,10 +87,10 @@ export function useCreateTaskModal({ open, onClose, projectId }: UseCreateTaskMo
       return;
     }
 
-    const input = buildCreateTaskInput(values, meta);
+    const input = buildCreateTaskInput(values, meta, projectIdNumber);
 
     if (!input) {
-      setSubmitError("Выберите исполнителя из списка.");
+      setSubmitError("Не удалось определить проект из URL или выбрать исполнителя.");
       return;
     }
 

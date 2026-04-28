@@ -13,19 +13,13 @@ export function getDefaultDeadline() {
   )}`;
 }
 
-export function getDefaultCreateTaskValues(meta?: CreateTaskMeta, projectId?: number | null): CreateTaskValues {
-  const defaultProjectId =
-    projectId != null && meta?.projects.some((project) => project.id === projectId)
-      ? projectId
-      : meta?.projects[0]?.id ?? 0;
-
+export function getDefaultCreateTaskValues(meta?: CreateTaskMeta): CreateTaskValues {
   return {
     title: "",
     description: "",
     priority: "MEDIUM",
     deadline: getDefaultDeadline(),
     assigneeId: meta?.users[0]?.id ?? 0,
-    projectId: defaultProjectId,
   };
 }
 
@@ -33,9 +27,9 @@ function toIsoFromDateTimeLocal(value: string) {
   return new Date(value).toISOString();
 }
 
-export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskMeta): CreateTaskInput | null {
+export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskMeta, projectId: number): CreateTaskInput | null {
   const assignee = meta.users.find((item) => item.id === values.assigneeId);
-  const project = meta.projects.find((item) => item.id === values.projectId);
+  const project = meta.projects.find((item) => item.id === projectId);
 
   if (!assignee || !project) {
     return null;

@@ -32,6 +32,11 @@ export const createTaskSchema = z.object({
     .refine((value) => !Number.isNaN(new Date(value).getTime()), "Укажите корректную дату")
     .refine((value) => new Date(value).getTime() > Date.now() - 60_000, "Дедлайн не может быть в прошлом"),
   assigneeId: z.coerce.number().int().positive().min(1, "Выберите исполнителя"),
-  projectId: z.coerce.number().int().positive().min(1, "Выберите проект"),
 });
+
+export const createTaskServerSchema = createTaskSchema.extend({
+  authorId: z.coerce.number().int().positive().min(1, "Укажите автора"),
+  projectId: z.coerce.number().int().positive().min(1, "Укажите проект"),
+});
+
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;
