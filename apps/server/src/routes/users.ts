@@ -5,6 +5,7 @@ import { changeUserRoleSchema, createUserSchema } from "@hakaton/shared";
 
 import { hashPassword } from "../lib/auth.js";
 import { isSessionAdmin } from "../middleware/auth.js";
+import { sendUserCreatedEmail } from "../lib/mail.js";
 import { prisma } from "../lib/prisma.js";
 import { serializeUser } from "../lib/serialization.js";
 
@@ -94,6 +95,16 @@ usersRouter.post("/register", isSessionAdmin, async (req, res) => {
     },
     include: { projects: true },
   });
+
+  try {
+    await sendUserCreatedEmail({
+      name: createdUser.name,
+      email: createdUser.email,
+      password: parsed.data.password,
+    });
+  } catch (error) {
+    console.error("Failed to send user created email", error);
+  }
 
   res.status(201).json(serializeUser(createdUser));
 });
