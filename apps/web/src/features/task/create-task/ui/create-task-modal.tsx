@@ -14,10 +14,7 @@ type CreateTaskModalProps = {
 const createTaskFormId = "create-task-form";
 
 export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
-  const { meta, register, setValue, watch, errors, isLoading, isError, isSubmitting, submitError, submit } = useCreateTaskModal({
-    open,
-    onClose,
-  });
+  const { meta, register, setValue, watch, errors, isLoading, isError, isSubmitting, submitError, submit } = useCreateTaskModal({open});
   const photos = watch("photos");
   const { photoPreviews, handlePhotosChange, handleRemovePhoto } = useTaskPhotoPreviews({
     photos,

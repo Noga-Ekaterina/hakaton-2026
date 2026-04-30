@@ -9,10 +9,9 @@ import { createTaskSchema, type CreateTaskValues } from "./create-task-schema";
 
 type UseCreateTaskModalParams = {
   open: boolean;
-  onClose: () => void;
 };
 
-export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) {
+export function useCreateTaskModal({ open }: UseCreateTaskModalParams) {
   const currentUser = useAppSelector((state) => state.auth.user);
   const { projectId } = useParams();
   const projectIdNumber = Number(projectId);
@@ -76,7 +75,11 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
 
     try {
       await createTask({ authorId: currentUser.id, body: input }).unwrap();
-      onClose();
+      reset({
+        ...getDefaultCreateTaskValues(meta),
+        priority: values.priority,
+        assigneeId: values.assigneeId,
+      });
     } catch {
       setSubmitError("Не удалось создать задачу. Попробуйте еще раз.");
     }
