@@ -2,6 +2,7 @@ import { useDrag } from "react-dnd";
 import { useUpdateTaskStatusMutation } from "@/app/store/api/tasks-api";
 import { TASK_DND_TYPE } from "../model/dnd";
 import type { Task } from "../model/types";
+import { API_BASE_URL } from "@/shared/config/api";
 import { Button } from "@/shared/ui/button";
 
 const priorityMeta = {
@@ -47,6 +48,11 @@ export function TaskCard({ task }: TaskCardProps) {
     updateTaskStatus({ id: task.id, status: nextStatus, projectId: task.projectId });
   };
 
+  const taskImages = task.images.map((image) => ({
+    ...image,
+    src: image.url.startsWith("http") ? image.url : `${API_BASE_URL}${image.url}`,
+  }));
+
   return (
     <article
       ref={dragRef}
@@ -86,11 +92,16 @@ export function TaskCard({ task }: TaskCardProps) {
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Автор</dt>
           <dd className="mt-2 text-sm font-medium text-slate-900">{task.authorName}</dd>
         </div>
-        <div className="col-span-2 rounded-2xl bg-slate-50 p-4">
-          <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Story points</dt>
-          <dd className="mt-2 text-sm font-medium text-slate-900">{task.storyPoints ?? "Не оценена"}</dd>
-        </div>
       </dl>
+      {taskImages.length > 0 ? (
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          {taskImages.map((image) => (
+            <a key={image.id} href={image.src} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl bg-slate-100">
+              <img src={image.src} alt={image.name} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+            </a>
+          ))}
+        </div>
+      ) : null}
     </article>
   );
 }

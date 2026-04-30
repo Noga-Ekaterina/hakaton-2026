@@ -1,21 +1,99 @@
 import { Router } from "express";
+import type { FileArray, UploadedFile } from "express-fileupload";
+import { randomUUID } from "node:crypto";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import { Prisma, TaskPriority, TaskStatus } from "@prisma/client";
-import { createTaskSchema, createTaskServerSchema, taskStatusSchema } from "@hakaton/shared";
+import { createTaskServerSchema, taskStatusSchema } from "@hakaton/shared";
 
 import { prisma } from "../lib/prisma.js";
 import { buildShortDescription, serializeTask } from "../lib/serialization.js";
-import { requireSessionAuth } from "../middleware/auth.js";
-import { requireSessionAdminOrProjectAccess } from "../middleware/projectAccess.js";
+import { requireSessionAdminOrProjectAccess, requireSessionAdminOrTaskProjectAccess } from "../middleware/projectAccess.js";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
   include: {
     author: true;
     assignee: true;
     project: true;
+    images: true;
   };
 }>;
 
 export const tasksRouter = Router();
+
+const taskPhotoFieldNames = ["photos", "photos[]"];
+const maxTaskPhotoCount = 10;
+const maxTaskPhotoSize = 5 * 1024 * 1024;
+const taskUploadsRoot = path.resolve(process.cwd(), "uploads", "tasks");
+
+// express-fileupload возвращает один файл или массив для одного поля.
+function normalizeUploadedFiles(fileField: UploadedFile | UploadedFile[] | undefined) {
+  if (!fileField) {
+    return [];
+  }
+
+  return Array.isArray(fileField) ? fileField : [fileField];
+}
+
+// Принимаем оба частых имени multipart-поля от разных клиентов.
+function getTaskPhotoFiles(files: FileArray | null | undefined) {
+  if (!files) {
+    return [];
+  }
+
+  return taskPhotoFieldNames.flatMap((fieldName) => normalizeUploadedFiles(files[fieldName]));
+}
+
+// Здесь только проверяем файлы, сохранение добавим вместе с БД/хранилищем.
+function validateTaskPhotoFiles(files: UploadedFile[]) {
+  if (files.length > maxTaskPhotoCount) {
+    return `Можно загрузить не больше ${maxTaskPhotoCount} фото.`;
+  }
+
+  const invalidTypeFile = files.find((file) => !file.mimetype.startsWith("image/"));
+
+  if (invalidTypeFile) {
+    return "Можно загружать только изображения.";
+  }
+
+  const oversizedFile = files.find((file) => file.size > maxTaskPhotoSize);
+
+  if (oversizedFile) {
+    return "Размер одного фото не должен превышать 5 МБ.";
+  }
+
+  return null;
+}
+
+// Генерируем имя без пользовательского пути, оставляя только расширение.
+function buildTaskPhotoFileName(file: UploadedFile) {
+  const extension = path.extname(file.name).toLowerCase();
+
+  return `${randomUUID()}${extension}`;
+}
+
+// Складываем фото в папку задачи, пока без записи путей в БД.
+async function saveTaskPhotoFiles(taskId: number, files: UploadedFile[]) {
+  if (files.length === 0) {
+    return;
+  }
+
+  const taskUploadDir = path.join(taskUploadsRoot, String(taskId));
+  await mkdir(taskUploadDir, { recursive: true });
+  
+  const names: string[] = [];
+
+  await Promise.all(
+    files.map((file) => {
+      const fileName = buildTaskPhotoFileName(file);
+      names.push(fileName);
+      const filePath = path.join(taskUploadDir, fileName);
+      return file.mv(filePath);
+    }),
+  );
+  
+  return names;
+}
 
 tasksRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) => {
   const projectId = Number(req.query.projectId);
@@ -42,6 +120,7 @@ tasksRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) => {
       author: true,
       assignee: true,
       project: true,
+      images: true,
     },
   });
 
@@ -54,8 +133,15 @@ tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
   if (!parsedBody.success) {
     res.status(400).json({ message: parsedBody.error.issues[0]?.message ?? "Некорректные данные" });
     return;
-  }
+  }  
 
+  const photoFiles = getTaskPhotoFiles(req.files);
+  const photoValidationError = validateTaskPhotoFiles(photoFiles);
+
+  if (photoValidationError) {
+    res.status(400).json({ message: photoValidationError });
+    return;
+  }
 
   const assigneeId = Number(parsedBody.data.assigneeId);
   const projectId = Number(parsedBody.data.projectId);
@@ -102,13 +188,61 @@ tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
       author: true,
       assignee: true,
       project: true,
+      images: true,
     },
   });
 
-  res.status(201).json(serializeTask(task));
+  const photoNames = await saveTaskPhotoFiles(task.id, photoFiles);
+
+  if (photoNames && photoNames.length > 0) {
+    await prisma.taskImage.createMany({
+      data: photoNames.map((name) => ({
+        taskId: task.id,
+        name,
+      })),
+    });
+  }
+
+  const taskWithImages = await prisma.task.findUniqueOrThrow({
+    where: { id: task.id },
+    include: {
+      author: true,
+      assignee: true,
+      project: true,
+      images: true,
+    },
+  });
+
+  res.status(201).json(serializeTask(taskWithImages));
 });
 
-tasksRouter.patch("/:id", requireSessionAdminOrProjectAccess,  async (req, res) => {
+tasksRouter.get("/:id/images/:name", requireSessionAdminOrTaskProjectAccess, async (req, res) => {
+  const taskId = Number(req.params.id);
+  const imageName = req.params.name;
+
+  if (!Number.isInteger(taskId)) {
+    res.status(400).json({ message: "Некорректный идентификатор задачи." });
+    return;
+  }
+
+  if (typeof imageName !== "string" || imageName.trim() === "") {
+    res.status(400).json({ message: "Некорректное имя фото задачи." });
+    return;
+  }
+
+  if (path.basename(imageName) !== imageName) {
+    res.status(400).json({ message: "Некорректное имя фото задачи." });
+    return;
+  }
+
+  res.sendFile(path.join(taskUploadsRoot, String(taskId), imageName), (error) => {
+    if (error && !res.headersSent) {
+      res.status(404).json({ message: "Файл фото задачи не найден." });
+    }
+  });
+});
+
+tasksRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess,  async (req, res) => {
   const taskId = Number(req.params.id);
 
   if (!Number.isInteger(taskId)) {
@@ -142,6 +276,7 @@ tasksRouter.patch("/:id", requireSessionAdminOrProjectAccess,  async (req, res) 
       author: true,
       assignee: true,
       project: true,
+      images: true,
     },
   });
 

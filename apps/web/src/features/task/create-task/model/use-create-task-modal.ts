@@ -32,6 +32,7 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
     reset,
     setValue,
     getValues,
+    watch,
     formState: { errors },
   } = form;
 
@@ -54,28 +55,6 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
       setValue("assigneeId", meta.users[0]?.id ?? 0, { shouldValidate: true });
     }
   }, [getValues, meta, open, setValue]);
-
-  useEffect(() => {
-    if (!open || typeof document === "undefined") {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open, onClose]);
 
   const submit = handleSubmit(async (values) => {
     if (!meta) {
@@ -106,6 +85,8 @@ export function useCreateTaskModal({ open, onClose }: UseCreateTaskModalParams) 
   return {
     meta,
     register,
+    setValue,
+    watch,
     errors,
     isLoading,
     isError,

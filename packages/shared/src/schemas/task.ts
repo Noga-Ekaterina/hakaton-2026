@@ -4,6 +4,12 @@ import { taskPrioritySchema, taskStatusSchema } from "./common.js";
 
 const isoDateTimeSchema = z.string().datetime();
 
+export const taskImageSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1),
+  url: z.string().min(1),
+});
+
 export const taskSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(1),
@@ -18,6 +24,7 @@ export const taskSchema = z.object({
   assigneeId: z.coerce.number().int().positive(),
   assigneeName: z.string().min(1),
   projectId: z.coerce.number().int().positive(),
+  images: z.array(taskImageSchema),
 });
 export type Task = z.infer<typeof taskSchema>;
 

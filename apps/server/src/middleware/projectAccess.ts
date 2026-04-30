@@ -1,6 +1,7 @@
 import type express from "express";
 
 import { requireSessionUser } from "../lib/auth.js";
+import { prisma } from "../lib/prisma.js";
 
 const adminRole = "ADMIN";
 
@@ -38,7 +39,12 @@ function getRequestedProjectId(req: express.Request) {
 }
 
 // middleware для проверки доступа к проекту: админ или участник проекта
-export async function requireSessionAdminOrProjectAccess(req: express.Request, res: express.Response, next: express.NextFunction) {
+async function requireProjectAccess(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+  projectId: number | null,
+) {
   const user = await requireSessionUser(req, res);
 
   if (!user) {
@@ -46,16 +52,14 @@ export async function requireSessionAdminOrProjectAccess(req: express.Request, r
     return;
   }
 
-  if (user.role === adminRole) {
-    res.locals.sessionUser = user;
-    next();
+  if (!projectId) {
+    res.status(400).json({ message: "Нужно указать projectId." });
     return;
   }
 
-  const projectId = getRequestedProjectId(req);
-
-  if (!projectId) {
-    res.status(400).json({ message: "Нужно указать projectId." });
+  if (user.role === adminRole) {
+    res.locals.sessionUser = user;
+    next();
     return;
   }
 
@@ -68,4 +72,30 @@ export async function requireSessionAdminOrProjectAccess(req: express.Request, r
 
   res.locals.sessionUser = user;
   next();
+}
+
+export async function requireSessionAdminOrProjectAccess(req: express.Request, res: express.Response, next: express.NextFunction) {
+  await requireProjectAccess(req, res, next, getRequestedProjectId(req));
+}
+
+export async function requireSessionAdminOrTaskProjectAccess(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const taskId = Number(req.params.id);
+
+  if (!Number.isInteger(taskId)) {
+    res.status(400).json({ message: "Некорректный идентификатор задачи." });
+    return;
+  }
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { projectId: true },
+  });
+
+  if (!task) {
+    res.status(404).json({ message: "Задача не найдена." });
+    return;
+  }
+
+  res.locals.taskProjectId = task.projectId;
+  await requireProjectAccess(req, res, next, task.projectId);
 }

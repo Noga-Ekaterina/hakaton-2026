@@ -27,7 +27,22 @@ export type CreateTaskInput = {
   priority: TaskPriority;
   assigneeId: number;
   projectId: number;
+  photos: File[];
 };
+
+function buildCreateTaskFormData(authorId: number, body: CreateTaskInput) {
+  const formData = new FormData();
+
+  formData.append("authorId", String(authorId));
+  formData.append("title", body.title);
+  formData.append("description", body.description);
+  formData.append("priority", body.priority);
+  formData.append("assigneeId", String(body.assigneeId));
+  formData.append("projectId", String(body.projectId));
+  body.photos.forEach((photo) => formData.append("photos", photo));
+
+  return formData;
+}
 
 export const tasksApi = createApi({
   reducerPath: "tasksApi",
@@ -51,10 +66,7 @@ export const tasksApi = createApi({
       query: ({ authorId, body }) => ({
         url: "/tasks",
         method: "POST",
-        body: {
-          authorId,
-          ...body,
-        },
+        body: buildCreateTaskFormData(authorId, body),
       }),
       invalidatesTags: [{ type: "Tasks", id: "LIST" }],
     }),

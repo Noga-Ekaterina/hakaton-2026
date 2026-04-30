@@ -6,6 +6,7 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
     author: true;
     assignee: true;
     project: true;
+    images: true;
   };
 }>;
 
@@ -61,5 +62,10 @@ export function serializeTask(task: TaskWithRelations): Task {
     assigneeId: task.assigneeId,
     assigneeName: task.assignee.name,
     projectId: task.projectId,
+    images: task.images.map((image) => ({
+      id: image.id,
+      name: image.name,
+      url: `/api/tasks/${task.id}/images/${encodeURIComponent(image.name)}`,
+    })),
   };
 }

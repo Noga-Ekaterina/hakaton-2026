@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
+import fileUpload from "express-fileupload";
 
 import { allowedOrigins } from "./lib/constants.js";
 import { authRouter } from "./routes/auth.js";
@@ -26,6 +27,14 @@ export function createApp() {
     }),
   );
   app.use(express.json());
+  app.use(
+    fileUpload({
+      abortOnLimit: true,
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+    }),
+  );
   app.use(cookieParser());
 
   app.get("/health", (_req, res) => {

@@ -52,7 +52,7 @@ export function Modal({ open, title, description, children, actions, onClose }: 
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className="relative z-10 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_30px_120px_rgba(15,23,42,0.24)]"
+        className="relative z-10 w-full max-w-3xl overflow-x-hidden overflow-y-auto max-h-full rounded-s-[2rem] border border-slate-200 bg-white shadow-[0_30px_120px_rgba(15,23,42,0.24)]"
       >
         <div className="border-b border-slate-200 bg-gradient-to-br from-orange-50 to-white px-6 py-5">
           <div className="flex items-start justify-between gap-4">
