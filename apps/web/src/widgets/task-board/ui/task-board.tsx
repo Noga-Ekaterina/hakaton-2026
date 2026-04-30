@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useGetTasksQuery, useUpdateTaskStatusMutation } from "@/app/store/api/tasks-api";
 import type { TaskStatus } from "@/entities/task";
+import { DeleteTaskModal, useDeleteTaskModal } from "@/features/task/delete-task";
 import { getTaskFilters } from "@/widgets/task-filters";
 import { columnConfig } from "../model/column-config";
 import { getColumnTasks } from "../model/get-column-tasks";
@@ -16,6 +17,7 @@ export function TaskBoard({ projectId }: TaskBoardProps) {
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
   const [searchParams] = useSearchParams();
   const filters = useMemo(() => getTaskFilters(searchParams), [searchParams]);
+  const deleteTaskModal = useDeleteTaskModal();
 
   const handleMoveTask = (taskId: number, status: TaskStatus) => {
     updateTaskStatus({ id: taskId, status, projectId });
@@ -47,10 +49,12 @@ export function TaskBoard({ projectId }: TaskBoardProps) {
               accent={column.accent}
               tasks={getColumnTasks(tasks, column.statuses, filters)}
               onMoveTask={handleMoveTask}
+              onDeleteTask={deleteTaskModal.open}
             />
           ))}
         </section>
       ) : null}
+      <DeleteTaskModal open={deleteTaskModal.isOpen} task={deleteTaskModal.task} onClose={deleteTaskModal.close} />
     </section>
   );
 }

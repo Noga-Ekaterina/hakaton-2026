@@ -1,7 +1,7 @@
 import { Router } from "express";
 import type { FileArray, UploadedFile } from "express-fileupload";
 import { randomUUID } from "node:crypto";
-import { mkdir } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { Prisma, TaskPriority, TaskStatus } from "@prisma/client";
 import { createTaskServerSchema, taskStatusSchema } from "@hakaton/shared";
@@ -281,4 +281,21 @@ tasksRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess,  async (req, r
   });
 
   res.json(serializeTask(task));
+});
+
+tasksRouter.delete("/:id", requireSessionAdminOrTaskProjectAccess, async (req, res) => {
+  const taskId = Number(req.params.id);
+
+  if (!Number.isInteger(taskId)) {
+    res.status(400).json({ message: "Некорректный идентификатор задачи." });
+    return;
+  }
+
+  await prisma.task.delete({
+    where: { id: taskId },
+  });
+
+  await rm(path.join(taskUploadsRoot, String(taskId)), { recursive: true, force: true });
+
+  res.status(204).send();
 });

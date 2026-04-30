@@ -1,4 +1,5 @@
 import { useDrag } from "react-dnd";
+import { CheckIcon, Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
 import { useUpdateTaskStatusMutation } from "@/app/store/api/tasks-api";
 import { TASK_DND_TYPE } from "../model/dnd";
 import type { Task } from "../model/types";
@@ -26,9 +27,10 @@ const priorityMeta = {
 
 type TaskCardProps = {
   task: Task;
+  onDeleteClick?: (task: Task) => void;
 };
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, onDeleteClick }: TaskCardProps) {
   const priority = priorityMeta[task.priority];
   const [updateTaskStatus, { isLoading: isStatusUpdating }] = useUpdateTaskStatusMutation();
   const nextStatus = task.status === "DONE" ? "NEW" : "DONE";
@@ -65,13 +67,34 @@ export function TaskCard({ task }: TaskCardProps) {
         <div className="space-y-2 mb-2">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Задача #{task.id}</p>
-            <Button
-              variant="secondary"
-              onClick={handleStatusButtonClick}
-              disabled={isStatusUpdating}
-            >
-              {statusButtonLabel}
-            </Button>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button
+                variant="secondary"
+                className={`h-9 w-9 shrink-0 px-0 py-0 ${
+                  task.status === "DONE"
+                    ? "text-rose-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                    : "text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                }`}
+                aria-label={statusButtonLabel}
+                onClick={handleStatusButtonClick}
+                disabled={isStatusUpdating}
+              >
+                {task.status === "DONE" ? (
+                  <Cross2Icon className="h-5 w-5" aria-hidden="true" />
+                ) : (
+                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-9 w-9 shrink-0 px-0 py-0 text-slate-500 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                aria-label="Удалить задачу"
+                onClick={() => onDeleteClick?.(task)}
+              >
+                <TrashIcon className="h-5 w-5" aria-hidden="true" />
+              </Button>
+            </div>
           </div>
           <h3 className="text-xl font-bold tracking-tight text-slate-900">{task.title}</h3>
         </div>

@@ -5,6 +5,7 @@ import { useGetProjectsQuery } from "@/app/store/api/admin-api";
 import { useGetTasksQuery } from "@/app/store/api/tasks-api";
 import { useAppSelector } from "@/app/store/hooks";
 import { TaskCard } from "@/entities/task";
+import { DeleteTaskModal, useDeleteTaskModal } from "@/features/task/delete-task";
 import { Button } from "@/shared/ui/button";
 import { paths, projectPath } from "@/shared/config/routes";
 import { getDoneTasks } from "@/widgets/task-board/model/get-column-tasks";
@@ -19,6 +20,7 @@ export function DonePage() {
   const projectIdNumber = Number(projectId);
   const shouldFetchTasks = Number.isInteger(projectIdNumber);
   const { data: tasks, isLoading, isError, error } = useGetTasksQuery(shouldFetchTasks ? projectIdNumber : skipToken);
+  const deleteTaskModal = useDeleteTaskModal();
 
   const project = useMemo(
     () => (Number.isInteger(projectIdNumber) ? projects?.find((item) => item.id === projectIdNumber) ?? null : null),
@@ -80,7 +82,7 @@ export function DonePage() {
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {doneTasks.length > 0 ? (
-              doneTasks.map((task) => <TaskCard key={task.id} task={task} />)
+              doneTasks.map((task) => <TaskCard key={task.id} task={task} onDeleteClick={deleteTaskModal.open} />)
             ) : (
               <div className="rounded-3xl border border-dashed border-emerald-300 bg-white/70 p-4 text-sm text-slate-500 sm:col-span-2 xl:col-span-3">
                 Сделанных задач пока нет.
@@ -89,6 +91,7 @@ export function DonePage() {
           </div>
         </section>
       ) : null}
+      <DeleteTaskModal open={deleteTaskModal.isOpen} task={deleteTaskModal.task} onClose={deleteTaskModal.close} />
     </section>
   );
 }

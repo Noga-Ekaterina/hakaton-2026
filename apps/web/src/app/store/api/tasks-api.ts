@@ -97,8 +97,29 @@ export const tasksApi = createApi({
         { type: "Tasks", id: "LIST" },
       ],
     }),
+    deleteTask: builder.mutation<void, { id: number; projectId: number }>({
+      query: ({ id }) => ({
+        url: `/tasks/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted({ id, projectId }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          tasksApi.util.updateQueryData("getTasks", projectId, (draft) => draft.filter((task) => task.id !== id)),
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Tasks", id },
+        { type: "Tasks", id: "LIST" },
+      ],
+    }),
   }),
 });
 
-export const { useGetTasksQuery, useGetCreateTaskMetaQuery, useCreateTaskMutation, useUpdateTaskStatusMutation } =
+export const { useGetTasksQuery, useGetCreateTaskMetaQuery, useCreateTaskMutation, useUpdateTaskStatusMutation, useDeleteTaskMutation } =
   tasksApi;

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
+import { Cross2Icon } from "@radix-ui/react-icons";
 import { Button } from "@/shared/ui/button";
 
 type ModalProps = {
@@ -63,8 +64,14 @@ export function Modal({ open, title, description, children, actions, onClose }: 
               {description ? <p className="mt-2 text-sm text-slate-600">{description}</p> : null}
             </div>
 
-            <Button type="button" variant="ghost" onClick={onClose}>
-              Закрыть
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-10 w-10 shrink-0 px-0 py-0"
+              aria-label="Закрыть модальное окно"
+              onClick={onClose}
+            >
+              <Cross2Icon className="h-5 w-5" aria-hidden="true" />
             </Button>
           </div>
         </div>
