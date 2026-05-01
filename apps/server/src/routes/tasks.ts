@@ -213,7 +213,7 @@ tasksRouter.get("/:id", requireSessionAdminOrTaskProjectAccess, async (req, res)
   const taskId = Number(req.params.id);
 
   if (!Number.isInteger(taskId)) {
-    res.status(400).json({ message: "РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РґР°С‡Рё." });
+    res.status(400).json({ message: "Некорректный идентификатор задачи." });
     return;
   }
 
@@ -228,7 +228,7 @@ tasksRouter.get("/:id", requireSessionAdminOrTaskProjectAccess, async (req, res)
   });
 
   if (!task) {
-    res.status(404).json({ message: "Р—Р°РґР°С‡Р° РЅРµ РЅР°Р№РґРµРЅР°." });
+    res.status(404).json({ message: "Задача не найдена." });
     return;
   }
 

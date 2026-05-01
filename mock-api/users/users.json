@@ -1,35 +1,34 @@
-﻿[
+[
   {
     "id": 1,
-    "name": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+    "name": "Иван Петров",
     "email": "ivan.petrov@company.ru",
     "role": "MANAGER",
     "projectId": 1,
-    "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+    "projectName": "Операционный отдел"
   },
   {
     "id": 2,
-    "name": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
+    "name": "Анна Смирнова",
     "email": "anna.smirnova@company.ru",
     "role": "EMPLOYEE",
     "projectId": 1,
-    "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+    "projectName": "Операционный отдел"
   },
   {
     "id": 3,
-    "name": "Р”РјРёС‚СЂРёР№ РљРѕР·Р»РѕРІ",
+    "name": "Дмитрий Козлов",
     "email": "dmitry.kozlov@company.ru",
     "role": "EMPLOYEE",
     "projectId": 2,
-    "projectName": "РњР°СЂРєРµС‚РёРЅРі"
+    "projectName": "Маркетинг"
   },
   {
     "id": 4,
-    "name": "Р•Р»РµРЅР° РћСЂР»РѕРІР°",
+    "name": "Елена Орлова",
     "email": "elena.orlova@company.ru",
     "role": "EMPLOYEE",
     "projectId": 3,
     "projectName": "HR"
   }
 ]
-

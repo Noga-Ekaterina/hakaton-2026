@@ -1,32 +1,32 @@
-﻿{
+{
   "users": [
     {
       "id": 1,
-      "name": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "name": "Иван Петров",
       "email": "ivan.petrov@company.ru",
       "role": "MANAGER",
       "projectId": 1,
-      "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+      "projectName": "Операционный отдел"
     },
     {
       "id": 2,
-      "name": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
+      "name": "Анна Смирнова",
       "email": "anna.smirnova@company.ru",
       "role": "EMPLOYEE",
       "projectId": 1,
-      "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+      "projectName": "Операционный отдел"
     },
     {
       "id": 3,
-      "name": "Р”РјРёС‚СЂРёР№ РљРѕР·Р»РѕРІ",
+      "name": "Дмитрий Козлов",
       "email": "dmitry.kozlov@company.ru",
       "role": "EMPLOYEE",
       "projectId": 2,
-      "projectName": "РњР°СЂРєРµС‚РёРЅРі"
+      "projectName": "Маркетинг"
     },
     {
       "id": 4,
-      "name": "Р•Р»РµРЅР° РћСЂР»РѕРІР°",
+      "name": "Елена Орлова",
       "email": "elena.orlova@company.ru",
       "role": "EMPLOYEE",
       "projectId": 3,
@@ -36,11 +36,11 @@
   "projects": [
     {
       "id": 1,
-      "name": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+      "name": "Операционный отдел"
     },
     {
       "id": 2,
-      "name": "РњР°СЂРєРµС‚РёРЅРі"
+      "name": "Маркетинг"
     },
     {
       "id": 3,
@@ -50,84 +50,84 @@
   "tasks": [
     {
       "id": 101,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ РѕС‚С‡РµС‚ РїРѕ РїСЂРѕРґР°Р¶Р°Рј",
-      "shortDescription": "РЎРѕР±СЂР°С‚СЊ РґР°РЅРЅС‹Рµ Р·Р° РјР°СЂС‚ Рё РїРѕРґРіРѕС‚РѕРІРёС‚СЊ РїСЂРµР·РµРЅС‚Р°С†РёСЋ",
+      "title": "Подготовить отчет по продажам",
+      "shortDescription": "Собрать данные за март и подготовить презентацию",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
       "deadline": "2026-04-10T18:00:00",
       "createdAt": "2026-04-07T09:00:00",
       "authorId": 1,
-      "authorName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "authorName": "Иван Петров",
       "assigneeId": 2,
-      "assigneeName": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
+      "assigneeName": "Анна Смирнова",
       "isOverdue": true
     },
     {
       "id": 102,
-      "title": "РћР±РЅРѕРІРёС‚СЊ Р»РµРЅРґРёРЅРі РєРѕРјРїР°РЅРёРё",
-      "shortDescription": "Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ Р±Р»РѕРє СЃ Р°РєС†РёРµР№",
+      "title": "Обновить лендинг компании",
+      "shortDescription": "Добавить новый блок с акцией",
       "status": "IN_PROGRESS",
       "priority": "MEDIUM",
       "deadline": "2026-04-18T12:00:00",
       "createdAt": "2026-04-09T10:15:00",
       "authorId": 1,
-      "authorName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "authorName": "Иван Петров",
       "assigneeId": 3,
-      "assigneeName": "Р”РјРёС‚СЂРёР№ РљРѕР·Р»РѕРІ",
+      "assigneeName": "Дмитрий Козлов",
       "isOverdue": false
     },
     {
       "id": 103,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ РґРѕРіРѕРІРѕСЂ РґР»СЏ РєР»РёРµРЅС‚Р° ABC",
-      "shortDescription": "РџСЂРѕРІРµСЂРёС‚СЊ СЂРµРєРІРёР·РёС‚С‹ Рё РЅР°РїСЂР°РІРёС‚СЊ РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРµ",
+      "title": "Подготовить договор для клиента ABC",
+      "shortDescription": "Проверить реквизиты и направить на согласование",
       "status": "NEW",
       "priority": "HIGH",
       "deadline": "2026-04-05T12:00:00",
       "createdAt": "2026-04-02T11:00:00",
       "authorId": 1,
-      "authorName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "authorName": "Иван Петров",
       "assigneeId": 2,
-      "assigneeName": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
+      "assigneeName": "Анна Смирнова",
       "isOverdue": true
     },
     {
       "id": 104,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ welcome-РїР»Р°РЅ РґР»СЏ РЅРѕРІРѕРіРѕ СЃРѕС‚СЂСѓРґРЅРёРєР°",
-      "shortDescription": "РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РїР»Р°РЅ Р°РґР°РїС‚Р°С†РёРё РЅР° РїРµСЂРІСѓСЋ РЅРµРґРµР»СЋ",
+      "title": "Подготовить welcome-план для нового сотрудника",
+      "shortDescription": "Сформировать план адаптации на первую неделю",
       "status": "BLOCKED",
       "priority": "CRITICAL",
       "deadline": "2026-04-12T15:00:00",
       "createdAt": "2026-04-08T14:00:00",
       "authorId": 1,
-      "authorName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "authorName": "Иван Петров",
       "assigneeId": 4,
-      "assigneeName": "Р•Р»РµРЅР° РћСЂР»РѕРІР°",
+      "assigneeName": "Елена Орлова",
       "isOverdue": false
     },
     {
       "id": 105,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ СЃРїРёСЃРѕРє Р·Р°РєСѓРїРѕРє РЅР° РЅРµРґРµР»СЋ",
-      "shortDescription": "РЎРѕР±СЂР°С‚СЊ РїРѕС‚СЂРµР±РЅРѕСЃС‚Рё РѕС‚РґРµР»РѕРІ Рё СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ СЃРїРёСЃРѕРє",
+      "title": "Подготовить список закупок на неделю",
+      "shortDescription": "Собрать потребности отделов и сформировать список",
       "status": "DONE",
       "priority": "LOW",
       "deadline": "2026-04-16T13:00:00",
       "createdAt": "2026-04-11T08:20:00",
       "authorId": 1,
-      "authorName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "authorName": "Иван Петров",
       "assigneeId": 2,
-      "assigneeName": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
+      "assigneeName": "Анна Смирнова",
       "isOverdue": false
     },
     {
-      "title": "Р°СЃСЃРј С‚СЊСЉ",
+      "title": "ассм тьъ",
       "shortDescription": "{\n  \"timestamp\": \"2026-04-14T18:48:24.333416267\",\n  \"status\": 500,\n  \"error\": \"Internal Server Error\",\n  \"message\": \"JDBC exception executing SQL [ERROR: relation \\\"tasks\\\" does not exist\\n  Position: 413] [select t1_0.id,t1_0.assignee_id,a2_0.id,a2_0.created_at,a2_0.project_id,a2_0.email,a2_0.is_active,a2_0.name,a2_0.password,a2_0.role,t1_0.author_id,a1_0.id,a1_0.created_at,a1_0.project_id,a1_0.email,a1_0.is_active,a1_0.name,a1_0.password,a1_0.role,t1_0.created_at,t1_0.deadline,t1_0.project_id,d1_0.id,d1_0.description,d1_0.name,t1_0.description,t1_0.priority,t1_0.status,t1_0.title,t1_0.updated_at from tasks t1_0 join users a1_0 on a1_0.id=t1_0.author_id join users a2_0 on a2_0.id=t1_0.assignee_id join projects d1_0 on d1_0.id=t1_0.project_id where (? is null or a2_0.id=?) and (? is null or t1_0.priority=?) and (? is null or lower(t1_0.title) like lower(('%'||?||'%')) escape '') and (? is null or t1_0.deadline>=?) and (? is null or t1_0.deadline<=?) order by t1_0.created_at desc]; SQL [select t1_0.id,t1_0.assignee_id,a2_0.id,a2_0.created_at,a2_0.project_id,a2_0.email,a2_0.is_active,a2_0.name,a2_0.password,a2_0.role,t1_0.author_id,a1_0.id,a1_0.created_at,a1_0.project_id,a1_0.email,a1_0.is_active,a1_0.name,a1_0.password,a1_0.role,t1_0.created_at,t1_0.deadline,t1_0.project_id,d1_0.id,d1_0.description,d1_0.name,t1_0.description,t1_0.priority,t1_0.status,t1_0.title,t1_0.updated_at from tasks t1_0 join users a1_0 on a1_0.id=t1_0.author_id join users a2_0 on a2_0.id=t1_0.assignee_id join projects d1_0 on d1_0.id=t1_0.project_id where (? is null or a2_0.id=?) and (? is null or t1_0.priority=?) and (? is null or lower(t1_0.title) like lower(('%'||?||'%')) escape '') and (? is null or t1_0.deadline>=?) and (? is null or t1_0.deadline<=?) order by t1_0.created_at desc]\",\n  \"path\": \"/api/tasks\"\n}",
       "status": "IN_PROGRESS",
       "priority": "MEDIUM",
       "deadline": "2026-04-15T15:00:00.000Z",
       "authorId": 1,
-      "authorName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "authorName": "Иван Петров",
       "assigneeId": 3,
-      "assigneeName": "Р”РјРёС‚СЂРёР№ РљРѕР·Р»РѕРІ",
+      "assigneeName": "Дмитрий Козлов",
       "projectId": 1,
       "createdAt": "2026-04-14T20:38:22.733Z",
       "isOverdue": false,
@@ -142,7 +142,7 @@
       "oldValue": "NEW",
       "newValue": "IN_PROGRESS",
       "changedByUserId": 2,
-      "changedByUserName": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
+      "changedByUserName": "Анна Смирнова",
       "changedAt": "2026-04-08T09:45:00"
     },
     {
@@ -152,7 +152,7 @@
       "oldValue": "2026-04-09T18:00:00",
       "newValue": "2026-04-10T18:00:00",
       "changedByUserId": 1,
-      "changedByUserName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+      "changedByUserName": "Иван Петров",
       "changedAt": "2026-04-08T12:20:00"
     },
     {
@@ -162,7 +162,7 @@
       "oldValue": "IN_PROGRESS",
       "newValue": "BLOCKED",
       "changedByUserId": 4,
-      "changedByUserName": "Р•Р»РµРЅР° РћСЂР»РѕРІР°",
+      "changedByUserName": "Елена Орлова",
       "changedAt": "2026-04-10T09:20:00"
     },
     {
@@ -172,7 +172,7 @@
       "oldValue": "IN_PROGRESS",
       "newValue": "DONE",
       "changedByUserId": 2,
-      "changedByUserName": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
+      "changedByUserName": "Анна Смирнова",
       "changedAt": "2026-04-05T11:40:00"
     }
   ],
@@ -181,117 +181,117 @@
       "id": 1,
       "taskId": 101,
       "authorId": 2,
-      "authorName": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
-      "text": "РќР°С‡Р°Р»Р° СЃРѕР±РёСЂР°С‚СЊ РґР°РЅРЅС‹Рµ РїРѕ РѕС‚РґРµР»Р°Рј.",
+      "authorName": "Анна Смирнова",
+      "text": "Начала собирать данные по отделам.",
       "createdAt": "2026-04-08T10:00:00"
     },
     {
       "id": 2,
       "taskId": 101,
       "authorId": 1,
-      "authorName": "РРІР°РЅ РџРµС‚СЂРѕРІ",
-      "text": "Р”РѕР±Р°РІСЊ СЃСЂР°РІРЅРµРЅРёРµ СЃ РїСЂРѕС€Р»С‹Рј РјРµСЃСЏС†РµРј.",
+      "authorName": "Иван Петров",
+      "text": "Добавь сравнение с прошлым месяцем.",
       "createdAt": "2026-04-08T12:00:00"
     },
     {
       "id": 3,
       "taskId": 104,
       "authorId": 4,
-      "authorName": "Р•Р»РµРЅР° РћСЂР»РѕРІР°",
-      "text": "Р–РґСѓ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ РґР°С‚С‹ РІС‹С…РѕРґР° СЃРѕС‚СЂСѓРґРЅРёРєР°.",
+      "authorName": "Елена Орлова",
+      "text": "Жду подтверждение даты выхода сотрудника.",
       "createdAt": "2026-04-10T09:15:00"
     },
     {
       "id": 4,
       "taskId": 103,
       "authorId": 2,
-      "authorName": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°",
-      "text": "Р”РѕРіРѕРІРѕСЂ СЃРѕРіР»Р°СЃРѕРІР°РЅ Рё РѕС‚РїСЂР°РІР»РµРЅ РєР»РёРµРЅС‚Сѓ.",
+      "authorName": "Анна Смирнова",
+      "text": "Договор согласован и отправлен клиенту.",
       "createdAt": "2026-04-05T11:30:00"
     }
   ],
   "taskDetails": [
     {
       "id": 101,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ РѕС‚С‡РµС‚ РїРѕ РїСЂРѕРґР°Р¶Р°Рј",
-      "description": "РЎРѕР±СЂР°С‚СЊ РґР°РЅРЅС‹Рµ Р·Р° РјР°СЂС‚, СЃРІРµСЂРёС‚СЊ РїРѕРєР°Р·Р°С‚РµР»Рё СЃ CRM, РїРѕРґРіРѕС‚РѕРІРёС‚СЊ РїСЂРµР·РµРЅС‚Р°С†РёСЋ Рё РѕС‚РїСЂР°РІРёС‚СЊ СЂСѓРєРѕРІРѕРґРёС‚РµР»СЋ РЅР° СЃРѕРіР»Р°СЃРѕРІР°РЅРёРµ.",
+      "title": "Подготовить отчет по продажам",
+      "description": "Собрать данные за март, сверить показатели с CRM, подготовить презентацию и отправить руководителю на согласование.",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
       "deadline": "2026-04-10T18:00:00",
       "createdAt": "2026-04-07T09:00:00",
       "author": {
         "id": 1,
-        "name": "РРІР°РЅ РџРµС‚СЂРѕРІ"
+        "name": "Иван Петров"
       },
       "assignee": {
         "id": 2,
-        "name": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°"
+        "name": "Анна Смирнова"
       },
       "project": {
         "id": 1,
-        "name": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+        "name": "Операционный отдел"
       },
       "isOverdue": true
     },
     {
       "id": 102,
-      "title": "РћР±РЅРѕРІРёС‚СЊ Р»РµРЅРґРёРЅРі РєРѕРјРїР°РЅРёРё",
-      "description": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ РЅРѕРІС‹Р№ С‚РµРєСЃС‚РѕРІС‹Р№ Р±Р»РѕРє СЃ Р°РєС†РёРµР№, РѕР±РЅРѕРІРёС‚СЊ CTA Рё РїРµСЂРµРґР°С‚СЊ РёР·РјРµРЅРµРЅРёСЏ РЅР° РїСѓР±Р»РёРєР°С†РёСЋ.",
+      "title": "Обновить лендинг компании",
+      "description": "Подготовить новый текстовый блок с акцией, обновить CTA и передать изменения на публикацию.",
       "status": "NEW",
       "priority": "MEDIUM",
       "deadline": "2026-04-18T12:00:00",
       "createdAt": "2026-04-09T10:15:00",
       "author": {
         "id": 1,
-        "name": "РРІР°РЅ РџРµС‚СЂРѕРІ"
+        "name": "Иван Петров"
       },
       "assignee": {
         "id": 3,
-        "name": "Р”РјРёС‚СЂРёР№ РљРѕР·Р»РѕРІ"
+        "name": "Дмитрий Козлов"
       },
       "project": {
         "id": 2,
-        "name": "РњР°СЂРєРµС‚РёРЅРі"
+        "name": "Маркетинг"
       },
       "isOverdue": false
     },
     {
       "id": 103,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ РґРѕРіРѕРІРѕСЂ РґР»СЏ РєР»РёРµРЅС‚Р° ABC",
-      "description": "РџСЂРѕРІРµСЂРёС‚СЊ С€Р°Р±Р»РѕРЅ, РІРЅРµСЃС‚Рё СЂРµРєРІРёР·РёС‚С‹ РєР»РёРµРЅС‚Р°, СЃРѕРіР»Р°СЃРѕРІР°С‚СЊ СЃ СЋСЂРёСЃС‚РѕРј Рё РїРµСЂРµРґР°С‚СЊ РЅР° РїРѕРґРїРёСЃСЊ.",
+      "title": "Подготовить договор для клиента ABC",
+      "description": "Проверить шаблон, внести реквизиты клиента, согласовать с юристом и передать на подпись.",
       "status": "DONE",
       "priority": "HIGH",
       "deadline": "2026-04-05T12:00:00",
       "createdAt": "2026-04-02T11:00:00",
       "author": {
         "id": 1,
-        "name": "РРІР°РЅ РџРµС‚СЂРѕРІ"
+        "name": "Иван Петров"
       },
       "assignee": {
         "id": 2,
-        "name": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°"
+        "name": "Анна Смирнова"
       },
       "project": {
         "id": 1,
-        "name": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+        "name": "Операционный отдел"
       },
       "isOverdue": false
     },
     {
       "id": 104,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ welcome-РїР»Р°РЅ РґР»СЏ РЅРѕРІРѕРіРѕ СЃРѕС‚СЂСѓРґРЅРёРєР°",
-      "description": "РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РїСЂРѕРіСЂР°РјРјСѓ Р°РґР°РїС‚Р°С†РёРё РЅР° РїРµСЂРІСѓСЋ РЅРµРґРµР»СЋ, СЃРѕРіР»Р°СЃРѕРІР°С‚СЊ РІСЃС‚СЂРµС‡Рё Рё РїРѕРґРіРѕС‚РѕРІРёС‚СЊ РІРІРѕРґРЅС‹Рµ РјР°С‚РµСЂРёР°Р»С‹.",
+      "title": "Подготовить welcome-план для нового сотрудника",
+      "description": "Сформировать программу адаптации на первую неделю, согласовать встречи и подготовить вводные материалы.",
       "status": "BLOCKED",
       "priority": "CRITICAL",
       "deadline": "2026-04-12T15:00:00",
       "createdAt": "2026-04-08T14:00:00",
       "author": {
         "id": 1,
-        "name": "РРІР°РЅ РџРµС‚СЂРѕРІ"
+        "name": "Иван Петров"
       },
       "assignee": {
         "id": 4,
-        "name": "Р•Р»РµРЅР° РћСЂР»РѕРІР°"
+        "name": "Елена Орлова"
       },
       "project": {
         "id": 3,
@@ -301,35 +301,35 @@
     },
     {
       "id": 105,
-      "title": "РџРѕРґРіРѕС‚РѕРІРёС‚СЊ СЃРїРёСЃРѕРє Р·Р°РєСѓРїРѕРє РЅР° РЅРµРґРµР»СЋ",
-      "description": "РЎРѕР±СЂР°С‚СЊ РїРѕС‚СЂРµР±РЅРѕСЃС‚Рё РѕС‚РґРµР»РѕРІ, СЃРІРµСЂРёС‚СЊ РѕСЃС‚Р°С‚РєРё Рё СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РµРґРёРЅС‹Р№ СЃРїРёСЃРѕРє РЅР° Р·Р°РєСѓРїРєСѓ.",
+      "title": "Подготовить список закупок на неделю",
+      "description": "Собрать потребности отделов, сверить остатки и сформировать единый список на закупку.",
       "status": "NEW",
       "priority": "LOW",
       "deadline": "2026-04-16T13:00:00",
       "createdAt": "2026-04-11T08:20:00",
       "author": {
         "id": 1,
-        "name": "РРІР°РЅ РџРµС‚СЂРѕРІ"
+        "name": "Иван Петров"
       },
       "assignee": {
         "id": 2,
-        "name": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°"
+        "name": "Анна Смирнова"
       },
       "project": {
         "id": 1,
-        "name": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+        "name": "Операционный отдел"
       },
       "isOverdue": false
     }
   ],
   "loginUser": {
     "id": 1,
-    "name": "РРІР°РЅ РџРµС‚СЂРѕРІ",
+    "name": "Иван Петров",
     "email": "ivan.petrov@company.ru",
     "password": "123456",
     "role": "MANAGER",
     "projectId": 1,
-    "projectName": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»",
+    "projectName": "Операционный отдел",
     "token": "mock-token-123"
   },
   "createTaskMeta": {
@@ -348,25 +348,25 @@
     "assignees": [
       {
         "id": 2,
-        "name": "РђРЅРЅР° РЎРјРёСЂРЅРѕРІР°"
+        "name": "Анна Смирнова"
       },
       {
         "id": 3,
-        "name": "Р”РјРёС‚СЂРёР№ РљРѕР·Р»РѕРІ"
+        "name": "Дмитрий Козлов"
       },
       {
         "id": 4,
-        "name": "Р•Р»РµРЅР° РћСЂР»РѕРІР°"
+        "name": "Елена Орлова"
       }
     ],
     "projects": [
       {
         "id": 1,
-        "name": "РћРїРµСЂР°С†РёРѕРЅРЅС‹Р№ РѕС‚РґРµР»"
+        "name": "Операционный отдел"
       },
       {
         "id": 2,
-        "name": "РњР°СЂРєРµС‚РёРЅРі"
+        "name": "Маркетинг"
       },
       {
         "id": 3,
