@@ -1,1 +1,1 @@
-export type { Task, TaskPriority, TaskStatus } from "@hakaton/shared";
+export type { Task, TaskChange, TaskComment, TaskEvent, TaskEventType, TaskPriority, TaskStatus, TaskTimelineItem } from "@hakaton/shared";

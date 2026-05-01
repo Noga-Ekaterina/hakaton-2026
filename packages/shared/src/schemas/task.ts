@@ -10,6 +10,61 @@ export const taskImageSchema = z.object({
   url: z.string().min(1),
 });
 
+export const taskEventTypeSchema = z.enum(["TASK_CREATED", "TASK_UPDATED", "STATUS_UPDATED", "STORY_POINTS_UPDATED"]);
+export type TaskEventType = z.infer<typeof taskEventTypeSchema>;
+
+export const taskTimelineUserSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1),
+});
+
+export const taskChangeSchema = z.object({
+  field: z.string().min(1),
+  oldValue: z.any(),
+  newValue: z.any(),
+});
+export type TaskChange = {
+  field: string;
+  oldValue: unknown;
+  newValue: unknown;
+};
+
+export const taskCommentSchema = z.object({
+  kind: z.literal("comment"),
+  id: z.number().int().positive(),
+  taskId: z.number().int().positive(),
+  author: taskTimelineUserSchema,
+  body: z.string(),
+  isDeleted: z.boolean(),
+  editedAt: isoDateTimeSchema.nullable(),
+  createdAt: isoDateTimeSchema,
+});
+export type TaskComment = z.infer<typeof taskCommentSchema>;
+
+export const taskEventSchema = z.object({
+  kind: z.literal("event"),
+  id: z.number().int().positive(),
+  taskId: z.number().int().positive(),
+  actor: taskTimelineUserSchema.nullable(),
+  type: taskEventTypeSchema,
+  changes: z.array(taskChangeSchema),
+  metadata: z.unknown().nullable(),
+  createdAt: isoDateTimeSchema,
+});
+export type TaskEvent = {
+  kind: "event";
+  id: number;
+  taskId: number;
+  actor: z.infer<typeof taskTimelineUserSchema> | null;
+  type: TaskEventType;
+  changes: TaskChange[];
+  metadata: unknown | null;
+  createdAt: string;
+};
+
+export const taskTimelineItemSchema = z.discriminatedUnion("kind", [taskCommentSchema, taskEventSchema]);
+export type TaskTimelineItem = TaskComment | TaskEvent;
+
 export const taskSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(1),
@@ -41,3 +96,22 @@ export const createTaskServerSchema = createTaskSchema.extend({
 });
 
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;
+
+const nullableStoryPointsSchema = z.preprocess(
+  (value) => (value === "" || value === null || typeof value === "undefined" ? null : value),
+  z.coerce.number().int().positive().nullable(),
+);
+
+export const updateTaskServerSchema = z.object({
+  title: z.string().trim().min(3).optional(),
+  description: z.string().trim().optional(),
+  priority: taskPrioritySchema.optional(),
+  status: taskStatusSchema.optional(),
+  assigneeId: z.coerce.number().int().positive().optional(),
+  storyPoints: nullableStoryPointsSchema.optional(),
+});
+
+export const createTaskCommentSchema = z.object({
+  body: z.string().trim().min(1).max(5000),
+});
+export type CreateTaskCommentValues = z.infer<typeof createTaskCommentSchema>;

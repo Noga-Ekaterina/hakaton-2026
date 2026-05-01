@@ -1,13 +1,19 @@
 import { Router } from "express";
+import type express from "express";
 import type { FileArray, UploadedFile } from "express-fileupload";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, rm, unlink } from "node:fs/promises";
 import path from "node:path";
 import { Prisma, TaskPriority, TaskStatus } from "@prisma/client";
-import { createTaskServerSchema, taskStatusSchema } from "@hakaton/shared";
+import {
+  createTaskCommentSchema,
+  createTaskServerSchema,
+  updateTaskServerSchema,
+  type TaskChange,
+} from "@hakaton/shared";
 
 import { prisma } from "../lib/prisma.js";
-import { buildShortDescription, serializeTask } from "../lib/serialization.js";
+import { buildShortDescription, serializeTask, serializeTaskComment, serializeTaskEvent } from "../lib/serialization.js";
 import { requireSessionAdminOrProjectAccess, requireSessionAdminOrTaskProjectAccess } from "../middleware/projectAccess.js";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
@@ -95,6 +101,82 @@ async function saveTaskPhotoFiles(taskId: number, files: UploadedFile[]) {
   return names;
 }
 
+function parseKeepImageIds(value: unknown) {
+  if (typeof value === "undefined") {
+    return null;
+  }
+
+  const rawValues = Array.isArray(value) ? value : [value];
+  const ids = rawValues
+    .flatMap((item) => String(item).split(","))
+    .map((item) => Number(item.trim()))
+    .filter((item) => Number.isInteger(item) && item > 0);
+
+  return new Set(ids);
+}
+
+async function deleteTaskPhotoFiles(taskId: number, imageNames: string[]) {
+  await Promise.all(
+    imageNames.map((name) =>
+      unlink(path.join(taskUploadsRoot, String(taskId), name)).catch((error: NodeJS.ErrnoException) => {
+        if (error.code !== "ENOENT") {
+          throw error;
+        }
+      }),
+    ),
+  );
+}
+
+function getSessionUserId(res: express.Response) {
+  const userId = res.locals.sessionUser?.id;
+  return typeof userId === "number" ? userId : null;
+}
+
+function addChange(changes: TaskChange[], field: string, oldValue: unknown, newValue: unknown) {
+  if (oldValue === newValue) {
+    return;
+  }
+
+  changes.push({
+    field,
+    oldValue,
+    newValue,
+  });
+}
+
+function buildTaskUpdateChanges(
+  existing: TaskWithRelations,
+  data: {
+    title?: string;
+    description?: string;
+    priority?: string;
+    status?: string;
+    assigneeId?: number;
+    storyPoints?: number | null;
+  },
+) {
+  const changes: TaskChange[] = [];
+
+  addChange(changes, "title", existing.title, data.title);
+  addChange(changes, "description", existing.description, data.description);
+  addChange(changes, "priority", existing.priority, data.priority);
+  addChange(changes, "assigneeId", existing.assigneeId, data.assigneeId);
+
+  return changes.filter((change) => typeof change.newValue !== "undefined");
+}
+
+function buildSingleChange(field: string, oldValue: unknown, newValue: unknown) {
+  if (typeof newValue === "undefined" || oldValue === newValue) {
+    return null;
+  }
+
+  return {
+    field,
+    oldValue,
+    newValue,
+  };
+}
+
 tasksRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) => {
   const projectId = Number(req.query.projectId);
 
@@ -125,6 +207,93 @@ tasksRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) => {
   });
 
   res.json(tasks.map(serializeTask));
+});
+
+tasksRouter.get("/:id", requireSessionAdminOrTaskProjectAccess, async (req, res) => {
+  const taskId = Number(req.params.id);
+
+  if (!Number.isInteger(taskId)) {
+    res.status(400).json({ message: "РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р·Р°РґР°С‡Рё." });
+    return;
+  }
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: {
+      author: true,
+      assignee: true,
+      project: true,
+      images: true,
+    },
+  });
+
+  if (!task) {
+    res.status(404).json({ message: "Р—Р°РґР°С‡Р° РЅРµ РЅР°Р№РґРµРЅР°." });
+    return;
+  }
+
+  res.json(serializeTask(task));
+});
+
+tasksRouter.get("/:id/timeline", requireSessionAdminOrTaskProjectAccess, async (req, res) => {
+  const taskId = Number(req.params.id);
+
+  if (!Number.isInteger(taskId)) {
+    res.status(400).json({ message: "Invalid task id." });
+    return;
+  }
+
+  const [comments, events] = await Promise.all([
+    prisma.taskComment.findMany({
+      where: { taskId },
+      include: { author: true },
+    }),
+    prisma.taskEvent.findMany({
+      where: { taskId },
+      include: { actor: true },
+    }),
+  ]);
+
+  const timeline = [
+    ...comments.map(serializeTaskComment),
+    ...events.map(serializeTaskEvent),
+  ].sort((left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime());
+
+  res.json(timeline);
+});
+
+tasksRouter.post("/:id/comments", requireSessionAdminOrTaskProjectAccess, async (req, res) => {
+  const taskId = Number(req.params.id);
+
+  if (!Number.isInteger(taskId)) {
+    res.status(400).json({ message: "Invalid task id." });
+    return;
+  }
+
+  const parsed = createTaskCommentSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Invalid comment." });
+    return;
+  }
+
+  const authorId = getSessionUserId(res);
+
+  if (!authorId) {
+    res.status(401).json({ message: "Session not found." });
+    return;
+  }
+
+  const comment = await prisma.taskComment.create({
+    data: {
+      taskId,
+      authorId,
+      body: parsed.data.body,
+    },
+    include: { author: true },
+  });
+
+  res.status(201).json(serializeTaskComment(comment));
 });
 
 tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
@@ -192,6 +361,17 @@ tasksRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) => {
     },
   });
 
+  await prisma.taskEvent.create({
+    data: {
+      taskId: task.id,
+      actorId: getSessionUserId(res),
+      type: "TASK_CREATED",
+      metadata: {
+        title: task.title,
+      },
+    },
+  });
+
   const photoNames = await saveTaskPhotoFiles(task.id, photoFiles);
 
   if (photoNames && photoNames.length > 0) {
@@ -242,7 +422,7 @@ tasksRouter.get("/:id/images/:name", requireSessionAdminOrTaskProjectAccess, asy
   });
 });
 
-tasksRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess,  async (req, res) => {
+tasksRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (req, res) => {
   const taskId = Number(req.params.id);
 
   if (!Number.isInteger(taskId)) {
@@ -252,7 +432,7 @@ tasksRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess,  async (req, r
 
   const existing = await prisma.task.findUnique({
     where: { id: taskId },
-    include: { author: true, assignee: true, project: true },
+    include: { author: true, assignee: true, project: true, images: true },
   });
 
   if (!existing) {
@@ -260,25 +440,128 @@ tasksRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess,  async (req, r
     return;
   }
 
-  const parsed = taskStatusSchema.safeParse(req.body.status);
+  const parsed = updateTaskServerSchema.safeParse(req.body);
 
   if (!parsed.success) {
     res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Некорректные данные" });
     return;
   }
 
-  const task = await prisma.task.update({
-    where: { id: taskId },
-    data: {
-      status: parsed.data as TaskStatus,
-    },
-    include: {
-      author: true,
-      assignee: true,
-      project: true,
-      images: true,
-    },
+  const photoFiles = getTaskPhotoFiles(req.files);
+  const photoValidationError = validateTaskPhotoFiles(photoFiles);
+
+  if (photoValidationError) {
+    res.status(400).json({ message: photoValidationError });
+    return;
+  }
+
+  if (parsed.data.assigneeId) {
+    const assignee = await prisma.user.findUnique({ where: { id: parsed.data.assigneeId } });
+
+    if (!assignee) {
+      res.status(404).json({ message: "Исполнитель не найден." });
+      return;
+    }
+  }
+
+  const keepImageIds = parseKeepImageIds(req.body.keepImageIds);
+  const imagesToDelete = keepImageIds
+    ? existing.images.filter((image) => !keepImageIds.has(image.id))
+    : [];
+    
+  const changes = buildTaskUpdateChanges(existing, parsed.data);
+  const statusChange = buildSingleChange("status", existing.status, parsed.data.status);
+  const storyPointsChange = buildSingleChange("storyPoints", existing.storyPoints, parsed.data.storyPoints);
+  const photoNames = await saveTaskPhotoFiles(taskId, photoFiles);
+
+  if (imagesToDelete.length > 0 || (photoNames && photoNames.length > 0)) {
+    changes.push({
+      field: "images",
+      oldValue: existing.images.map((image) => image.name),
+      newValue: [
+        ...existing.images.filter((image) => !imagesToDelete.some((deletedImage) => deletedImage.id === image.id)).map((image) => image.name),
+        ...(photoNames ?? []),
+      ],
+    });
+  }
+
+  const task = await prisma.$transaction(async (tx) => {
+    if (imagesToDelete.length > 0) {
+      await tx.taskImage.deleteMany({
+        where: {
+          id: { in: imagesToDelete.map((image) => image.id) },
+          taskId,
+        },
+      });
+    }
+
+    if (photoNames && photoNames.length > 0) {
+      await tx.taskImage.createMany({
+        data: photoNames.map((name) => ({
+          taskId,
+          name,
+        })),
+      });
+    }
+
+    const updatedTask = await tx.task.update({
+      where: { id: taskId },
+      data: {
+        title: parsed.data.title,
+        description: parsed.data.description,
+        shortDescription: typeof parsed.data.description === "string" ? buildShortDescription(parsed.data.description) : undefined,
+        priority: parsed.data.priority as TaskPriority | undefined,
+        status: parsed.data.status as TaskStatus | undefined,
+        assigneeId: parsed.data.assigneeId,
+        storyPoints: parsed.data.storyPoints,
+      },
+      include: {
+        author: true,
+        assignee: true,
+        project: true,
+        images: true,
+      },
+    });
+
+    if (changes.length > 0) {
+      await tx.taskEvent.create({
+        data: {
+          taskId,
+          actorId: getSessionUserId(res),
+          type: "TASK_UPDATED",
+          changes: changes as Prisma.InputJsonValue,
+        },
+      });
+    }
+
+    if (statusChange) {
+      await tx.taskEvent.create({
+        data: {
+          taskId,
+          actorId: getSessionUserId(res),
+          type: "STATUS_UPDATED",
+          changes: [statusChange] as Prisma.InputJsonValue,
+        },
+      });
+    }
+
+    if (storyPointsChange) {
+      await tx.taskEvent.create({
+        data: {
+          taskId,
+          actorId: getSessionUserId(res),
+          type: "STORY_POINTS_UPDATED",
+          changes: [storyPointsChange] as Prisma.InputJsonValue,
+        },
+      });
+    }
+
+    return updatedTask;
   });
+
+  if (imagesToDelete.length > 0) {
+    await deleteTaskPhotoFiles(taskId, imagesToDelete.map((image) => image.name));
+  }
 
   res.json(serializeTask(task));
 });

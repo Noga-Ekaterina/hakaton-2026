@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate, Outlet } from "react-router-dom";
+import { Link, Navigate, Outlet, useMatch } from "react-router-dom";
 import { CreateTaskModal } from "@/features/task/create-task";
 import { ProjectModal } from "@/features/project/manage-project";
 import { ProjectMembersModal } from "@/features/project/manage-project-members";
@@ -13,6 +13,7 @@ export function ProjectLayout() {
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isMembersOpen, setIsMembersOpen] = useState(false);
+  const isTaskPage = Boolean(useMatch(paths.taskDetail));
   const {
     currentUser,
     projectId,
@@ -65,7 +66,8 @@ export function ProjectLayout() {
 
   return (
     <>
-      <div className="space-y-6 border-b border-slate-200/70 pb-8">
+      {!isTaskPage ? (
+        <div className="space-y-6 border-b border-slate-200/70 pb-8">
         <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex-1">
@@ -98,7 +100,8 @@ export function ProjectLayout() {
           <TaskFiltersPanel />
           <ProjectNav currentProjectId={projectId} onCreateTask={() => setIsCreateTaskOpen(true)} />
         </div>
-      </div>
+        </div>
+      ) : null}
 
       <main className="pb-16 pt-8">
         <Outlet />

@@ -24,6 +24,6 @@ export const columnConfig: TaskBoardColumn[] = [
     title: "Ожидает проверки",
     description: "Задачи, которые готовы к проверке.",
     statuses: ["AWAITING_INSPECTION"],
-    accent: "from-emerald-500 to-teal-500",
+    accent: "from-indigo-500 to-violet-500",
   },
 ];

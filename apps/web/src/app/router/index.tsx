@@ -10,6 +10,7 @@ import { AdminUsersPage } from "@/pages/admin/users";
 import { HomePage } from "@/pages/home";
 import { DonePage } from "@/pages/done";
 import { ProjectPage } from "@/pages/project";
+import { TaskPage } from "@/pages/task";
 import { LoginPage } from "@/pages/login";
 
 const routeObjects: RouteObject[] = [
@@ -39,6 +40,10 @@ const routeObjects: RouteObject[] = [
               {
                 path: ":projectId/done",
                 element: <DonePage />,
+              },
+              {
+                path: ":projectId/tasks/:taskId",
+                element: <TaskPage />,
               },
             ],
           },

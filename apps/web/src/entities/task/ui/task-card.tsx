@@ -1,9 +1,11 @@
 import { useDrag } from "react-dnd";
+import { Link } from "react-router-dom";
 import { CheckIcon, Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
 import { useUpdateTaskStatusMutation } from "@/app/store/api/tasks-api";
 import { TASK_DND_TYPE } from "../model/dnd";
 import type { Task } from "../model/types";
 import { API_BASE_URL } from "@/shared/config/api";
+import { taskPath } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
 
 const priorityMeta = {
@@ -96,7 +98,11 @@ export function TaskCard({ task, onDeleteClick }: TaskCardProps) {
               </Button>
             </div>
           </div>
-          <h3 className="text-xl font-bold tracking-tight text-slate-900">{task.title}</h3>
+          <h3 className="text-xl font-bold tracking-tight text-slate-900">
+            <Link className="transition hover:text-primary" to={taskPath(task.projectId, task.id)}>
+              {task.title}
+            </Link>
+          </h3>
         </div>
 
         <div className="flex flex-wrap gap-2">

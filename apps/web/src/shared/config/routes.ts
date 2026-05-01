@@ -5,6 +5,7 @@ export const paths = {
   adminUsers: "/admin/users",
   projects: "/projects",
   projectDetail: "/projects/:projectId",
+  taskDetail: "/projects/:projectId/tasks/:taskId",
   projectDone: "/projects/:projectId/done",
 } as const;
 
@@ -16,4 +17,8 @@ export function projectPath(projectId: number | string) {
 
 export function projectDonePath(projectId: number | string) {
   return `${paths.projects}/${projectId}/done`;
+}
+
+export function taskPath(projectId: number | string, taskId: number | string) {
+  return `${paths.projects}/${projectId}/tasks/${taskId}`;
 }

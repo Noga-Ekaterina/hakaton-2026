@@ -1,5 +1,15 @@
 import { Prisma, UserRole } from "@prisma/client";
-import type { Project, Task, TaskPriority as SharedTaskPriority, TaskStatus as SharedTaskStatus, User, UserRole as SharedUserRole } from "@hakaton/shared";
+import type {
+  Project,
+  Task,
+  TaskChange,
+  TaskComment,
+  TaskEvent,
+  TaskPriority as SharedTaskPriority,
+  TaskStatus as SharedTaskStatus,
+  User,
+  UserRole as SharedUserRole,
+} from "@hakaton/shared";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
   include: {
@@ -13,6 +23,18 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
 type UserWithProject = Prisma.UserGetPayload<{
   include: {
     projects: true;
+  };
+}>;
+
+type TaskCommentWithAuthor = Prisma.TaskCommentGetPayload<{
+  include: {
+    author: true;
+  };
+}>;
+
+type TaskEventWithActor = Prisma.TaskEventGetPayload<{
+  include: {
+    actor: true;
   };
 }>;
 
@@ -67,5 +89,64 @@ export function serializeTask(task: TaskWithRelations): Task {
       name: image.name,
       url: `/api/tasks/${task.id}/images/${encodeURIComponent(image.name)}`,
     })),
+  };
+}
+
+function serializeTimelineUser(user: { id: number; name: string }) {
+  return {
+    id: user.id,
+    name: user.name,
+  };
+}
+
+function serializeTaskChanges(value: Prisma.JsonValue | null): TaskChange[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        return null;
+      }
+
+      const change = item as Record<string, unknown>;
+
+      if (typeof change.field !== "string" || change.field.trim() === "") {
+        return null;
+      }
+
+      return {
+        field: change.field,
+        oldValue: change.oldValue,
+        newValue: change.newValue,
+      };
+    })
+    .filter((item): item is TaskChange => item !== null);
+}
+
+export function serializeTaskComment(comment: TaskCommentWithAuthor): TaskComment {
+  return {
+    kind: "comment",
+    id: comment.id,
+    taskId: comment.taskId,
+    author: serializeTimelineUser(comment.author),
+    body: comment.body,
+    isDeleted: comment.isDeleted,
+    editedAt: comment.editedAt ? toIso(comment.editedAt) : null,
+    createdAt: toIso(comment.createdAt),
+  };
+}
+
+export function serializeTaskEvent(event: TaskEventWithActor): TaskEvent {
+  return {
+    kind: "event",
+    id: event.id,
+    taskId: event.taskId,
+    actor: event.actor ? serializeTimelineUser(event.actor) : null,
+    type: event.type,
+    changes: serializeTaskChanges(event.changes),
+    metadata: event.metadata,
+    createdAt: toIso(event.createdAt),
   };
 }
