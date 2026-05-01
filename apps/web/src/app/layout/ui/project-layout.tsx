@@ -79,14 +79,11 @@ export function ProjectLayout() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <div className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
-                {memberCount} участников
-              </div>
+              <Button variant="secondary" type="button" onClick={() => setIsMembersOpen(true)}>
+                Участники ({memberCount})
+              </Button>
               {currentUser?.role === "ADMIN" ? (
                 <>
-                  <Button variant="secondary" type="button" onClick={() => setIsMembersOpen(true)}>
-                    Участники
-                  </Button>
                   <Button type="button" onClick={() => setIsRenameOpen(true)}>
                     Переименовать проект
                   </Button>
@@ -109,7 +106,13 @@ export function ProjectLayout() {
 
       <CreateTaskModal open={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
       <ProjectModal open={isRenameOpen} onClose={() => setIsRenameOpen(false)} project={project} />
-      <ProjectMembersModal open={isMembersOpen} onClose={() => setIsMembersOpen(false)} project={project} users={users ?? []} />
+      <ProjectMembersModal
+        open={isMembersOpen}
+        onClose={() => setIsMembersOpen(false)}
+        project={project}
+        users={users ?? []}
+        canManageMembers={currentUser?.role === "ADMIN"}
+      />
     </>
   );
 }

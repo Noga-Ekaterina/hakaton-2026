@@ -18,13 +18,23 @@ export function HomePage() {
 
   const memberCounts = useMemo(() => {
     const counts = new Map<number, number>();
+    const adminCount = users?.filter((user) => user.role === "ADMIN").length ?? 0;
+
+    projects?.forEach((project) => {
+      counts.set(project.id, adminCount);
+    });
+
     users?.forEach((user) => {
+      if (user.role === "ADMIN") {
+        return;
+      }
+
       user.projects?.forEach((project) => {
         counts.set(project.id, (counts.get(project.id) ?? 0) + 1);
       });
     });
     return counts;
-  }, [users]);
+  }, [projects, users]);
 
   const visibleProjects = useMemo(() => {
     if (!projects) {

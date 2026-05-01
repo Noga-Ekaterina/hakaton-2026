@@ -6,6 +6,7 @@ type ProjectMembersUsersListProps = {
   isPending: boolean;
   pendingUserId: number | null;
   submitError: string | null;
+  canRemoveUsers?: boolean;
   onRemoveUser: (user: User) => void;
 };
 
@@ -14,6 +15,7 @@ export function ProjectMembersUsersList({
   isPending,
   pendingUserId,
   submitError,
+  canRemoveUsers = false,
   onRemoveUser,
 }: ProjectMembersUsersListProps) {
   return (
@@ -26,11 +28,13 @@ export function ProjectMembersUsersList({
         <div className="grid gap-4 md:grid-cols-2">
           {users.map((user) => (
             <UserCard key={user.id} user={user}>
-              <div className="flex flex-wrap gap-3">
-                <Button type="button" variant="secondary" disabled={isPending} onClick={() => onRemoveUser(user)}>
-                  {pendingUserId === user.id ? "Удаляем..." : "Удалить из проекта"}
-                </Button>
-              </div>
+              {canRemoveUsers && user.role !== "ADMIN" ? (
+                <div className="flex flex-wrap gap-3">
+                  <Button type="button" variant="secondary" disabled={isPending} onClick={() => onRemoveUser(user)}>
+                    {pendingUserId === user.id ? "Удаляем..." : "Удалить из проекта"}
+                  </Button>
+                </div>
+              ) : null}
             </UserCard>
           ))}
         </div>

@@ -15,7 +15,7 @@ export function useProjectUsersModal({ open, project, users }: UseProjectUsersMo
   const [pendingUserId, setPendingUserId] = useState<number | null>(null);
 
   const projectUsers = useMemo(() => {
-    return users.filter((user) => user.projects?.some((item) => item.id === project.id));
+    return users.filter((user) => user.role === "ADMIN" || user.projects?.some((item) => item.id === project.id));
   }, [project.id, users]);
 
   useEffect(() => {

@@ -29,7 +29,7 @@ export function useProjectLayoutModel() {
       return [];
     }
 
-    return users.filter((user) => user.projects?.some((item) => item.id === project.id));
+    return users.filter((user) => user.role === "ADMIN" || user.projects?.some((item) => item.id === project.id));
   }, [project, users]);
 
   const accessibleProjectIds = useMemo(() => {
