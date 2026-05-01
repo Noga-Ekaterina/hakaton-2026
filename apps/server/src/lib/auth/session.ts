@@ -1,10 +1,9 @@
-import bcrypt from "bcryptjs";
 import type { UserRole } from "@prisma/client";
-import jwt from "jsonwebtoken";
 import type express from "express";
+import jwt from "jsonwebtoken";
 
-import { prisma } from "./prisma.js";
-import { sessionCookieName } from "./constants.js";
+import { sessionCookieName } from "../constants.js";
+import { prisma } from "../prisma.js";
 
 const sessionTokenTtl = "7d";
 
@@ -20,14 +19,6 @@ function getSessionToken(req: express.Request) {
   }
 
   return token;
-}
-
-export async function hashPassword(password: string) {
-  return bcrypt.hash(password, 10);
-}
-
-export async function verifyPassword(password: string, storedPassword: string) {
-  return bcrypt.compare(password, storedPassword);
 }
 
 export function createSessionToken(userId: number, role: UserRole, projectIds: number[]) {

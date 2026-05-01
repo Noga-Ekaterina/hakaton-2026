@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { createProjectSchema } from "@hakaton/shared";
 
-import { prisma } from "../lib/prisma.js";
-import { serializeProject } from "../lib/serialization.js";
-import { isSessionAdmin } from "../middleware/auth.js";
-import { requireSessionAuth } from "../middleware/auth.js";
+import { prisma } from "../../lib/prisma.js";
+import { serializeProject } from "./lib/serialize.js";
+import { isSessionAdmin } from "../../middleware/auth.js";
+import { requireSessionAuth } from "../../middleware/auth.js";
 
 export const projectsRouter = Router();
 

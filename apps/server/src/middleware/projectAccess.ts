@@ -1,6 +1,6 @@
 import type express from "express";
 
-import { requireSessionUser } from "../lib/auth.js";
+import { requireSessionUser } from "../lib/auth/session.js";
 import { prisma } from "../lib/prisma.js";
 
 const adminRole = "ADMIN";

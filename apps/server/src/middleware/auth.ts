@@ -1,6 +1,6 @@
 import type express from "express";
 
-import { getSessionUserRole, requireSessionUser } from "../lib/auth.js";
+import { getSessionUserRole, requireSessionUser } from "../lib/auth/session.js";
 
 const adminRole = "ADMIN";
 

@@ -6,9 +6,9 @@ import fileUpload from "express-fileupload";
 import { allowedOrigins } from "./lib/constants.js";
 import { authRouter } from "./routes/auth.js";
 import { metaRouter } from "./routes/meta.js";
-import { projectsRouter } from "./routes/projects.js";
-import { tasksRouter } from "./routes/tasks.js";
-import { usersRouter } from "./routes/users.js";
+import { projectsRouter } from "./routes/projects/projects.js";
+import { tasksRouter } from "./routes/tasks/index.js";
+import { usersRouter } from "./routes/users/index.js";
 
 export function createApp() {
   const app = express();

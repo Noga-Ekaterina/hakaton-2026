@@ -1,6 +1,6 @@
 import { PrismaClient, UserRole, TaskPriority, TaskStatus } from "@prisma/client";
 
-import { hashPassword } from "../src/lib/auth.js";
+import { hashPassword } from "../src/lib/auth/passwords.js";
 
 const prisma = new PrismaClient();
 

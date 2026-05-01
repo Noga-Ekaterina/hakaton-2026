@@ -1,15 +1,14 @@
-import { Prisma, UserRole } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type {
-  Project,
   Task,
   TaskChange,
   TaskComment,
   TaskEvent,
   TaskPriority as SharedTaskPriority,
   TaskStatus as SharedTaskStatus,
-  User,
-  UserRole as SharedUserRole,
 } from "@hakaton/shared";
+
+import { toIso } from "../../../lib/dates.js";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
   include: {
@@ -17,12 +16,6 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
     assignee: true;
     project: true;
     images: true;
-  };
-}>;
-
-type UserWithProject = Prisma.UserGetPayload<{
-  include: {
-    projects: true;
   };
 }>;
 
@@ -38,35 +31,9 @@ type TaskEventWithActor = Prisma.TaskEventGetPayload<{
   };
 }>;
 
-export function toIso(value: Date) {
-  return value.toISOString();
-}
-
 export function buildShortDescription(description: string) {
   const trimmed = description.trim();
   return trimmed.length <= 96 ? trimmed : `${trimmed.slice(0, 93)}...`;
-}
-
-export function serializeProject(project: { id: number; name: string }): Project {
-  return {
-    id: project.id,
-    name: project.name,
-  };
-}
-
-export function serializeUser(user: UserWithProject): User {
-  const projects = user.projects.map(serializeProject);
-  const primaryProject = projects[0] ?? null;
-
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role as SharedUserRole,
-    projectId: primaryProject?.id ?? null,
-    projectName: primaryProject?.name ?? null,
-    projects,
-  };
 }
 
 export function serializeTask(task: TaskWithRelations): Task {

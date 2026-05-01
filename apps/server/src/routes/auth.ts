@@ -2,11 +2,12 @@ import { Router } from "express";
 
 import { loginSchema } from "@hakaton/shared";
 
-import { createSessionToken, requireSessionUser, verifyPassword } from "../lib/auth.js";
+import { verifyPassword } from "../lib/auth/passwords.js";
+import { createSessionToken, requireSessionUser } from "../lib/auth/session.js";
 import { requireSessionAuth } from "../middleware/auth.js";
 import { sessionCookieName } from "../lib/constants.js";
 import { prisma } from "../lib/prisma.js";
-import { serializeUser } from "../lib/serialization.js";
+import { serializeUser } from "./users/lib/serialize.js";
 
 export const authRouter = Router();
 

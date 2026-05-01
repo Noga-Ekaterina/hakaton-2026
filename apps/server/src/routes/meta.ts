@@ -4,7 +4,8 @@ import { UserRole } from "@prisma/client";
 import { taskPrioritySchema, taskStatusSchema } from "@hakaton/shared";
 
 import { prisma } from "../lib/prisma.js";
-import { serializeUser, toIso } from "../lib/serialization.js";
+import { toIso } from "../lib/dates.js";
+import { serializeUser } from "./users/lib/serialize.js";
 import { requireSessionAdminOrProjectAccess } from "../middleware/projectAccess.js";
 
 export const metaRouter = Router();
