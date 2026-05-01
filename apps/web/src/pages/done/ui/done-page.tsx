@@ -6,9 +6,10 @@ import { useGetTasksQuery } from "@/app/store/api/tasks-api";
 import { useAppSelector } from "@/app/store/hooks";
 import { TaskCard } from "@/entities/task";
 import { DeleteTaskModal, useDeleteTaskModal } from "@/features/task/delete-task";
+import { TaskActions } from "@/features/task/task-actions";
 import { Button } from "@/shared/ui/button";
 import { paths, projectPath } from "@/shared/config/routes";
-import { getDoneTasks } from "@/widgets/task-board/model/get-column-tasks";
+import { getDoneTasks } from "@/widgets/task-board";
 import { getTaskFilters } from "@/widgets/task-filters";
 
 export function DonePage() {
@@ -82,7 +83,9 @@ export function DonePage() {
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {doneTasks.length > 0 ? (
-              doneTasks.map((task) => <TaskCard key={task.id} task={task} onDeleteClick={deleteTaskModal.open} />)
+              doneTasks.map((task) => (
+                <TaskCard key={task.id} task={task} actions={<TaskActions task={task} onDeleteClick={deleteTaskModal.open} />} />
+              ))
             ) : (
               <div className="rounded-3xl border border-dashed border-emerald-300 bg-white/70 p-4 text-sm text-slate-500 sm:col-span-2 xl:col-span-3">
                 Сделанных задач пока нет.

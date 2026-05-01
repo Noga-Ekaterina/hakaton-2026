@@ -1,7 +1,5 @@
 import { useDrop } from "react-dnd";
-import { TASK_DND_TYPE } from "@/entities/task/model/dnd";
-import type { TaskStatus } from "@/entities/task";
-import type { TaskDragItem } from "@/entities/task/model/dnd";
+import { TASK_DND_TYPE, type TaskDragItem, type TaskStatus } from "@/entities/task";
 
 type UseTaskColumnDropParams = {
   targetStatus: TaskStatus;

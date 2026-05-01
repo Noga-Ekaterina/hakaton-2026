@@ -1,42 +1,17 @@
-import { useState } from "react";
-import { useDeleteTaskMutation } from "@/app/store/api/tasks-api";
 import type { Task } from "@/entities/task";
 import { Button } from "@/shared/ui/button";
 import { Modal } from "@/shared/ui/modal";
+import { useDeleteTask } from "../model/use-delete-task";
 
 type DeleteTaskModalProps = {
   open: boolean;
   task: Task | null;
   onClose: () => void;
+  event?: () => void;
 };
 
-export function DeleteTaskModal({ open, task, onClose }: DeleteTaskModalProps) {
-  const [deleteTask, { isLoading }] = useDeleteTaskMutation();
-  const [error, setError] = useState<string | null>(null);
-
-  const handleClose = () => {
-    if (isLoading) {
-      return;
-    }
-
-    setError(null);
-    onClose();
-  };
-
-  const handleDelete = async () => {
-    if (!task) {
-      return;
-    }
-
-    setError(null);
-
-    try {
-      await deleteTask({ id: task.id, projectId: task.projectId }).unwrap();
-      onClose();
-    } catch {
-      setError("Не удалось удалить задачу.");
-    }
-  };
+export function DeleteTaskModal({ open, task, onClose, event }: DeleteTaskModalProps) {
+  const { error, handleClose, handleDelete, isLoading } = useDeleteTask({ event, onClose, task });
 
   return (
     <Modal

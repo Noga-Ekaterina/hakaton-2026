@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { User } from "@/entities/user";
-import type { LoginValues } from "@/features/auth/login-form/model/login-schema";
+import type { LoginValues } from "@/features/auth/login-form";
 import { AUTH_LOGIN_URL, AUTH_LOGOUT_URL, AUTH_ME_URL } from "@/shared/config/api";
 
 type AuthState = {

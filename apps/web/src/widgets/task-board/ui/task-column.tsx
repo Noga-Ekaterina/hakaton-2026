@@ -1,5 +1,6 @@
 import { TaskCard } from "@/entities/task";
 import type { Task, TaskStatus } from "@/entities/task";
+import { TaskActions } from "@/features/task/task-actions";
 import { useTaskColumnDrop } from "../model/use-task-column-drop";
 
 type TaskColumnProps = {
@@ -35,7 +36,9 @@ export function TaskColumn({ title, description, statuses, accent, tasks, onMove
 
         <div className="mt-5 space-y-4">
           {tasks.length > 0 ? (
-            tasks.map((task) => <TaskCard key={task.id} task={task} onDeleteClick={onDeleteTask} />)
+            tasks.map((task) => (
+              <TaskCard key={task.id} task={task} actions={<TaskActions task={task} onDeleteClick={onDeleteTask} />} />
+            ))
           ) : (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-white/70 p-4 text-sm text-slate-500">
               Здесь пока пусто.

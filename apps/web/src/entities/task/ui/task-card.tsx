@@ -1,42 +1,18 @@
+import type { ReactNode } from "react";
 import { useDrag } from "react-dnd";
 import { Link } from "react-router-dom";
-import { CheckIcon, Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
-import { useUpdateTaskStatusMutation } from "@/app/store/api/tasks-api";
 import { TASK_DND_TYPE } from "../model/dnd";
+import { getTaskImageSrc } from "../model/task-images";
 import type { Task } from "../model/types";
-import { API_BASE_URL } from "@/shared/config/api";
+import { TaskPriorityBadge } from "./task-badge";
 import { taskPath } from "@/shared/config/routes";
-import { Button } from "@/shared/ui/button";
-
-const priorityMeta = {
-  LOW: {
-    label: "Низкий",
-    className: "bg-slate-100 text-slate-700",
-  },
-  MEDIUM: {
-    label: "Средний",
-    className: "bg-cyan-100 text-cyan-900",
-  },
-  HIGH: {
-    label: "Высокий",
-    className: "bg-orange-100 text-orange-900",
-  },
-  CRITICAL: {
-    label: "Критический",
-    className: "bg-red-100 text-red-900",
-  },
-} as const;
 
 type TaskCardProps = {
+  actions?: ReactNode;
   task: Task;
-  onDeleteClick?: (task: Task) => void;
 };
 
-export function TaskCard({ task, onDeleteClick }: TaskCardProps) {
-  const priority = priorityMeta[task.priority];
-  const [updateTaskStatus, { isLoading: isStatusUpdating }] = useUpdateTaskStatusMutation();
-  const nextStatus = task.status === "DONE" ? "NEW" : "DONE";
-  const statusButtonLabel = task.status === "DONE" ? "не сделана" : "сделана";
+export function TaskCard({ actions, task }: TaskCardProps) {
   const [{ isDragging }, dragRef] = useDrag(
     () => ({
       type: TASK_DND_TYPE,
@@ -48,13 +24,9 @@ export function TaskCard({ task, onDeleteClick }: TaskCardProps) {
     [task.id, task.status],
   );
 
-  const handleStatusButtonClick = () => {
-    updateTaskStatus({ id: task.id, status: nextStatus, projectId: task.projectId });
-  };
-
   const taskImages = task.images.map((image) => ({
     ...image,
-    src: image.url.startsWith("http") ? image.url : `${API_BASE_URL}${image.url}`,
+    src: getTaskImageSrc(image.url),
   }));
 
   return (
@@ -69,34 +41,7 @@ export function TaskCard({ task, onDeleteClick }: TaskCardProps) {
         <div className="space-y-2 mb-2">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Задача #{task.id}</p>
-            <div className="flex shrink-0 items-center gap-2">
-              <Button
-                variant="secondary"
-                className={`h-9 w-9 shrink-0 px-0 py-0 ${
-                  task.status === "DONE"
-                    ? "text-rose-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
-                    : "text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
-                }`}
-                aria-label={statusButtonLabel}
-                onClick={handleStatusButtonClick}
-                disabled={isStatusUpdating}
-              >
-                {task.status === "DONE" ? (
-                  <Cross2Icon className="h-5 w-5" aria-hidden="true" />
-                ) : (
-                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                )}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                className="h-9 w-9 shrink-0 px-0 py-0 text-slate-500 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
-                aria-label="Удалить задачу"
-                onClick={() => onDeleteClick?.(task)}
-              >
-                <TrashIcon className="h-5 w-5" aria-hidden="true" />
-              </Button>
-            </div>
+            {actions}
           </div>
           <h3 className="text-xl font-bold tracking-tight text-slate-900">
             <Link className="transition hover:text-primary" to={taskPath(task.projectId, task.id)}>
@@ -106,7 +51,7 @@ export function TaskCard({ task, onDeleteClick }: TaskCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${priority.className}`}>{priority.label}</span>
+          <TaskPriorityBadge priority={task.priority} />
         </div>
       </div>
 

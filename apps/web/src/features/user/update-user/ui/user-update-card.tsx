@@ -3,8 +3,8 @@ import type { Project } from "@/entities/project";
 import { UserCard } from "@/entities/user";
 import type { User } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
-import { AssignUserProjectModal } from "@/features/user/assign-project/ui/assign-user-project-modal";
-import { ChangeUserRoleModal } from "@/features/user/change-role/ui/change-user-role-modal";
+import { AssignUserProjectModal } from "@/features/user/assign-project";
+import { ChangeUserRoleModal } from "@/features/user/change-role";
 
 type UserUpdateCardProps = {
   user: User;
