@@ -3,7 +3,7 @@ import { Router } from "express";
 import { prisma } from "../../lib/prisma.js";
 import { serializeTask } from "./lib/serialize.js";
 import { requireSessionAdminOrTaskProjectAccess } from "../../middleware/projectAccess.js";
-import { taskRelations } from "./lib/taskRelations.js";
+import { taskDetailSelect } from "./lib/taskRelations.js";
 
 export const taskGetRouter = Router();
 
@@ -17,7 +17,7 @@ taskGetRouter.get("/:id", requireSessionAdminOrTaskProjectAccess, async (req, re
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
-    include: taskRelations,
+    select: taskDetailSelect,
   });
 
   if (!task) {

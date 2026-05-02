@@ -36,7 +36,7 @@ taskCommentsRouter.post("/:id/comments", requireSessionAdminOrTaskProjectAccess,
       authorId,
       body: parsed.data.body,
     },
-    include: { author: true },
+    include: { author: { select: { id: true, name: true } } },
   });
 
   res.status(201).json(serializeTaskComment(comment));

@@ -8,6 +8,7 @@ import { requireSessionAuth } from "../middleware/auth.js";
 import { sessionCookieName } from "../lib/constants.js";
 import { prisma } from "../lib/prisma.js";
 import { serializeUser } from "./users/lib/serialize.js";
+import { userWithPasswordSelect } from "./users/lib/userRelations.js";
 
 export const authRouter = Router();
 
@@ -29,7 +30,7 @@ authRouter.post("/login", async (req, res) => {
 
   const user = await prisma.user.findUnique({
     where: { email: parsed.data.email },
-    include: { projects: true },
+    select: userWithPasswordSelect,
   });
 
   if (!user || !(await verifyPassword(parsed.data.password, user.password))) {

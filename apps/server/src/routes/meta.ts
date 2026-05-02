@@ -8,6 +8,7 @@ import { toIso } from "../lib/dates.js";
 import { serializeUser } from "./users/lib/serialize.js";
 import { requireSessionAdminOrProjectAccess } from "../middleware/projectAccess.js";
 import { serializeTaskTag } from "./projects/lib/tags.js";
+import { userSelect } from "./users/lib/userRelations.js";
 
 export const metaRouter = Router();
 
@@ -25,7 +26,10 @@ metaRouter.get("/meta", requireSessionAdminOrProjectAccess, async (req, res) => 
         OR: [{ role: UserRole.ADMIN }, { projects: { some: { id: projectId } } }],
       },
       orderBy: { id: "asc" },
-      include: { projects: true },
+      select: {
+        ...userSelect,
+        createdAt: true,
+      },
     }),
     prisma.taskTag.findMany({
       where: { projectId },

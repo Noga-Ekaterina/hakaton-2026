@@ -3,13 +3,13 @@ import { useDrag } from "react-dnd";
 import { Link } from "react-router-dom";
 import { TASK_DND_TYPE } from "../model/dnd";
 import { getTaskImageSrc } from "../model/task-images";
-import type { Task } from "../model/types";
+import type { TaskListItem } from "../model/types";
 import { TaskPriorityBadge, TaskTagBadge } from "./task-badge";
 import { taskPath } from "@/shared/config/routes";
 
 type TaskCardProps = {
   actions?: ReactNode;
-  task: Task;
+  task: TaskListItem;
 };
 
 export function TaskCard({ actions, task }: TaskCardProps) {

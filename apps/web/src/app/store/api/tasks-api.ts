@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Task, TaskComment, TaskPriority, TaskStatus, TaskTag, TaskTimelineItem } from "@/entities/task";
+import type { Task, TaskComment, TaskListItem, TaskPriority, TaskStatus, TaskTag, TaskTimelineItem } from "@/entities/task";
 import type { UserRole } from "@/entities/user";
 import { API_URL } from "@/shared/config/api";
 
@@ -104,7 +104,7 @@ export const tasksApi = createApi({
     credentials: "include",
   }),
   endpoints: (builder) => ({
-    getTasks: builder.query<Task[], number>({
+    getTasks: builder.query<TaskListItem[], number>({
       query: (projectId) => `/tasks?projectId=${projectId}`,
       providesTags: (result) =>
         result
@@ -169,7 +169,7 @@ export const tasksApi = createApi({
         { type: "Tasks", id: "LIST" },
       ],
     }),
-    createTask: builder.mutation<Task, { authorId: number; body: CreateTaskInput }>({
+    createTask: builder.mutation<TaskListItem, { authorId: number; body: CreateTaskInput }>({
       query: ({ authorId, body }) => ({
         url: "/tasks",
         method: "POST",

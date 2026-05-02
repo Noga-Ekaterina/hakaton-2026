@@ -3,11 +3,11 @@ import { TaskPriority, TaskStatus } from "@prisma/client";
 import { createTaskServerSchema } from "@hakaton/shared";
 
 import { prisma } from "../../lib/prisma.js";
-import { buildShortDescription, serializeTask } from "./lib/serialize.js";
+import { buildShortDescription, serializeTaskListItem } from "./lib/serialize.js";
 import { requireSessionAdminOrProjectAccess } from "../../middleware/projectAccess.js";
 import { getTaskPhotoFiles, saveTaskPhotoFiles, validateTaskPhotoFiles } from "./lib/photoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
-import { taskRelations } from "./lib/taskRelations.js";
+import { taskListSelect } from "./lib/taskRelations.js";
 import { toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";
 
 export const taskCreateRouter = Router();
@@ -79,7 +79,7 @@ taskCreateRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) 
         connect: toTaskTagConnections(parsedBody.data.tagIds),
       },
     },
-    include: taskRelations,
+    select: taskListSelect,
   });
 
   await prisma.taskEvent.create({
@@ -113,8 +113,8 @@ taskCreateRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) 
 
   const taskWithImages = await prisma.task.findUniqueOrThrow({
     where: { id: task.id },
-    include: taskRelations,
+    select: taskListSelect,
   });
 
-  res.status(201).json(serializeTask(taskWithImages));
+  res.status(201).json(serializeTaskListItem(taskWithImages));
 });

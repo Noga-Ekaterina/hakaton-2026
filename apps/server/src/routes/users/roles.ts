@@ -5,7 +5,7 @@ import { changeUserRoleSchema } from "@hakaton/shared";
 import { prisma } from "../../lib/prisma.js";
 import { isSessionAdmin } from "../../middleware/auth.js";
 import { serializeUser } from "./lib/serialize.js";
-import { userRelations } from "./lib/userRelations.js";
+import { userSelect } from "./lib/userRelations.js";
 
 export const userRolesRouter = Router();
 
@@ -25,7 +25,7 @@ userRolesRouter.post("/:id/change-role", isSessionAdmin, async (req, res) => {
 
   const existing = await prisma.user.findUnique({
     where: { id: userId },
-    include: userRelations,
+    select: { id: true },
   });
 
   if (!existing) {
@@ -39,7 +39,7 @@ userRolesRouter.post("/:id/change-role", isSessionAdmin, async (req, res) => {
       role: parsedParams.data.role as UserRole,
       projects: parsedParams.data.role === "ADMIN" ? { set: [] } : undefined,
     },
-    include: userRelations,
+    select: userSelect,
   });
 
   res.json(serializeUser(updated));

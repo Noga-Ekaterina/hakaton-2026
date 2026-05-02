@@ -1,9 +1,9 @@
 import { Router } from "express";
 
 import { prisma } from "../../lib/prisma.js";
-import { serializeTask } from "./lib/serialize.js";
+import { serializeTaskListItem } from "./lib/serialize.js";
 import { requireSessionAdminOrProjectAccess } from "../../middleware/projectAccess.js";
-import { taskRelations } from "./lib/taskRelations.js";
+import { taskListSelect } from "./lib/taskRelations.js";
 
 export const taskListRouter = Router();
 
@@ -28,8 +28,8 @@ taskListRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) => 
   const tasks = await prisma.task.findMany({
     where: { projectId },
     orderBy: { createdAt: "desc" },
-    include: taskRelations,
+    select: taskListSelect,
   });
 
-  res.json(tasks.map(serializeTask));
+  res.json(tasks.map(serializeTaskListItem));
 });

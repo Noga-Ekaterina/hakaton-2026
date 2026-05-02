@@ -4,31 +4,31 @@ import type {
   TaskChange,
   TaskComment,
   TaskEvent,
+  TaskListItem,
   TaskPriority as SharedTaskPriority,
   TaskStatus as SharedTaskStatus,
 } from "@hakaton/shared";
 
 import { toIso } from "../../../lib/dates.js";
+import { taskDetailSelect, taskListSelect } from "./taskRelations.js";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
-  include: {
-    author: true;
-    assignee: true;
-    project: true;
-    images: true;
-    tags: true;
-  };
+  select: typeof taskDetailSelect;
+}>;
+
+type TaskListItemWithRelations = Prisma.TaskGetPayload<{
+  select: typeof taskListSelect;
 }>;
 
 type TaskCommentWithAuthor = Prisma.TaskCommentGetPayload<{
   include: {
-    author: true;
+    author: { select: { id: true; name: true } };
   };
 }>;
 
 type TaskEventWithActor = Prisma.TaskEventGetPayload<{
   include: {
-    actor: true;
+    actor: { select: { id: true; name: true } };
   };
 }>;
 
@@ -46,6 +46,33 @@ export function serializeTask(task: TaskWithRelations): Task {
     status: task.status as SharedTaskStatus,
     priority: task.priority as SharedTaskPriority,
     storyPoints: task.storyPoints,
+    createdAt: toIso(task.createdAt),
+    authorId: task.authorId,
+    authorName: task.author.name,
+    assigneeId: task.assigneeId,
+    assigneeName: task.assignee.name,
+    projectId: task.projectId,
+    images: task.images.map((image) => ({
+      id: image.id,
+      name: image.name,
+      url: `/api/tasks/${task.id}/images/${encodeURIComponent(image.name)}`,
+    })),
+    tags: task.tags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      color: tag.color,
+      projectId: tag.projectId,
+    })),
+  };
+}
+
+export function serializeTaskListItem(task: TaskListItemWithRelations): TaskListItem {
+  return {
+    id: task.id,
+    title: task.title,
+    shortDescription: task.shortDescription,
+    status: task.status as SharedTaskStatus,
+    priority: task.priority as SharedTaskPriority,
     createdAt: toIso(task.createdAt),
     authorId: task.authorId,
     authorName: task.author.name,

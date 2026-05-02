@@ -1,7 +1,7 @@
 import { useUpdateTaskStatusMutation } from "@/app/store/api/tasks-api";
-import type { Task } from "@/entities/task";
+import type { TaskListItem } from "@/entities/task";
 
-export function useTaskActions(task: Task) {
+export function useTaskActions(task: Pick<TaskListItem, "id" | "projectId" | "status">) {
   const [updateTaskStatus, { isLoading: isStatusUpdating }] = useUpdateTaskStatusMutation();
   const nextStatus = task.status === "DONE" ? "NEW" : "DONE";
   const statusButtonLabel = task.status === "DONE" ? "Отметить не сделанной" : "Отметить сделанной";

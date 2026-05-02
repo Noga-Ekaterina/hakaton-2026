@@ -1,12 +1,12 @@
 import { CheckIcon, Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
-import type { Task } from "@/entities/task";
+import type { TaskListItem } from "@/entities/task";
 import { Button } from "@/shared/ui/button";
 import { useTaskActions } from "../model/use-task-actions";
 
 type TaskActionsProps = {
-  task: Task;
+  task: TaskListItem;
   mode?: "icon" | "full";
-  onDeleteClick?: (task: Task) => void;
+  onDeleteClick?: (task: TaskListItem) => void;
 };
 
 export function TaskActions({ mode = "icon", onDeleteClick, task }: TaskActionsProps) {

@@ -7,6 +7,13 @@ import { serializeTaskTag } from "./lib/tags.js";
 
 export const projectTagsRouter = Router({ mergeParams: true });
 
+const taskTagSelect = {
+  id: true,
+  name: true,
+  color: true,
+  projectId: true,
+} as const;
+
 function parseProjectId(value: unknown) {
   const projectId = Number(value);
   return Number.isInteger(projectId) ? projectId : null;
@@ -42,6 +49,7 @@ projectTagsRouter.get("/", requireSessionAdminOrProjectAccess, async (req, res) 
   const tags = await prisma.taskTag.findMany({
     where: { projectId },
     orderBy: { id: "asc" },
+    select: taskTagSelect,
   });
 
   res.json(tags.map(serializeTaskTag));
@@ -73,6 +81,7 @@ projectTagsRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res)
       color: parsed.data.color,
       projectId,
     },
+    select: taskTagSelect,
   });
 
   res.status(201).json(serializeTaskTag(tag));
@@ -96,6 +105,7 @@ projectTagsRouter.patch("/:tagId", requireSessionAdminOrProjectAccess, async (re
 
   const existing = await prisma.taskTag.findFirst({
     where: { id: tagId, projectId },
+    select: { id: true },
   });
 
   if (!existing) {
@@ -106,6 +116,7 @@ projectTagsRouter.patch("/:tagId", requireSessionAdminOrProjectAccess, async (re
   const tag = await prisma.taskTag.update({
     where: { id: tagId },
     data: parsed.data,
+    select: taskTagSelect,
   });
 
   res.json(serializeTaskTag(tag));
@@ -122,6 +133,7 @@ projectTagsRouter.delete("/:tagId", requireSessionAdminOrProjectAccess, async (r
 
   const existing = await prisma.taskTag.findFirst({
     where: { id: tagId, projectId },
+    select: { id: true },
   });
 
   if (!existing) {

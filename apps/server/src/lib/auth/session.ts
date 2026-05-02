@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 import { sessionCookieName } from "../constants.js";
 import { prisma } from "../prisma.js";
+import { userSelect } from "../../routes/users/lib/userRelations.js";
 
 const sessionTokenTtl = "7d";
 
@@ -79,7 +80,7 @@ export async function requireSessionUser(req: express.Request, res: express.Resp
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { projects: true },
+    select: userSelect,
   });
 
   if (!user) {

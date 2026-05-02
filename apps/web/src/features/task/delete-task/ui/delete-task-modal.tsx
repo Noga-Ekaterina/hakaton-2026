@@ -1,11 +1,11 @@
-import type { Task } from "@/entities/task";
+import type { TaskListItem } from "@/entities/task";
 import { Button } from "@/shared/ui/button";
 import { Modal } from "@/shared/ui/modal";
 import { useDeleteTask } from "../model/use-delete-task";
 
 type DeleteTaskModalProps = {
   open: boolean;
-  task: Task | null;
+  task: TaskListItem | null;
   onClose: () => void;
   event?: () => void;
 };

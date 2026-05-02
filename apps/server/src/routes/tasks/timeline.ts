@@ -17,11 +17,11 @@ taskTimelineRouter.get("/:id/timeline", requireSessionAdminOrTaskProjectAccess, 
   const [comments, events] = await Promise.all([
     prisma.taskComment.findMany({
       where: { taskId },
-      include: { author: true },
+      include: { author: { select: { id: true, name: true } } },
     }),
     prisma.taskEvent.findMany({
       where: { taskId },
-      include: { actor: true },
+      include: { actor: { select: { id: true, name: true } } },
     }),
   ]);
 

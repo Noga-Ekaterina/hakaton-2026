@@ -1,4 +1,4 @@
-import type { Task, TaskPriority } from "./types";
+import type { TaskListItem, TaskPriority } from "./types";
 
 export type TaskFilters = {
   priority: TaskPriority | "";
@@ -6,7 +6,7 @@ export type TaskFilters = {
   tagIds: number[];
 };
 
-export function filterTasks(tasks: Task[] | undefined, filters: TaskFilters) {
+export function filterTasks(tasks: TaskListItem[] | undefined, filters: TaskFilters) {
   return (tasks ?? []).filter((task) => {
     if (filters.priority && task.priority !== filters.priority) {
       return false;

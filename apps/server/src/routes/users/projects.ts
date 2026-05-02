@@ -4,7 +4,7 @@ import { prisma } from "../../lib/prisma.js";
 import { isSessionAdmin } from "../../middleware/auth.js";
 import { parseProjectIdsFromBody } from "./lib/projectIds.js";
 import { serializeUser } from "./lib/serialize.js";
-import { userRelations } from "./lib/userRelations.js";
+import { userSelect } from "./lib/userRelations.js";
 
 export const userProjectsRouter = Router();
 
@@ -18,7 +18,7 @@ userProjectsRouter.post("/:id/assign-project", isSessionAdmin, async (req, res) 
 
   const existing = await prisma.user.findUnique({
     where: { id: userId },
-    include: userRelations,
+    select: { id: true },
   });
 
   if (!existing) {
@@ -50,7 +50,7 @@ userProjectsRouter.post("/:id/assign-project", isSessionAdmin, async (req, res) 
         connect: projectIds.map((id) => ({ id })),
       },
     },
-    include: userRelations,
+    select: userSelect,
   });
 
   res.json(serializeUser(updated));
@@ -72,7 +72,7 @@ userProjectsRouter.delete("/:id/projects/:projectId", isSessionAdmin, async (req
 
   const existing = await prisma.user.findUnique({
     where: { id: userId },
-    include: userRelations,
+    select: { projects: { select: { id: true } } },
   });
 
   if (!existing) {
@@ -94,7 +94,7 @@ userProjectsRouter.delete("/:id/projects/:projectId", isSessionAdmin, async (req
         disconnect: { id: projectId },
       },
     },
-    include: userRelations,
+    select: userSelect,
   });
 
   res.json(serializeUser(updated));

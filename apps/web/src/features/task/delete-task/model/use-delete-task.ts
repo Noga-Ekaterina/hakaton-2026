@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useDeleteTaskMutation } from "@/app/store/api/tasks-api";
-import type { Task } from "@/entities/task";
+import type { TaskListItem } from "@/entities/task";
 
 type UseDeleteTaskParams = {
-  task: Task | null;
+  task: Pick<TaskListItem, "id" | "projectId"> | null;
   onClose: () => void;
   event?: () => void;
 };

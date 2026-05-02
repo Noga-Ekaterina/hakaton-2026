@@ -11,9 +11,15 @@ export const projectsRouter = Router();
 
 projectsRouter.use("/:projectId/tags", projectTagsRouter);
 
+const projectSelect = {
+  id: true,
+  name: true,
+} as const;
+
 projectsRouter.get("/", requireSessionAuth, async (_req, res) => {
   const projects = await prisma.project.findMany({
     orderBy: { id: "asc" },
+    select: projectSelect,
   });
 
   res.json(projects.map(serializeProject));
@@ -29,6 +35,7 @@ projectsRouter.post("/", isSessionAdmin, async (req, res) => {
 
   const project = await prisma.project.create({
     data: { name: parsed.data.name },
+    select: projectSelect,
   });
 
   res.status(201).json(serializeProject(project));
@@ -44,6 +51,7 @@ projectsRouter.patch("/:id", isSessionAdmin, async (req, res) => {
 
   const existing = await prisma.project.findUnique({
     where: { id: projectId },
+    select: { id: true },
   });
 
   if (!existing) {
@@ -61,6 +69,7 @@ projectsRouter.patch("/:id", isSessionAdmin, async (req, res) => {
   const project = await prisma.project.update({
     where: { id: projectId },
     data: { name: parsed.data.name },
+    select: projectSelect,
   });
 
   res.json(serializeProject(project));

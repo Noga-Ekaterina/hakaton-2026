@@ -1,14 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import type { TaskChange } from "@hakaton/shared";
+import { taskDetailSelect } from "./taskRelations.js";
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
-  include: {
-    author: true;
-    assignee: true;
-    project: true;
-    images: true;
-    tags: true;
-  };
+  select: typeof taskDetailSelect;
 }>;
 
 function addChange(changes: TaskChange[], field: string, oldValue: unknown, newValue: unknown) {

@@ -1,5 +1,5 @@
 import { TaskCard } from "@/entities/task";
-import type { Task, TaskStatus } from "@/entities/task";
+import type { TaskListItem, TaskStatus } from "@/entities/task";
 import { TaskActions } from "@/features/task/task-actions";
 import { useTaskColumnDrop } from "../model/use-task-column-drop";
 
@@ -8,9 +8,9 @@ type TaskColumnProps = {
   description: string;
   statuses: TaskStatus[];
   accent: string;
-  tasks: Task[];
+  tasks: TaskListItem[];
   onMoveTask: (taskId: number, status: TaskStatus) => void;
-  onDeleteTask: (task: Task) => void;
+  onDeleteTask: (task: TaskListItem) => void;
 };
 
 export function TaskColumn({ title, description, statuses, accent, tasks, onMoveTask, onDeleteTask }: TaskColumnProps) {

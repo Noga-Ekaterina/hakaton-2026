@@ -91,6 +91,22 @@ export const taskSchema = z.object({
   tags: z.array(taskTagSchema),
 });
 export type Task = z.infer<typeof taskSchema>;
+export const taskListItemSchema = taskSchema.pick({
+  id: true,
+  title: true,
+  shortDescription: true,
+  status: true,
+  priority: true,
+  createdAt: true,
+  authorId: true,
+  authorName: true,
+  assigneeId: true,
+  assigneeName: true,
+  projectId: true,
+  images: true,
+  tags: true,
+});
+export type TaskListItem = z.infer<typeof taskListItemSchema>;
 
 function normalizeTagIds(value: unknown) {
   if (typeof value === "undefined" || value === null || value === "") {

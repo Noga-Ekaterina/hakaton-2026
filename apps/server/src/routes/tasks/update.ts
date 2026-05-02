@@ -14,7 +14,7 @@ import {
   validateTaskPhotoFiles,
 } from "./lib/photoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
-import { taskRelations } from "./lib/taskRelations.js";
+import { taskDetailSelect } from "./lib/taskRelations.js";
 import { getProjectTagsByIds, toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";
 
 export const taskUpdateRouter = Router();
@@ -29,7 +29,7 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
 
   const existing = await prisma.task.findUnique({
     where: { id: taskId },
-    include: taskRelations,
+    select: taskDetailSelect,
   });
 
   if (!existing) {
@@ -131,7 +131,7 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
             }
           : undefined,
       },
-      include: taskRelations,
+      select: taskDetailSelect,
     });
 
     if (changes.length > 0) {

@@ -4,6 +4,7 @@ export type {
   TaskComment,
   TaskEvent,
   TaskEventType,
+  TaskListItem,
   TaskPriority,
   TaskStatus,
   TaskTag,

@@ -8,7 +8,7 @@ import { prisma } from "../../lib/prisma.js";
 import { isSessionAdmin } from "../../middleware/auth.js";
 import { normalizeProjectIds } from "./lib/projectIds.js";
 import { serializeUser } from "./lib/serialize.js";
-import { userRelations } from "./lib/userRelations.js";
+import { userSelect } from "./lib/userRelations.js";
 
 export const userRegisterRouter = Router();
 
@@ -22,6 +22,7 @@ userRegisterRouter.post("/register", isSessionAdmin, async (req, res) => {
 
   const existing = await prisma.user.findUnique({
     where: { email: parsed.data.email },
+    select: { id: true },
   });
 
   if (existing) {
@@ -64,7 +65,7 @@ userRegisterRouter.post("/register", isSessionAdmin, async (req, res) => {
               connect: projectIds.map((id) => ({ id })),
             },
     },
-    include: userRelations,
+    select: userSelect,
   });
 
   try {
