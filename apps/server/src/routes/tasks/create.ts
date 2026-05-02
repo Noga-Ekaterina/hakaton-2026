@@ -93,6 +93,13 @@ taskCreateRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) 
     },
   });
 
+  await prisma.taskNotificationAssignee.create({
+    data: {
+      taskId: task.id,
+      assigneeId: task.assigneeId,
+    },
+  });
+
   const photoNames = await saveTaskPhotoFiles(task.id, photoFiles);
 
   if (photoNames && photoNames.length > 0) {

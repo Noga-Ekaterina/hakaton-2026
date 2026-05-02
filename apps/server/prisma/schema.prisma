@@ -35,50 +35,52 @@ enum TaskEventType {
 }
 
 model Project {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   users     User[]
   tasks     Task[]
   tags      TaskTag[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  name           String
-  email          String   @unique
-  password       String
-  role           UserRole @default(USER)
-  projects       Project[]
-  authoredTasks  Task[] @relation("TaskAuthor")
-  assignedTasks  Task[] @relation("TaskAssignee")
-  taskComments   TaskComment[] @relation("TaskCommentAuthor")
-  taskEvents     TaskEvent[] @relation("TaskEventActor")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                    Int                        @id @default(autoincrement())
+  name                  String
+  email                 String                     @unique
+  password              String
+  role                  UserRole                   @default(USER)
+  projects              Project[]
+  authoredTasks         Task[]                     @relation("TaskAuthor")
+  assignedTasks         Task[]                     @relation("TaskAssignee")
+  taskComments          TaskComment[]              @relation("TaskCommentAuthor")
+  taskEvents            TaskEvent[]                @relation("TaskEventActor")
+  notificationsAssignee TaskNotificationAssignee[] @relation("TaskNotificationAssignee")
+  createdAt             DateTime                   @default(now())
+  updatedAt             DateTime                   @updatedAt
 }
 
 model Task {
-  id               Int           @id @default(autoincrement())
+  id               Int                       @id @default(autoincrement())
   title            String
-  description      String        @db.Text
-  shortDescription  String        @db.Text
-  status           TaskStatus    @default(NEW)
-  priority         TaskPriority   @default(MEDIUM)
+  description      String                    @db.Text
+  shortDescription String                    @db.Text
+  status           TaskStatus                @default(NEW)
+  priority         TaskPriority              @default(MEDIUM)
   storyPoints      Int?
   authorId         Int
   assigneeId       Int
   projectId        Int
   tags             TaskTag[]
-  author           User          @relation("TaskAuthor", fields: [authorId], references: [id], onDelete: Restrict)
-  assignee         User          @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
-  project          Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author           User                      @relation("TaskAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  assignee         User                      @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
+  project          Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   images           TaskImage[]
   comments         TaskComment[]
   events           TaskEvent[]
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  notification     TaskNotificationAssignee?
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
 
   @@index([authorId])
   @@index([assigneeId])
@@ -138,4 +140,17 @@ model TaskTag {
   updatedAt DateTime @updatedAt
 
   @@index([projectId])
+}
+
+model TaskNotificationAssignee {
+  id         Int      @id @default(autoincrement())
+  assigneeId Int
+  taskId     Int      @unique
+  assignee   User     @relation("TaskNotificationAssignee", fields: [assigneeId], references: [id], onDelete: Cascade)
+  task       Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([assigneeId, createdAt])
+  @@index([taskId, createdAt])
 }

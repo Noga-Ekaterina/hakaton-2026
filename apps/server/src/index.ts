@@ -1,10 +1,13 @@
 import { createApp } from "./app.js";
 import { prisma } from "./lib/prisma.js";
+import { startTaskNotificationWorker } from "./workers/taskNotifications.js";
 
 const port = Number(process.env.PORT ?? 4000);
 const app = createApp();
+const stopTaskNotificationWorker = startTaskNotificationWorker();
 
 async function shutdown() {
+  stopTaskNotificationWorker();
   await prisma.$disconnect();
 }
 

@@ -8,10 +8,24 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
+const webUrl = process.env.WEB_URL ?? "http://localhost:5173";
+
 type SendUserCreatedEmailParams = {
   name: string;
   email: string;
   password: string;
+};
+
+type SendTaskAssigneeNotificationEmailParams = {
+  email: string;
+  tasks: {
+    id: number;
+    title: string;
+    project:{
+      id: number;
+      name: string;
+    }
+  }[];
 };
 
 function escapeHtml(value: string) {
@@ -24,7 +38,6 @@ function escapeHtml(value: string) {
 }
 
 function getLoginUrl() {
-  const webUrl = process.env.WEB_URL ?? "http://localhost:5173";
   return `${webUrl.replace(/\/$/, "")}/login`;
 }
 
@@ -65,6 +78,21 @@ export async function sendUserCreatedEmail({ name, email, password }: SendUserCr
           </a>
         </p>
         <p style="color: #475569; font-size: 14px;">Если кнопка не открывается, перейдите по ссылке: ${safeLoginUrl}</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendTaskAssigneeNotificationEmail({ email, tasks }: SendTaskAssigneeNotificationEmailParams) {
+  await transporter.sendMail({
+    from: process.env.GMAIL_USER,
+    to: email,
+    subject: `У вас ${tasks.length} новых задач в QITask`,
+    text: tasks.map((task) => `- ${task.title}`).join("\n"),
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5;">
+        <h2 style="margin: 0 0 16px;">У вас ${tasks.length} новых задач в QITask</h2>
+        ${tasks.map((task) => `<p style="margin: 0 0 8px;">${escapeHtml(task.title)} (<a href="${webUrl}/projects/${task.project.id}" style="color: #2563eb; text-decoration: underline;">${escapeHtml(task.project.name)}</a>)</p>`).join("")}
       </div>
     `,
   });
