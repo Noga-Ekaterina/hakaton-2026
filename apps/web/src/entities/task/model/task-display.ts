@@ -19,6 +19,8 @@ export function getTaskFieldLabel(field: string) {
     assigneeId: "Исполнитель",
     storyPoints: "Story points",
     images: "Фото",
+    tagsAdded: "Добавлены теги",
+    tagsRemoved: "Удалены теги",
   };
 
   return labels[field] ?? field;

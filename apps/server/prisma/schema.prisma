@@ -31,6 +31,7 @@ enum TaskEventType {
   TASK_UPDATED
   STATUS_UPDATED
   STORY_POINTS_UPDATED
+  TAGS_UPDATED
 }
 
 model Project {

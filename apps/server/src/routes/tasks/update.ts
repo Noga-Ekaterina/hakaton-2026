@@ -5,7 +5,7 @@ import { updateTaskServerSchema } from "@hakaton/shared";
 import { prisma } from "../../lib/prisma.js";
 import { buildShortDescription, serializeTask } from "./lib/serialize.js";
 import { requireSessionAdminOrTaskProjectAccess } from "../../middleware/projectAccess.js";
-import { buildSingleChange, buildTaskUpdateChanges } from "./lib/changes.js";
+import { buildSingleChange, buildTaskTagsChange, buildTaskUpdateChanges } from "./lib/changes.js";
 import {
   deleteTaskPhotoFiles,
   getTaskPhotoFiles,
@@ -15,7 +15,7 @@ import {
 } from "./lib/photoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
 import { taskRelations } from "./lib/taskRelations.js";
-import { toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";
+import { getProjectTagsByIds, toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";
 
 export const taskUpdateRouter = Router();
 
@@ -61,6 +61,8 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
     }
   }
 
+  let requestedTags: Awaited<ReturnType<typeof getProjectTagsByIds>> | null = null;
+
   if (parsed.data.tagIds) {
     const hasValidTags = await validateProjectTagIds(prisma, existing.projectId, parsed.data.tagIds);
 
@@ -68,6 +70,8 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
       res.status(400).json({ message: "Некорректные теги задачи." });
       return;
     }
+
+    requestedTags = await getProjectTagsByIds(prisma, existing.projectId, parsed.data.tagIds);
   }
 
   const keepImageIds = parseKeepImageIds(req.body.keepImageIds);
@@ -78,6 +82,7 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
   const changes = buildTaskUpdateChanges(existing, parsed.data);
   const statusChange = buildSingleChange("status", existing.status, parsed.data.status);
   const storyPointsChange = buildSingleChange("storyPoints", existing.storyPoints, parsed.data.storyPoints);
+  const tagsChange = requestedTags ? buildTaskTagsChange(existing.tags, requestedTags) : null;
   const photoNames = await saveTaskPhotoFiles(taskId, photoFiles);
 
   if (imagesToDelete.length > 0 || (photoNames && photoNames.length > 0)) {
@@ -158,6 +163,17 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
           actorId: getSessionUserId(res),
           type: "STORY_POINTS_UPDATED",
           changes: [storyPointsChange] as Prisma.InputJsonValue,
+        },
+      });
+    }
+
+    if (tagsChange && tagsChange.length > 0) {
+      await tx.taskEvent.create({
+        data: {
+          taskId,
+          actorId: getSessionUserId(res),
+          type: "TAGS_UPDATED",
+          changes: tagsChange as Prisma.InputJsonValue,
         },
       });
     }

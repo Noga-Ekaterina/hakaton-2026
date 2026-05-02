@@ -18,7 +18,7 @@ export const taskTagSchema = z.object({
 });
 export type TaskTag = z.infer<typeof taskTagSchema>;
 
-export const taskEventTypeSchema = z.enum(["TASK_CREATED", "TASK_UPDATED", "STATUS_UPDATED", "STORY_POINTS_UPDATED"]);
+export const taskEventTypeSchema = z.enum(["TASK_CREATED", "TASK_UPDATED", "STATUS_UPDATED", "STORY_POINTS_UPDATED", "TAGS_UPDATED"]);
 export type TaskEventType = z.infer<typeof taskEventTypeSchema>;
 
 export const taskTimelineUserSchema = z.object({

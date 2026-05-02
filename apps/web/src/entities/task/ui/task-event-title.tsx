@@ -7,6 +7,7 @@ function getEventAction(type: TaskEventType) {
     TASK_UPDATED: "изменил(а) задачу",
     STATUS_UPDATED: "изменил(а) статус",
     STORY_POINTS_UPDATED: "изменил(а) story points",
+    TAGS_UPDATED: "изменил(а) теги",
   };
 
   return labels[type];

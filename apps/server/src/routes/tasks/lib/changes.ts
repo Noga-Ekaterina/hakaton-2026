@@ -27,6 +27,12 @@ function areNumberArraysEqual(left: number[], right: number[]) {
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
+type TaskTagChangeItem = {
+  id: number;
+  name: string;
+  color: string;
+};
+
 export function buildTaskUpdateChanges(
   existing: TaskWithRelations,
   data: {
@@ -46,16 +52,32 @@ export function buildTaskUpdateChanges(
   addChange(changes, "priority", existing.priority, data.priority);
   addChange(changes, "assigneeId", existing.assigneeId, data.assigneeId);
 
-  if (data.tagIds) {
-    const oldTagIds = existing.tags.map((tag) => tag.id).sort((left, right) => left - right);
-    const newTagIds = [...data.tagIds].sort((left, right) => left - right);
+  return changes.filter((change) => typeof change.newValue !== "undefined");
+}
 
-    if (!areNumberArraysEqual(oldTagIds, newTagIds)) {
-      changes.push({ field: "tagIds", oldValue: oldTagIds, newValue: newTagIds });
-    }
+export function buildTaskTagsChange(existingTags: TaskTagChangeItem[], newTags: TaskTagChangeItem[]) {
+  const oldTagIds = existingTags.map((tag) => tag.id).sort((left, right) => left - right);
+  const newTagIds = newTags.map((tag) => tag.id).sort((left, right) => left - right);
+
+  if (areNumberArraysEqual(oldTagIds, newTagIds)) {
+    return null;
   }
 
-  return changes.filter((change) => typeof change.newValue !== "undefined");
+  const oldTagIdSet = new Set(existingTags.map((tag) => tag.id));
+  const newTagIdSet = new Set(newTags.map((tag) => tag.id));
+  const addedTags = newTags.filter((tag) => !oldTagIdSet.has(tag.id));
+  const removedTags = existingTags.filter((tag) => !newTagIdSet.has(tag.id));
+  const changes: TaskChange[] = [];
+
+  if (addedTags.length > 0) {
+    changes.push({ field: "tagsAdded", oldValue: [], newValue: addedTags });
+  }
+
+  if (removedTags.length > 0) {
+    changes.push({ field: "tagsRemoved", oldValue: removedTags, newValue: [] });
+  }
+
+  return changes;
 }
 
 export function buildSingleChange(field: string, oldValue: unknown, newValue: unknown) {
