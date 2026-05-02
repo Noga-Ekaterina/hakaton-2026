@@ -8,6 +8,7 @@ import { requireSessionAdminOrProjectAccess } from "../../middleware/projectAcce
 import { getTaskPhotoFiles, saveTaskPhotoFiles, validateTaskPhotoFiles } from "./lib/photoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
 import { taskRelations } from "./lib/taskRelations.js";
+import { toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";
 
 export const taskCreateRouter = Router();
 
@@ -57,6 +58,13 @@ taskCreateRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) 
     return;
   }
 
+  const hasValidTags = await validateProjectTagIds(prisma, projectId, parsedBody.data.tagIds);
+
+  if (!hasValidTags) {
+    res.status(400).json({ message: "Некорректные теги задачи." });
+    return;
+  }
+
   const task = await prisma.task.create({
     data: {
       title: parsedBody.data.title,
@@ -67,6 +75,9 @@ taskCreateRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) 
       assigneeId,
       projectId,
       status: TaskStatus.NEW,
+      tags: {
+        connect: toTaskTagConnections(parsedBody.data.tagIds),
+      },
     },
     include: taskRelations,
   });

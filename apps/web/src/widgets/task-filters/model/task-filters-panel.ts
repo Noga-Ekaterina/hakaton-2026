@@ -33,11 +33,21 @@ export function useTaskFiltersPanel() {
     setSearchParams(nextSearchParams, { replace: true });
   };
 
+  const updateTagFilter = (tagIds: number[]) => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    nextSearchParams.delete(taskFilterParamNames.tagIds);
+    tagIds.forEach((tagId) => nextSearchParams.append(taskFilterParamNames.tagIds, String(tagId)));
+
+    setSearchParams(nextSearchParams, { replace: true });
+  };
+
   const clearFilters = () => {
     const nextSearchParams = new URLSearchParams(searchParams);
 
     nextSearchParams.delete(taskFilterParamNames.priority);
     nextSearchParams.delete(taskFilterParamNames.assigneeId);
+    nextSearchParams.delete(taskFilterParamNames.tagIds);
 
     setSearchParams(nextSearchParams, { replace: true });
   };
@@ -45,10 +55,12 @@ export function useTaskFiltersPanel() {
   return {
     filters,
     assigneeOptions: meta?.users ?? [],
+    tagOptions: meta?.tags ?? [],
     priorityOptions,
     priorityLabels,
     hasActiveFilters: hasActiveTaskFilters(filters),
     updateFilter,
+    updateTagFilter,
     clearFilters,
   };
 }

@@ -1,8 +1,9 @@
 export { TaskCard } from "./ui/task-card";
-export { TaskBadge, TaskPriorityBadge, TaskStatusBadge } from "./ui/task-badge";
+export { TaskBadge, TaskPriorityBadge, TaskStatusBadge, TaskTagBadge } from "./ui/task-badge";
+export { TaskTagSelect } from "./ui/task-tag-select";
 export { TaskChangeLine } from "./ui/task-change";
 export { TaskEventTitle } from "./ui/task-event-title";
-export type { Task, TaskChange, TaskComment, TaskEvent, TaskEventType, TaskPriority, TaskStatus, TaskTimelineItem } from "./model/types";
+export type { Task, TaskChange, TaskComment, TaskEvent, TaskEventType, TaskPriority, TaskStatus, TaskTag, TaskTimelineItem } from "./model/types";
 export { filterTasks } from "./model/task-filters";
 export type { TaskFilters } from "./model/task-filters";
 export { TASK_DND_TYPE } from "./model/dnd";

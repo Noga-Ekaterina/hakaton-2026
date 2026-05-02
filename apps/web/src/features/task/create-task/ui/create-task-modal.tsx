@@ -1,3 +1,4 @@
+import { TaskTagSelect } from "@/entities/task";
 import { UserSelect } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -141,6 +142,15 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
               })}
             />
             {errors.assigneeId ? <p className="text-sm text-rose-600">{errors.assigneeId.message}</p> : null}
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <Label>Теги</Label>
+            <TaskTagSelect
+              tags={meta?.tags ?? []}
+              value={watch("tagIds")}
+              onChange={(tagIds) => setValue("tagIds", tagIds, { shouldDirty: true, shouldValidate: true })}
+            />
           </div>
         </div>
       </form>

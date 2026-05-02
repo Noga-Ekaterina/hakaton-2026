@@ -5,8 +5,11 @@ import { prisma } from "../../lib/prisma.js";
 import { serializeProject } from "./lib/serialize.js";
 import { isSessionAdmin } from "../../middleware/auth.js";
 import { requireSessionAuth } from "../../middleware/auth.js";
+import { projectTagsRouter } from "./tags.js";
 
 export const projectsRouter = Router();
+
+projectsRouter.use("/:projectId/tags", projectTagsRouter);
 
 projectsRouter.get("/", requireSessionAuth, async (_req, res) => {
   const projects = await prisma.project.findMany({

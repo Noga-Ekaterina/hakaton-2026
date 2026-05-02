@@ -7,6 +7,7 @@ export type EditableTaskValues = {
   status: TaskStatus;
   assigneeId: number;
   storyPoints: string;
+  tagIds: number[];
   keepImageIds: number[];
   photos: File[];
 };
@@ -18,6 +19,7 @@ export type UpdateTaskFormInput = {
   status: TaskStatus;
   assigneeId: number;
   storyPoints: number | null;
+  tagIds: number[];
   keepImageIds: number[];
   photos: File[];
 };
@@ -30,6 +32,7 @@ export function getEditableTaskValues(task: Task): EditableTaskValues {
     status: task.status,
     assigneeId: task.assigneeId,
     storyPoints: task.storyPoints === null ? "" : String(task.storyPoints),
+    tagIds: task.tags.map((tag) => tag.id),
     keepImageIds: task.images.map((image) => image.id),
     photos: [],
   };
@@ -49,6 +52,7 @@ export function buildUpdateTaskInput(values: EditableTaskValues): UpdateTaskForm
     status: values.status,
     assigneeId: values.assigneeId,
     storyPoints: parseTaskStoryPoints(values.storyPoints),
+    tagIds: values.tagIds,
     keepImageIds: values.keepImageIds,
     photos: values.photos,
   };

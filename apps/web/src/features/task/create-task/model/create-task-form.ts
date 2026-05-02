@@ -7,6 +7,7 @@ export function getDefaultCreateTaskValues(meta?: CreateTaskMeta): CreateTaskVal
     description: "",
     priority: "MEDIUM",
     assigneeId: meta?.users[0]?.id ?? 0,
+    tagIds: [],
     photos: [],
   };
 }
@@ -24,6 +25,7 @@ export function buildCreateTaskInput(values: CreateTaskValues, meta: CreateTaskM
     priority: values.priority,
     assigneeId: assignee.id,
     projectId,
+    tagIds: values.tagIds,
     photos: values.photos,
   };
 }

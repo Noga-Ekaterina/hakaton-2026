@@ -7,6 +7,7 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
     assignee: true;
     project: true;
     images: true;
+    tags: true;
   };
 }>;
 
@@ -22,6 +23,10 @@ function addChange(changes: TaskChange[], field: string, oldValue: unknown, newV
   });
 }
 
+function areNumberArraysEqual(left: number[], right: number[]) {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
 export function buildTaskUpdateChanges(
   existing: TaskWithRelations,
   data: {
@@ -31,6 +36,7 @@ export function buildTaskUpdateChanges(
     status?: string;
     assigneeId?: number;
     storyPoints?: number | null;
+    tagIds?: number[];
   },
 ) {
   const changes: TaskChange[] = [];
@@ -39,6 +45,15 @@ export function buildTaskUpdateChanges(
   addChange(changes, "description", existing.description, data.description);
   addChange(changes, "priority", existing.priority, data.priority);
   addChange(changes, "assigneeId", existing.assigneeId, data.assigneeId);
+
+  if (data.tagIds) {
+    const oldTagIds = existing.tags.map((tag) => tag.id).sort((left, right) => left - right);
+    const newTagIds = [...data.tagIds].sort((left, right) => left - right);
+
+    if (!areNumberArraysEqual(oldTagIds, newTagIds)) {
+      changes.push({ field: "tagIds", oldValue: oldTagIds, newValue: newTagIds });
+    }
+  }
 
   return changes.filter((change) => typeof change.newValue !== "undefined");
 }

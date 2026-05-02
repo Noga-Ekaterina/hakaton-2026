@@ -15,6 +15,7 @@ import {
 } from "./lib/photoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
 import { taskRelations } from "./lib/taskRelations.js";
+import { toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";
 
 export const taskUpdateRouter = Router();
 
@@ -56,6 +57,15 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
 
     if (!assignee) {
       res.status(404).json({ message: "Исполнитель не найден." });
+      return;
+    }
+  }
+
+  if (parsed.data.tagIds) {
+    const hasValidTags = await validateProjectTagIds(prisma, existing.projectId, parsed.data.tagIds);
+
+    if (!hasValidTags) {
+      res.status(400).json({ message: "Некорректные теги задачи." });
       return;
     }
   }
@@ -110,6 +120,11 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
         status: parsed.data.status as TaskStatus | undefined,
         assigneeId: parsed.data.assigneeId,
         storyPoints: parsed.data.storyPoints,
+        tags: parsed.data.tagIds
+          ? {
+              set: toTaskTagConnections(parsed.data.tagIds),
+            }
+          : undefined,
       },
       include: taskRelations,
     });

@@ -25,6 +25,12 @@ function parseProjectId(value: unknown) {
 
 // определяет projectId из разных частей запроса (query, body)
 function getRequestedProjectId(req: express.Request) {
+  const paramsProjectId = parseProjectId(req.params.projectId);
+
+  if (paramsProjectId) {
+    return paramsProjectId;
+  }
+
   const queryProjectId = parseProjectId(req.query.projectId);
 
   if (queryProjectId) {

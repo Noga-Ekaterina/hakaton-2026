@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { TASK_DND_TYPE } from "../model/dnd";
 import { getTaskImageSrc } from "../model/task-images";
 import type { Task } from "../model/types";
-import { TaskPriorityBadge } from "./task-badge";
+import { TaskPriorityBadge, TaskTagBadge } from "./task-badge";
 import { taskPath } from "@/shared/config/routes";
 
 type TaskCardProps = {
@@ -52,6 +52,9 @@ export function TaskCard({ actions, task }: TaskCardProps) {
 
         <div className="flex flex-wrap gap-2">
           <TaskPriorityBadge priority={task.priority} />
+          {task.tags.map((tag) => (
+            <TaskTagBadge key={tag.id} tag={tag} />
+          ))}
         </div>
       </div>
 

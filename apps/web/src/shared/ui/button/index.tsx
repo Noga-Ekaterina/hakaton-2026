@@ -13,16 +13,20 @@ const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
   ghost: "bg-transparent text-foreground hover:bg-primary/10",
 };
 
-export function Button({
-  asChild = false,
-  className,
-  variant = "primary",
-  ...props
-}: ButtonProps) {
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    asChild = false,
+    className,
+    variant = "primary",
+    ...props
+  },
+  ref,
+) {
   const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
+      ref={ref}
       className={cn(
         "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-50",
         variants[variant],
@@ -31,4 +35,4 @@ export function Button({
       {...props}
     />
   );
-}
+});

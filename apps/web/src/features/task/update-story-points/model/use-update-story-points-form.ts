@@ -33,6 +33,7 @@ export function useUpdateStoryPointsForm(task: Task) {
           status: task.status,
           assigneeId: task.assigneeId,
           storyPoints,
+          tagIds: task.tags.map((tag) => tag.id),
           keepImageIds: task.images.map((image) => image.id),
           photos: [],
         },

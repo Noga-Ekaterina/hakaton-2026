@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { TaskPriority, TaskStatus } from "../model/types";
+import type { TaskPriority, TaskStatus, TaskTag } from "../model/types";
 import { taskPriorityMeta, taskStatusMeta } from "../model/task-meta";
 
 type TaskBadgeProps = {
@@ -17,4 +17,15 @@ export function TaskStatusBadge({ status }: { status: TaskStatus }) {
 
 export function TaskPriorityBadge({ priority }: { priority: TaskPriority }) {
   return <TaskBadge className={taskPriorityMeta[priority].className}>{taskPriorityMeta[priority].label}</TaskBadge>;
+}
+
+export function TaskTagBadge({ tag }: { tag: TaskTag }) {
+  return (
+    <span
+      className="inline-flex shrink-0 rounded-full border px-3 py-1 text-xs font-semibold"
+      style={{ borderColor: tag.color, color: "#ffffff", backgroundColor: tag.color }}
+    >
+      {tag.name}
+    </span>
+  );
 }

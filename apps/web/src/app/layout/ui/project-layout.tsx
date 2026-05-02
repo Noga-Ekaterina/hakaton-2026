@@ -3,6 +3,7 @@ import { Link, Navigate, Outlet, useMatch } from "react-router-dom";
 import { CreateTaskModal } from "@/features/task/create-task";
 import { ProjectModal } from "@/features/project/manage-project";
 import { ProjectMembersModal } from "@/features/project/manage-project-members";
+import { ProjectTagsModal } from "@/features/project/manage-project-tags";
 import { Button } from "@/shared/ui/button";
 import { paths } from "@/shared/config/routes";
 import { ProjectNav } from "./project-nav";
@@ -13,6 +14,7 @@ export function ProjectLayout() {
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isMembersOpen, setIsMembersOpen] = useState(false);
+  const [isTagsOpen, setIsTagsOpen] = useState(false);
   const isTaskPage = Boolean(useMatch(paths.taskDetail));
   const {
     currentUser,
@@ -82,6 +84,9 @@ export function ProjectLayout() {
               <Button variant="secondary" type="button" onClick={() => setIsMembersOpen(true)}>
                 Участники ({memberCount})
               </Button>
+              <Button variant="secondary" type="button" onClick={() => setIsTagsOpen(true)}>
+                Теги
+              </Button>
               {currentUser?.role === "ADMIN" ? (
                 <>
                   <Button type="button" onClick={() => setIsRenameOpen(true)}>
@@ -106,6 +111,7 @@ export function ProjectLayout() {
 
       <CreateTaskModal open={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
       <ProjectModal open={isRenameOpen} onClose={() => setIsRenameOpen(false)} project={project} />
+      <ProjectTagsModal open={isTagsOpen} onClose={() => setIsTagsOpen(false)} project={project} />
       <ProjectMembersModal
         open={isMembersOpen}
         onClose={() => setIsMembersOpen(false)}

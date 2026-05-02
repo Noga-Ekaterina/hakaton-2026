@@ -7,6 +7,7 @@ import { prisma } from "../lib/prisma.js";
 import { toIso } from "../lib/dates.js";
 import { serializeUser } from "./users/lib/serialize.js";
 import { requireSessionAdminOrProjectAccess } from "../middleware/projectAccess.js";
+import { serializeTaskTag } from "./projects/lib/tags.js";
 
 export const metaRouter = Router();
 
@@ -18,13 +19,19 @@ metaRouter.get("/meta", requireSessionAdminOrProjectAccess, async (req, res) => 
     return;
   }
 
-  const users = await prisma.user.findMany({
-    where: {
-      OR: [{ role: UserRole.ADMIN }, { projects: { some: { id: projectId } } }],
-    },
-    orderBy: { id: "asc" },
-    include: { projects: true },
-  });
+  const [users, tags] = await Promise.all([
+    prisma.user.findMany({
+      where: {
+        OR: [{ role: UserRole.ADMIN }, { projects: { some: { id: projectId } } }],
+      },
+      orderBy: { id: "asc" },
+      include: { projects: true },
+    }),
+    prisma.taskTag.findMany({
+      where: { projectId },
+      orderBy: { id: "asc" },
+    }),
+  ]);
 
   res.json({
     users: users.map((user: (typeof users)[number]) => ({
@@ -35,5 +42,6 @@ metaRouter.get("/meta", requireSessionAdminOrProjectAccess, async (req, res) => 
     roles: ["USER", "ADMIN"] as UserRole[],
     taskStatuses: taskStatusSchema.options,
     taskPriorities: taskPrioritySchema.options,
+    tags: tags.map(serializeTaskTag),
   });
 });

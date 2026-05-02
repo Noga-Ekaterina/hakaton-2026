@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Task, TaskComment, TaskPriority, TaskStatus, TaskTimelineItem } from "@/entities/task";
+import type { Task, TaskComment, TaskPriority, TaskStatus, TaskTag, TaskTimelineItem } from "@/entities/task";
 import type { UserRole } from "@/entities/user";
 import { API_URL } from "@/shared/config/api";
 
@@ -19,6 +19,7 @@ export type CreateTaskMeta = {
   roles: UserRole[];
   taskStatuses: TaskStatus[];
   taskPriorities: TaskPriority[];
+  tags: TaskTag[];
 };
 
 export type CreateTaskInput = {
@@ -27,6 +28,7 @@ export type CreateTaskInput = {
   priority: TaskPriority;
   assigneeId: number;
   projectId: number;
+  tagIds: number[];
   photos: File[];
 };
 
@@ -37,8 +39,22 @@ export type UpdateTaskInput = {
   status: TaskStatus;
   assigneeId: number;
   storyPoints: number | null;
+  tagIds: number[];
   keepImageIds: number[];
   photos: File[];
+};
+
+export type CreateProjectTagInput = {
+  projectId: number;
+  name: string;
+  color: string;
+};
+
+export type UpdateProjectTagInput = {
+  projectId: number;
+  tagId: number;
+  name: string;
+  color: string;
 };
 
 function buildCreateTaskFormData(authorId: number, body: CreateTaskInput) {
@@ -50,6 +66,7 @@ function buildCreateTaskFormData(authorId: number, body: CreateTaskInput) {
   formData.append("priority", body.priority);
   formData.append("assigneeId", String(body.assigneeId));
   formData.append("projectId", String(body.projectId));
+  body.tagIds.forEach((tagId) => formData.append("tagIds", String(tagId)));
   body.photos.forEach((photo) => formData.append("photos", photo));
 
   return formData;
@@ -64,6 +81,11 @@ function buildUpdateTaskFormData(body: UpdateTaskInput) {
   formData.append("status", body.status);
   formData.append("assigneeId", String(body.assigneeId));
   formData.append("storyPoints", body.storyPoints === null ? "" : String(body.storyPoints));
+  if (body.tagIds.length === 0) {
+    formData.append("tagIds", "");
+  } else {
+    body.tagIds.forEach((tagId) => formData.append("tagIds", String(tagId)));
+  }
   if (body.keepImageIds.length === 0) {
     formData.append("keepImageIds", "");
   } else {
@@ -76,7 +98,7 @@ function buildUpdateTaskFormData(body: UpdateTaskInput) {
 
 export const tasksApi = createApi({
   reducerPath: "tasksApi",
-  tagTypes: ["Tasks", "TaskTimeline"],
+  tagTypes: ["Tasks", "TaskTimeline", "TaskTags", "TaskMeta"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
     credentials: "include",
@@ -99,6 +121,53 @@ export const tasksApi = createApi({
     }),
     getCreateTaskMeta: builder.query<CreateTaskMeta, number>({
       query: (projectId) => `/meta?projectId=${projectId}`,
+      providesTags: (_result, _error, projectId) => [{ type: "TaskMeta", id: projectId }],
+    }),
+    getProjectTags: builder.query<TaskTag[], number>({
+      query: (projectId) => `/projects/${projectId}/tags`,
+      providesTags: (result, _error, projectId) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "TaskTags" as const, id })),
+              { type: "TaskTags" as const, id: `PROJECT-${projectId}` },
+            ]
+          : [{ type: "TaskTags" as const, id: `PROJECT-${projectId}` }],
+    }),
+    createProjectTag: builder.mutation<TaskTag, CreateProjectTagInput>({
+      query: ({ projectId, ...body }) => ({
+        url: `/projects/${projectId}/tags`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { projectId }) => [
+        { type: "TaskTags", id: `PROJECT-${projectId}` },
+        { type: "TaskMeta", id: projectId },
+      ],
+    }),
+    updateProjectTag: builder.mutation<TaskTag, UpdateProjectTagInput>({
+      query: ({ projectId, tagId, ...body }) => ({
+        url: `/projects/${projectId}/tags/${tagId}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { projectId, tagId }) => [
+        { type: "TaskTags", id: tagId },
+        { type: "TaskTags", id: `PROJECT-${projectId}` },
+        { type: "TaskMeta", id: projectId },
+        { type: "Tasks", id: "LIST" },
+      ],
+    }),
+    deleteProjectTag: builder.mutation<void, { projectId: number; tagId: number }>({
+      query: ({ projectId, tagId }) => ({
+        url: `/projects/${projectId}/tags/${tagId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, { projectId, tagId }) => [
+        { type: "TaskTags", id: tagId },
+        { type: "TaskTags", id: `PROJECT-${projectId}` },
+        { type: "TaskMeta", id: projectId },
+        { type: "Tasks", id: "LIST" },
+      ],
     }),
     createTask: builder.mutation<Task, { authorId: number; body: CreateTaskInput }>({
       query: ({ authorId, body }) => ({
@@ -186,6 +255,10 @@ export const {
   useGetTaskQuery,
   useGetTaskTimelineQuery,
   useGetCreateTaskMetaQuery,
+  useGetProjectTagsQuery,
+  useCreateProjectTagMutation,
+  useUpdateProjectTagMutation,
+  useDeleteProjectTagMutation,
   useCreateTaskMutation,
   useUpdateTaskStatusMutation,
   useUpdateTaskMutation,

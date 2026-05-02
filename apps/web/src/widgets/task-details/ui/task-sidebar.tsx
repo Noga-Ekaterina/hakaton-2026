@@ -3,6 +3,8 @@ import type { CreateTaskMeta } from "@/app/store/api/tasks-api";
 import {
   TaskPriorityBadge,
   TaskStatusBadge,
+  TaskTagBadge,
+  TaskTagSelect,
   taskPriorityLabels,
   taskStatusLabels,
   type EditableTaskValues,
@@ -111,6 +113,26 @@ export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, 
                 />
               ) : (
                 <span className="text-sm font-semibold text-slate-900">{task.storyPoints ?? "Не указаны"}</span>
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Теги</dt>
+            <dd className="mt-2">
+              {isEditing ? (
+                <TaskTagSelect
+                  tags={meta?.tags ?? []}
+                  value={values.tagIds}
+                  onChange={(tagIds) => onValuesChange({ ...values, tagIds })}
+                />
+              ) : task.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {task.tags.map((tag) => (
+                    <TaskTagBadge key={tag.id} tag={tag} />
+                  ))}
+                </div>
+              ) : (
+                <span className="text-sm font-semibold text-slate-900">Не указаны</span>
               )}
             </dd>
           </div>

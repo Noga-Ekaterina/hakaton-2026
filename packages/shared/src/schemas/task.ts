@@ -10,6 +10,14 @@ export const taskImageSchema = z.object({
   url: z.string().min(1),
 });
 
+export const taskTagSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1).max(40),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  projectId: z.number().int().positive(),
+});
+export type TaskTag = z.infer<typeof taskTagSchema>;
+
 export const taskEventTypeSchema = z.enum(["TASK_CREATED", "TASK_UPDATED", "STATUS_UPDATED", "STORY_POINTS_UPDATED"]);
 export type TaskEventType = z.infer<typeof taskEventTypeSchema>;
 
@@ -80,14 +88,26 @@ export const taskSchema = z.object({
   assigneeName: z.string().min(1),
   projectId: z.coerce.number().int().positive(),
   images: z.array(taskImageSchema),
+  tags: z.array(taskTagSchema),
 });
 export type Task = z.infer<typeof taskSchema>;
+
+function normalizeTagIds(value: unknown) {
+  if (typeof value === "undefined" || value === null || value === "") {
+    return [];
+  }
+
+  return Array.isArray(value) ? value.filter((item) => item !== "") : [value];
+}
+
+export const taskTagIdsSchema = z.preprocess(normalizeTagIds, z.array(z.coerce.number().int().positive()));
 
 export const createTaskSchema = z.object({
   title: z.string().trim().min(3, "Название должно быть не короче 3 символов"),
   description: z.string().trim(),
   priority: taskPrioritySchema,
   assigneeId: z.coerce.number().int().positive().min(1, "Выберите исполнителя"),
+  tagIds: taskTagIdsSchema.default([]),
 });
 
 export const createTaskServerSchema = createTaskSchema.extend({
@@ -109,6 +129,12 @@ export const updateTaskServerSchema = z.object({
   status: taskStatusSchema.optional(),
   assigneeId: z.coerce.number().int().positive().optional(),
   storyPoints: nullableStoryPointsSchema.optional(),
+  tagIds: taskTagIdsSchema.optional(),
+});
+
+export const taskTagInputSchema = z.object({
+  name: z.string().trim().min(1).max(40),
+  color: z.string().trim().regex(/^#[0-9a-fA-F]{6}$/).default("#64748b"),
 });
 
 export const createTaskCommentSchema = z.object({
