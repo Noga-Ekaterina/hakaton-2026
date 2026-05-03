@@ -11,10 +11,11 @@ import { taskPath } from "@/shared/config/routes";
 
 type TaskCardProps = {
   actions?: ReactNode;
+  footer?: ReactNode;
   task: TaskListItem;
 };
 
-export function TaskCard({ actions, task }: TaskCardProps) {
+export function TaskCard({ actions, footer, task }: TaskCardProps) {
   const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
   const [{ isDragging }, dragRef] = useDrag(
     () => ({
@@ -45,7 +46,7 @@ export function TaskCard({ actions, task }: TaskCardProps) {
       <div className="">
         <div className="space-y-2 mb-2">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Задача #{task.id}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">#{task.id} · {new Date(task.createdAt).toLocaleDateString("ru-RU")}</p>
             {actions}
           </div>
           <h3 className="text-xl font-bold tracking-tight text-slate-900">
@@ -75,6 +76,7 @@ export function TaskCard({ actions, task }: TaskCardProps) {
           <dd className="mt-2 text-sm font-medium text-slate-900">{authorName}</dd>
         </div>
       </dl>
+      {footer}
       {taskImages.length > 0 ? (
         <div className="mt-4 grid grid-cols-3 gap-2">
           {taskImages.map((image) => (

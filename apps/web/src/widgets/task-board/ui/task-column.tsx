@@ -1,6 +1,7 @@
 import { TaskCard } from "@/entities/task";
 import type { TaskListItem, TaskStatus } from "@/entities/task";
 import { TaskActions } from "@/features/task/task-actions";
+import { UpdateStoryPointsForm } from "@/features/task/update-story-points";
 import { useTaskColumnDrop } from "../model/use-task-column-drop";
 
 type TaskColumnProps = {
@@ -25,7 +26,7 @@ export function TaskColumn({ title, description, statuses, accent, tasks, onMove
       }`}
     >
       <div className={`h-2 bg-gradient-to-r ${accent}`} />
-      <div className="p-5">
+      <div className="p-3">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-black tracking-tight text-slate-900 xl:text-2xl">{title}</h2>
@@ -37,7 +38,17 @@ export function TaskColumn({ title, description, statuses, accent, tasks, onMove
         <div className="mt-5 space-y-4">
           {tasks.length > 0 ? (
             tasks.map((task) => (
-              <TaskCard key={task.id} task={task} actions={<TaskActions task={task} onDeleteClick={onDeleteTask} />} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                actions={<TaskActions task={task} onDeleteClick={onDeleteTask} />}
+                footer={
+                  <div className="mt-4 rounded-2xl bg-slate-50 p-4">
+                    <h4 className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Story points</h4>
+                    <UpdateStoryPointsForm task={task} />
+                  </div>
+                }
+              />
             ))
           ) : (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-white/70 p-4 text-sm text-slate-500">

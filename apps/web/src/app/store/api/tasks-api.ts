@@ -57,6 +57,12 @@ export type UpdateProjectTagInput = {
   color: string;
 };
 
+export type UpdateTaskStoryPointsInput = {
+  id: number;
+  projectId: number;
+  storyPoints: number | null;
+};
+
 function buildCreateTaskFormData(authorId: number, body: CreateTaskInput) {
   const formData = new FormData();
 
@@ -205,6 +211,34 @@ export const tasksApi = createApi({
         { type: "TaskTimeline", id },
       ],
     }),
+    updateTaskStoryPoints: builder.mutation<Task, UpdateTaskStoryPointsInput>({
+      query: ({ id, storyPoints }) => ({
+        url: `/tasks/${id}`,
+        method: "PATCH",
+        body: { storyPoints },
+      }),
+      async onQueryStarted({ id, projectId, storyPoints }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          tasksApi.util.updateQueryData("getTasks", projectId, (draft) => {
+            const task = draft.find((item) => item.id === id);
+            if (task) {
+              task.storyPoints = storyPoints;
+            }
+          }),
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Tasks", id },
+        { type: "Tasks", id: "LIST" },
+        { type: "TaskTimeline", id },
+      ],
+    }),
     updateTask: builder.mutation<Task, { id: number; projectId: number; body: UpdateTaskInput }>({
       query: ({ id, body }) => ({
         url: `/tasks/${id}`,
@@ -261,6 +295,7 @@ export const {
   useDeleteProjectTagMutation,
   useCreateTaskMutation,
   useUpdateTaskStatusMutation,
+  useUpdateTaskStoryPointsMutation,
   useUpdateTaskMutation,
   useCreateTaskCommentMutation,
   useDeleteTaskMutation,

@@ -39,7 +39,7 @@ export function TaskBoard({ projectId }: TaskBoardProps) {
       ) : null}
 
       {tasks ? (
-        <section className="grid gap-6 md:grid-cols-3">
+        <section className="grid gap-4 lg:grid-cols-3">
           {columnConfig.map((column) => (
             <TaskColumn
               key={column.title}

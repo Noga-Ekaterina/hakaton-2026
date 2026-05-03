@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { useUpdateTaskMutation } from "@/app/store/api/tasks-api";
+import { useUpdateTaskStoryPointsMutation } from "@/app/store/api/tasks-api";
 import { parseTaskStoryPoints, type Task } from "@/entities/task";
 
-export function useUpdateStoryPointsForm(task: Task) {
-  const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
+type UpdateStoryPointsTask = Pick<Task, "id" | "projectId" | "storyPoints">;
+
+export function useUpdateStoryPointsForm(task: UpdateStoryPointsTask) {
+  const [updateTaskStoryPoints, { isLoading: isUpdating }] = useUpdateTaskStoryPointsMutation();
   const [storyPointsValue, setStoryPointsValue] = useState("");
   const [storyPointsError, setStoryPointsError] = useState<string | null>(null);
+  const initialStoryPointsValue = task.storyPoints === null ? "" : String(task.storyPoints);
+  const isStoryPointsUnchanged = storyPointsValue === initialStoryPointsValue;
 
   useEffect(() => {
-    setStoryPointsValue(task.storyPoints === null ? "" : String(task.storyPoints));
-  }, [task.storyPoints]);
+    setStoryPointsValue(initialStoryPointsValue);
+  }, [initialStoryPointsValue]);
 
   const handleSaveStoryPoints = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isStoryPointsUnchanged) {
+      return;
+    }
 
     const storyPoints = parseTaskStoryPoints(storyPointsValue);
 
@@ -23,20 +31,10 @@ export function useUpdateStoryPointsForm(task: Task) {
     }
 
     try {
-      await updateTask({
+      await updateTaskStoryPoints({
         id: task.id,
         projectId: task.projectId,
-        body: {
-          title: task.title,
-          description: task.description,
-          priority: task.priority,
-          status: task.status,
-          assigneeId: task.assigneeId,
-          storyPoints,
-          tagIds: task.tags.map((tag) => tag.id),
-          keepImageIds: task.images.map((image) => image.id),
-          photos: [],
-        },
+        storyPoints,
       }).unwrap();
       setStoryPointsError(null);
     } catch {
@@ -46,6 +44,7 @@ export function useUpdateStoryPointsForm(task: Task) {
 
   return {
     handleSaveStoryPoints,
+    isStoryPointsUnchanged,
     isUpdating,
     setStoryPointsValue,
     storyPointsError,

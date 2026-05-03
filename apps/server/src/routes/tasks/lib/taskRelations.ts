@@ -32,6 +32,7 @@ export const taskListSelect = {
   projectId: true,
   author: { select: { name: true } },
   assignee: { select: { name: true } },
+  storyPoints: true,
   images: { select: { id: true, name: true } },
   tags: { select: { id: true, name: true, color: true, projectId: true } },
 } as const;

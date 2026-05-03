@@ -105,6 +105,7 @@ export const taskListItemSchema = taskSchema.pick({
   projectId: true,
   images: true,
   tags: true,
+  storyPoints: true,
 });
 export type TaskListItem = z.infer<typeof taskListItemSchema>;
 

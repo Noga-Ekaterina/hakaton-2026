@@ -73,6 +73,7 @@ export function serializeTaskListItem(task: TaskListItemWithRelations): TaskList
     shortDescription: task.shortDescription,
     status: task.status as SharedTaskStatus,
     priority: task.priority as SharedTaskPriority,
+    storyPoints: task.storyPoints,
     createdAt: toIso(task.createdAt),
     authorId: task.authorId,
     authorName: task.author.name,
