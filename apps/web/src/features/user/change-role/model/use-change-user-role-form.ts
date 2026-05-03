@@ -18,11 +18,14 @@ export function useChangeUserRoleForm({ user, onClose }: UseChangeUserRoleFormPa
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ChangeUserRoleValues>({
     resolver: zodResolver(changeUserRoleSchema),
     defaultValues: { role: user.role },
   });
+  const selectedRole = watch("role");
 
   useEffect(() => {
     reset({ role: user.role });
@@ -44,9 +47,11 @@ export function useChangeUserRoleForm({ user, onClose }: UseChangeUserRoleFormPa
 
   return {
     register,
+    setValue,
     errors,
     submit,
     submitError,
     isPending: isSubmitting || isLoading,
+    selectedRole,
   };
 }

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { useCreateTaskMutation, useGetCreateTaskMetaQuery } from "@/app/store/api/tasks-api";
 import { useAppSelector } from "@/app/store/hooks";
+import { getUserDisplayOptions } from "@/entities/user";
 import { buildCreateTaskInput, getDefaultCreateTaskValues } from "./create-task-form";
 import { createTaskSchema, type CreateTaskValues } from "./create-task-schema";
 
@@ -19,6 +20,7 @@ export function useCreateTaskModal({ open }: UseCreateTaskModalParams) {
   const { data: meta, isLoading, isError } = useGetCreateTaskMetaQuery(projectIdNumber, { skip: !open || !hasProjectId });
   const [createTask, { isLoading: isSubmitting }] = useCreateTaskMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const assigneeOptions = useMemo(() => getUserDisplayOptions(meta?.users ?? [], currentUser?.id ?? null), [currentUser?.id, meta?.users]);
 
   const form = useForm<CreateTaskValues>({
     resolver: zodResolver(createTaskSchema),
@@ -87,6 +89,7 @@ export function useCreateTaskModal({ open }: UseCreateTaskModalParams) {
 
   return {
     meta,
+    assigneeOptions,
     register,
     setValue,
     watch,

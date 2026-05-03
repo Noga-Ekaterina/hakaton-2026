@@ -1,7 +1,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { CheckIcon, ChevronDownIcon, Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
+import { CheckIcon, Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { Button } from "@/shared/ui/button";
-import { cn } from "@/shared/lib/cn";
+import { OptionSelect } from "@/shared/ui/option-select";
 import type { TaskTag } from "../model/types";
 import { TaskTagBadge } from "./task-badge";
 
@@ -42,60 +42,21 @@ export function TaskTagSelect({
     onChange(value.filter((id) => id !== tagId));
   };
 
-  const toggleTag = (tagId: number) => {
-    if (selectedIds.has(tagId)) {
-      removeTag(tagId);
-      return;
-    }
-
-    onChange([...value, tagId]);
-  };
-
   if (tags.length === 0) {
     return <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">{emptyTagsLabel}</p>;
   }
 
   if (mode === "checkboxDropdown") {
     return (
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <Button type="button" variant="secondary" className={cn("h-11 justify-between gap-2", triggerClassName)}>
-            <span>
-              {triggerLabel} ({selectedTags.length})
-            </span>
-            <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-          </Button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content
-            align="start"
-            sideOffset={8}
-            className="z-[60] min-w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_20px_70px_rgba(15,23,42,0.18)]"
-          >
-            {tags.map((tag) => (
-              <DropdownMenu.CheckboxItem
-                key={tag.id}
-                checked={selectedIds.has(tag.id)}
-                className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 outline-none transition hover:bg-slate-50 focus:bg-slate-50"
-                onSelect={(event) => {
-                  event.preventDefault();
-                  toggleTag(tag.id);
-                }}
-              >
-                <span className="flex h-4 w-4 items-center justify-center rounded border border-slate-300 bg-white text-primary">
-                  <DropdownMenu.ItemIndicator>
-                    <CheckIcon className="h-3 w-3" aria-hidden="true" />
-                  </DropdownMenu.ItemIndicator>
-                </span>
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: tag.color }} />
-                  {tag.name}
-                </span>
-              </DropdownMenu.CheckboxItem>
-            ))}
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
+      <OptionSelect
+        selectionMode="multiple"
+        options={tags.map((tag) => ({ value: String(tag.id), label: tag.name, color: tag.color }))}
+        value={value.map(String)}
+        onChange={(tagIds) => onChange(tagIds.map(Number))}
+        emptyLabel={emptyTagsLabel}
+        triggerClassName={triggerClassName}
+        triggerLabel={triggerLabel}
+      />
     );
   }
 

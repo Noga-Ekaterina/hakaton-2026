@@ -1,4 +1,6 @@
 import type { KeyboardEvent, ReactNode } from "react";
+import { useAppSelector } from "@/app/store/hooks";
+import { getUserDisplayName } from "../model/user-display";
 import type { User } from "../model/types";
 
 const roleMeta: Record<User["role"], { label: string; className: string }> = {
@@ -19,8 +21,10 @@ type UserCardProps = {
 };
 
 export function UserCard({ user, children, onClick }: UserCardProps) {
+  const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
   const role = roleMeta[user.role];
   const projects = user.projects ?? [];
+  const userName = getUserDisplayName(user, currentUserId);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (!onClick) {
@@ -51,7 +55,7 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
       </div>
 
       <div>
-        <h3 className="mt-3 text-xl font-bold tracking-tight text-slate-950">{user.name}</h3>
+        <h3 className="mt-3 text-xl font-bold tracking-tight text-slate-950">{userName}</h3>
         <p className="mt-1 text-sm text-slate-600">{user.email}</p>
       </div>
 

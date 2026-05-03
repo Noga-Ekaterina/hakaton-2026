@@ -1,61 +1,116 @@
-import { TaskTagSelect } from "@/entities/task";
-import { Button } from "@/shared/ui/button";
-import { Label } from "@/shared/ui/label";
-import { UserSelect } from "@/entities/user";
+import { OptionSelect } from "@/shared/ui/option-select";
 import { useTaskFiltersPanel } from "../model";
+import { TaskDateFilter } from "./task-date-filter";
+import { TaskFilterAddMenu } from "./task-filter-add-menu";
+import { TaskFilterField } from "./task-filter-field";
 
 export function TaskFiltersPanel() {
-  const { filters, assigneeOptions, tagOptions, priorityOptions, priorityLabels, updateFilter, updateTagFilter, clearFilters } =
-    useTaskFiltersPanel();
+  const {
+    filters,
+    renderedFilters,
+    menuFilters,
+    assigneeOptions,
+    authorOptions,
+    tagOptions,
+    priorityOptions,
+    hasActiveFilters,
+    updateFilter,
+    updateArrayFilter,
+    updateDateFilter,
+    updateVisibleDateFilter,
+    clearDateFilters,
+    removeFilter,
+    resetFilters,
+  } = useTaskFiltersPanel();
 
   return (
-    <>
-      <div className=" grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 items-end">
-        <div className="space-y-2">
-          <Label htmlFor="task-filter-priority">Приоритет</Label>
-          <select
+    <div className="flex w-full flex-wrap items-end gap-4 lg:w-[70%]">
+      <TaskFilterAddMenu
+        hiddenFilters={menuFilters}
+        filters={filters}
+        assigneeOptions={assigneeOptions}
+        authorOptions={authorOptions}
+        priorityOptions={priorityOptions}
+        tagOptions={tagOptions}
+        hasActiveFilters={hasActiveFilters}
+        onDateClear={clearDateFilters}
+        onDateChange={updateDateFilter}
+        onFilterChange={updateFilter}
+        onResetFilters={resetFilters}
+        onTagChange={(tagIds) => updateFilter("tagIds", tagIds)}
+      />
+
+      {renderedFilters.includes("priority") ? (
+        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-priority" label="Приоритет" onRemove={() => removeFilter("priority")}>
+          <OptionSelect
             id="task-filter-priority"
+            selectionMode="multiple"
             value={filters.priority}
-            onChange={(event) => updateFilter("priority", event.target.value)}
-            className="flex h-11 w-full rounded-2xl border border-border bg-white px-4 py-2 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="">Все приоритеты</option>
-            {priorityOptions.map((priority) => (
-              <option key={priority} value={priority}>
-                {priorityLabels[priority]}
-              </option>
-            ))}
-          </select>
-        </div>
+            onChange={(value) => updateArrayFilter("priority", value)}
+            options={priorityOptions}
+            emptyLabel="Все приоритеты"
+            triggerLabel="Приоритет"
+            triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+          />
+        </TaskFilterField>
+      ) : null}
 
-        <div className="space-y-2">
-          <Label htmlFor="task-filter-assignee">Исполнитель</Label>
-          <UserSelect
+      {renderedFilters.includes("assignee") ? (
+        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-assignee" label="Исполнитель" onRemove={() => removeFilter("assignee")}>
+          <OptionSelect
             id="task-filter-assignee"
-            users={assigneeOptions}
+            selectionMode="multiple"
+            options={assigneeOptions.map((user) => ({ value: String(user.id), label: user.name }))}
             emptyLabel="Все исполнители"
-            value={filters.assigneeId}
-            onChange={(event) => updateFilter("assigneeId", event.target.value)}
-            className="flex h-11 w-full rounded-2xl border border-border bg-white px-4 py-2 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            value={filters.assigneeIds}
+            onChange={(value) => updateArrayFilter("assignee", value)}
+            triggerLabel="Исполнитель"
+            triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
           />
-        </div>
+        </TaskFilterField>
+      ) : null}
 
-        <div className="space-y-2">
-          <Label>Теги</Label>
-          <TaskTagSelect
-            tags={tagOptions}
-            value={filters.tagIds}
-            onChange={updateTagFilter}
-            emptyTagsLabel="В проекте пока нет тегов."
-            mode="checkboxDropdown"
-            triggerClassName="w-full rounded-2xl border-border bg-white px-4 py-2 text-foreground shadow-sm hover:bg-white focus-visible:ring-primary/20"
-            triggerLabel="Теги"
+      {renderedFilters.includes("author") ? (
+        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-author" label="Автор" onRemove={() => removeFilter("author")}>
+          <OptionSelect
+            id="task-filter-author"
+            selectionMode="multiple"
+            options={authorOptions.map((user) => ({ value: String(user.id), label: user.name }))}
+            emptyLabel="Все авторы"
+            value={filters.authorIds}
+            onChange={(value) => updateArrayFilter("author", value)}
+            triggerLabel="Автор"
+            triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
           />
-        </div>
-        <Button type="button" variant="secondary" onClick={clearFilters} className="h-11 rounded-2xl">
-          Сбросить фильтры
-        </Button>
-      </div>
-    </>
+        </TaskFilterField>
+      ) : null}
+
+      {renderedFilters.includes("tags") ? (
+        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-tags" label="Теги" onRemove={() => removeFilter("tags")}>
+          <OptionSelect
+            id="task-filter-tags"
+            selectionMode="multiple"
+            options={tagOptions.map((tag) => ({ value: String(tag.id), label: tag.name, color: tag.color }))}
+            value={filters.tagIds.map(String)}
+            onChange={(tagIds) => updateArrayFilter("tags", tagIds.map(Number))}
+            emptyLabel="Все теги"
+            triggerLabel="Теги"
+            triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+          />
+        </TaskFilterField>
+      ) : null}
+
+      {renderedFilters.includes("date") ? (
+        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-date" label="Дата" onRemove={() => removeFilter("date")}>
+          <TaskDateFilter
+            createdFrom={filters.createdFrom}
+            createdTo={filters.createdTo}
+            hideLabel
+            onChange={updateVisibleDateFilter}
+            onClear={() => removeFilter("date")}
+          />
+        </TaskFilterField>
+      ) : null}
+    </div>
   );
 }

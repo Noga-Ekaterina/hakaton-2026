@@ -1,21 +1,25 @@
 import { Link } from "react-router-dom";
+import { useMemo } from "react";
 import type { CreateTaskMeta } from "@/app/store/api/tasks-api";
+import { useAppSelector } from "@/app/store/hooks";
 import {
   TaskPriorityBadge,
   TaskStatusBadge,
   TaskTagBadge,
   TaskTagSelect,
-  taskPriorityLabels,
-  taskStatusLabels,
+  taskPriorityMeta,
+  taskStatusMeta,
   type EditableTaskValues,
   type Task,
   type TaskPriority,
   type TaskStatus,
 } from "@/entities/task";
+import { getUserDisplayName, getUserDisplayOptions } from "@/entities/user";
 import { UpdateStoryPointsForm } from "@/features/task/update-story-points";
 import { projectPath } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
+import { OptionSelect } from "@/shared/ui/option-select";
 
 type TaskSidebarProps = {
   isEditing: boolean;
@@ -27,6 +31,11 @@ type TaskSidebarProps = {
 };
 
 export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, values }: TaskSidebarProps) {
+  const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
+  const userOptions = useMemo(() => getUserDisplayOptions(meta?.users ?? [], currentUserId), [currentUserId, meta?.users]);
+  const assigneeName = getUserDisplayName({ id: task.assigneeId, name: task.assigneeName }, currentUserId);
+  const authorName = getUserDisplayName({ id: task.authorId, name: task.authorName }, currentUserId);
+
   return (
     <aside className="space-y-6">
       <section className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
@@ -36,17 +45,18 @@ export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, 
             <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Статус</dt>
             <dd className="mt-2">
               {isEditing ? (
-                <select
-                  className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                <OptionSelect
+                  selectionMode="single"
+                  clearable={false}
                   value={values.status}
-                  onChange={(event) => onValuesChange({ ...values, status: event.target.value as TaskStatus })}
-                >
-                  {meta?.taskStatuses.map((status) => (
-                    <option key={status} value={status}>
-                      {taskStatusLabels[status]}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => onValuesChange({ ...values, status: value as TaskStatus })}
+                  options={(meta?.taskStatuses ?? []).map((status) => ({
+                    value: status,
+                    label: taskStatusMeta[status].label,
+                    color: taskStatusMeta[status].color,
+                  }))}
+                  triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+                />
               ) : (
                 <TaskStatusBadge status={task.status} />
               )}
@@ -56,17 +66,18 @@ export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, 
             <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Приоритет</dt>
             <dd className="mt-2">
               {isEditing ? (
-                <select
-                  className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                <OptionSelect
+                  selectionMode="single"
+                  clearable={false}
                   value={values.priority}
-                  onChange={(event) => onValuesChange({ ...values, priority: event.target.value as TaskPriority })}
-                >
-                  {meta?.taskPriorities.map((priority) => (
-                    <option key={priority} value={priority}>
-                      {taskPriorityLabels[priority]}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => onValuesChange({ ...values, priority: value as TaskPriority })}
+                  options={(meta?.taskPriorities ?? []).map((priority) => ({
+                    value: priority,
+                    label: taskPriorityMeta[priority].label,
+                    color: taskPriorityMeta[priority].color,
+                  }))}
+                  triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+                />
               ) : (
                 <TaskPriorityBadge priority={task.priority} />
               )}
@@ -76,25 +87,22 @@ export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, 
             <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Исполнитель</dt>
             <dd className="mt-2">
               {isEditing ? (
-                <select
-                  className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  value={values.assigneeId}
-                  onChange={(event) => onValuesChange({ ...values, assigneeId: Number(event.target.value) })}
-                >
-                  {meta?.users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name}
-                    </option>
-                  ))}
-                </select>
+                <OptionSelect
+                  selectionMode="single"
+                  clearable={false}
+                  value={String(values.assigneeId)}
+                  onChange={(value) => onValuesChange({ ...values, assigneeId: Number(value) })}
+                  options={userOptions.map((user) => ({ value: String(user.id), label: user.name }))}
+                  triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+                />
               ) : (
-                <span className="text-sm font-semibold text-slate-900">{task.assigneeName}</span>
+                <span className="text-sm font-semibold text-slate-900">{assigneeName}</span>
               )}
             </dd>
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Автор</dt>
-            <dd className="mt-2 text-sm font-semibold text-slate-900">{task.authorName}</dd>
+            <dd className="mt-2 text-sm font-semibold text-slate-900">{authorName}</dd>
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Создана</dt>

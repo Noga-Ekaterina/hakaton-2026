@@ -17,6 +17,7 @@ export {
 export {
   taskPriorityLabels,
   taskPriorityMeta,
+  taskPriorityValues,
   taskStatusLabels,
   taskStatusMeta,
 } from "./model/task-meta";

@@ -19,7 +19,7 @@ type TaskEventTitleProps = {
 };
 
 export function TaskEventTitle({ item, userNameById }: TaskEventTitleProps) {
-  const actorName = item.actor?.name ?? "Система";
+  const actorName = item.actor ? (userNameById.get(item.actor.id) ?? item.actor.name) : "Система";
   const statusChange = item.type === "STATUS_UPDATED" ? item.changes.find((change) => change.field === "status") : undefined;
 
   if (statusChange) {

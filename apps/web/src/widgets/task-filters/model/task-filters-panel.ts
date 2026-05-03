@@ -1,66 +1,46 @@
 import { useMemo } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGetCreateTaskMetaQuery } from "@/app/store/api/tasks-api";
-import type { TaskFilters } from "@/entities/task";
-import { getTaskFilters, hasActiveTaskFilters, taskFilterParamNames } from "./task-filters";
-
-const priorityOptions = ["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
-
-const priorityLabels: Record<(typeof priorityOptions)[number], string> = {
-  LOW: "Низкий",
-  MEDIUM: "Средний",
-  HIGH: "Высокий",
-  CRITICAL: "Критический",
-};
+import { useAppSelector } from "@/app/store/hooks";
+import { getUserDisplayOptions } from "@/entities/user";
+import { hasActiveTaskFilters } from "./task-filters";
+import { getTaskPriorityOptions } from "./task-filter-options";
+import { useTaskFilterActions } from "./use-task-filter-actions";
+import { useTaskFilterUrlState } from "./use-task-filter-url-state";
+import { useVisibleTaskFilters } from "./use-visible-task-filters";
 
 export function useTaskFiltersPanel() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const { projectId } = useParams();
   const projectIdNumber = Number(projectId);
+  const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
   const { data: meta } = useGetCreateTaskMetaQuery(projectIdNumber, { skip: !Number.isInteger(projectIdNumber) });
-
-  const filters = useMemo<TaskFilters>(() => getTaskFilters(searchParams), [searchParams]);
-
-  const updateFilter = (key: keyof typeof taskFilterParamNames, value: string) => {
-    const nextSearchParams = new URLSearchParams(searchParams);
-
-    if (value) {
-      nextSearchParams.set(taskFilterParamNames[key], value);
-    } else {
-      nextSearchParams.delete(taskFilterParamNames[key]);
-    }
-
-    setSearchParams(nextSearchParams, { replace: true });
-  };
-
-  const updateTagFilter = (tagIds: number[]) => {
-    const nextSearchParams = new URLSearchParams(searchParams);
-
-    nextSearchParams.delete(taskFilterParamNames.tagIds);
-    tagIds.forEach((tagId) => nextSearchParams.append(taskFilterParamNames.tagIds, String(tagId)));
-
-    setSearchParams(nextSearchParams, { replace: true });
-  };
-
-  const clearFilters = () => {
-    const nextSearchParams = new URLSearchParams(searchParams);
-
-    nextSearchParams.delete(taskFilterParamNames.priority);
-    nextSearchParams.delete(taskFilterParamNames.assigneeId);
-    nextSearchParams.delete(taskFilterParamNames.tagIds);
-
-    setSearchParams(nextSearchParams, { replace: true });
-  };
+  const { filters, updateFilter, updateDateFilter, clearDateFilters, clearFilters } = useTaskFilterUrlState();
+  const { renderedFilters, menuFilters, hideFilter, resetVisibleFilters } = useVisibleTaskFilters(filters);
+  const userOptions = useMemo(() => getUserDisplayOptions(meta?.users ?? [], currentUserId), [currentUserId, meta?.users]);
+  const priorityOptions = useMemo(() => getTaskPriorityOptions(), []);
+  const actions = useTaskFilterActions({
+    filters,
+    hideFilter,
+    resetVisibleFilters,
+    updateFilter,
+    updateDateFilter,
+    clearDateFilters,
+    clearFilters,
+  });
 
   return {
     filters,
-    assigneeOptions: meta?.users ?? [],
+    renderedFilters,
+    menuFilters,
+    assigneeOptions: userOptions,
+    authorOptions: userOptions,
     tagOptions: meta?.tags ?? [],
     priorityOptions,
-    priorityLabels,
     hasActiveFilters: hasActiveTaskFilters(filters),
     updateFilter,
-    updateTagFilter,
+    updateDateFilter,
+    clearDateFilters,
     clearFilters,
+    ...actions,
   };
 }

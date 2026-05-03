@@ -98,7 +98,7 @@ export function ProjectLayout() {
           </div>
         </div>
 
-        <div className="flex flex-col-reverse flex-wrap-reverse gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col-reverse flex-wrap-reverse gap-5 lg:flex-row lg:items-start lg:justify-between">
           <TaskFiltersPanel />
           <ProjectNav currentProjectId={projectId} onCreateTask={() => setIsCreateTaskOpen(true)} />
         </div>

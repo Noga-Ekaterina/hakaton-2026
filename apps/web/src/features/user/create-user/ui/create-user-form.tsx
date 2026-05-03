@@ -3,14 +3,21 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateUserMutation } from "@/app/store/api/admin-api";
 import type { Project } from "@/entities/project";
+import type { UserRole } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { OptionSelect } from "@/shared/ui/option-select";
 import { createUserSchema, type CreateUserValues } from "../model/create-user-schema";
 
 type CreateUserFormProps = {
   projects: Project[];
 };
+
+const roleOptions = [
+  { value: "USER", label: "Пользователь" },
+  { value: "ADMIN", label: "Администратор" },
+] satisfies Array<{ value: UserRole; label: string }>;
 
 export function CreateUserForm({ projects }: CreateUserFormProps) {
   const [createUser, { isLoading }] = useCreateUserMutation();
@@ -82,6 +89,9 @@ export function CreateUserForm({ projects }: CreateUserFormProps) {
       onSubmit={onSubmit}
       noValidate
     >
+      <input type="hidden" {...register("role")} />
+      <input type="hidden" {...register("projectId")} />
+
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Новый пользователь</p>
         <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">Создать пользователя</h2>
@@ -126,34 +136,31 @@ export function CreateUserForm({ projects }: CreateUserFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="user-role">Роль</Label>
-          <select
+          <OptionSelect
             id="user-role"
-            className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-            aria-invalid={Boolean(errors.role)}
-            {...register("role")}
-          >
-            <option value="USER">Пользователь</option>
-            <option value="ADMIN">Администратор</option>
-          </select>
+            selectionMode="single"
+            clearable={false}
+            value={selectedRole}
+            onChange={(value) => setValue("role", value as UserRole, { shouldDirty: true, shouldValidate: true })}
+            options={roleOptions}
+            triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+          />
           {errors.role ? <p className="text-sm text-rose-600">{errors.role.message}</p> : null}
         </div>
 
         {selectedRole === "ADMIN" ? null : (
           <div className="space-y-2">
             <Label htmlFor="user-project">Проект</Label>
-            <select
+            <OptionSelect
               id="user-project"
-              className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              aria-invalid={Boolean(errors.projectId)}
-              {...register("projectId")}
-            >
-              <option value="">Выберите проект</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
+              selectionMode="single"
+              clearable={false}
+              options={projects.map((project) => ({ value: String(project.id), label: project.name }))}
+              emptyLabel="Выберите проект"
+              value={selectedProjectId ?? ""}
+              onChange={(value) => setValue("projectId", value, { shouldDirty: true, shouldValidate: true })}
+              triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+            />
             {errors.projectId ? <p className="text-sm text-rose-600">{errors.projectId.message}</p> : null}
           </div>
         )}

@@ -3,6 +3,7 @@ import type { User } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
 import { Label } from "@/shared/ui/label";
 import { Modal } from "@/shared/ui/modal";
+import { OptionSelect } from "@/shared/ui/option-select";
 import { useAssignUserProjectForm } from "../model/use-assign-user-project-form";
 
 type AssignUserProjectModalProps = {
@@ -13,11 +14,12 @@ type AssignUserProjectModalProps = {
 };
 
 export function AssignUserProjectModal({ open, onClose, user, projects }: AssignUserProjectModalProps) {
-  const { register, errors, submit, submitError, isPending, availableProjects } = useAssignUserProjectForm({
-    user,
-    projects,
-    onClose,
-  });
+  const { register, setValue, errors, submit, submitError, isPending, availableProjects, selectedProjectId } =
+    useAssignUserProjectForm({
+      user,
+      projects,
+      onClose,
+    });
 
   return (
     <Modal
@@ -37,6 +39,7 @@ export function AssignUserProjectModal({ open, onClose, user, projects }: Assign
       }
     >
       <form id="assign-user-project-form" className="space-y-4" onSubmit={submit} noValidate>
+        <input type="hidden" {...register("projectId")} />
         {submitError ? <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{submitError}</p> : null}
         {availableProjects.length === 0 ? (
           <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
@@ -46,20 +49,17 @@ export function AssignUserProjectModal({ open, onClose, user, projects }: Assign
 
         <div className="space-y-2">
           <Label htmlFor={`assign-project-${user.id}`}>Новый проект</Label>
-          <select
+          <OptionSelect
             id={`assign-project-${user.id}`}
-            className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-            aria-invalid={Boolean(errors.projectId)}
+            selectionMode="single"
+            clearable={false}
             disabled={availableProjects.length === 0}
-            {...register("projectId")}
-          >
-            <option value="">Выберите проект</option>
-            {availableProjects.map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
+            options={availableProjects.map((project) => ({ value: String(project.id), label: project.name }))}
+            emptyLabel="Выберите проект"
+            value={selectedProjectId}
+            onChange={(value) => setValue("projectId", value, { shouldDirty: true, shouldValidate: true })}
+            triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+          />
           {errors.projectId ? <p className="text-sm text-rose-600">{errors.projectId.message}</p> : null}
         </div>
       </form>

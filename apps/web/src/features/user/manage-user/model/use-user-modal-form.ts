@@ -89,10 +89,12 @@ export function useUserModalForm({ open, onClose, projects }: UseUserModalFormPa
 
   return {
     register,
+    setValue,
     errors,
     submit,
     submitError,
     isPending,
+    selectedProjectId,
     selectedRole,
     title: "Создать пользователя",
     description: "Можно указать имя, email, пароль, роль и проект в одном окне.",

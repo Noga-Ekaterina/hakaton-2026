@@ -32,7 +32,7 @@ export function TaskTimeline({ isLoading, taskId, timeline, userNameById }: Task
             {item.kind === "comment" ? (
               <>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-bold text-slate-950">{item.author.name}</p>
+                  <p className="text-sm font-bold text-slate-950">{userNameById.get(item.author.id) ?? item.author.name}</p>
                   <time className="text-xs font-semibold text-slate-500">{formatTaskTimelineDate(item.createdAt)}</time>
                 </div>
                 <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">

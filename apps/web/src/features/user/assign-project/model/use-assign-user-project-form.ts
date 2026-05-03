@@ -24,6 +24,8 @@ export function useAssignUserProjectForm({ user, projects, onClose }: UseAssignU
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<AssignUserProjectValues>({
     resolver: zodResolver(assignUserProjectSchema),
@@ -31,6 +33,7 @@ export function useAssignUserProjectForm({ user, projects, onClose }: UseAssignU
       projectId: String(availableProjects[0]?.id ?? ""),
     },
   });
+  const selectedProjectId = watch("projectId");
 
   useEffect(() => {
     reset({
@@ -54,10 +57,12 @@ export function useAssignUserProjectForm({ user, projects, onClose }: UseAssignU
 
   return {
     register,
+    setValue,
     errors,
     submit,
     submitError,
     isPending: isSubmitting || isLoading,
     availableProjects,
+    selectedProjectId,
   };
 }

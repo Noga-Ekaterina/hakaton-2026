@@ -1,9 +1,9 @@
-import { TaskTagSelect } from "@/entities/task";
-import { UserSelect } from "@/entities/user";
+import { TaskTagSelect, taskPriorityMeta, taskPriorityValues, type TaskPriority } from "@/entities/task";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Modal } from "@/shared/ui/modal";
+import { OptionSelect } from "@/shared/ui/option-select";
 import { useCreateTaskModal } from "../model/use-create-task-modal";
 import { useTaskPhotoPreviews } from "../model/use-task-photo-previews";
 
@@ -15,8 +15,13 @@ type CreateTaskModalProps = {
 const createTaskFormId = "create-task-form";
 
 export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
-  const { meta, register, setValue, watch, errors, isLoading, isError, isSubmitting, submitError, submit } = useCreateTaskModal({open});
+  const { meta, assigneeOptions, register, setValue, watch, errors, isLoading, isError, isSubmitting, submitError, submit } =
+    useCreateTaskModal({
+      open,
+    });
   const photos = watch("photos");
+  const priority = watch("priority");
+  const assigneeId = watch("assigneeId");
   const { photoPreviews, handlePhotosChange, handleRemovePhoto } = useTaskPhotoPreviews({
     photos,
     onPhotosChange: (nextPhotos) => setValue("photos", nextPhotos, { shouldDirty: true, shouldValidate: true }),
@@ -58,31 +63,22 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
 
           <div className="space-y-3 md:col-span-2">
             <Label htmlFor="task-photos">Фото</Label>
-            <input
-              id="task-photos"
-              className="sr-only"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handlePhotosChange}
-            />
+            <input id="task-photos" className="sr-only" type="file" accept="image/*" multiple onChange={handlePhotosChange} />
 
             <div className={photoPreviews.length > 0 ? "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4" : ""}>
-              {photoPreviews.length > 0
-                ? photoPreviews.map((photo) => (
-                    <div key={photo.id} className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                      <img src={photo.url} alt={photo.name} className="aspect-[4/3] w-full object-cover" />
-                      <button
-                        type="button"
-                        className="absolute right-2 top-2 rounded-full bg-slate-950/75 px-2 py-1 text-xs font-semibold text-white opacity-90 transition hover:bg-slate-950"
-                        onClick={() => handleRemovePhoto(photo.index)}
-                      >
-                        Удалить
-                      </button>
-                      <p className="truncate px-3 py-2 text-xs font-medium text-slate-600">{photo.name}</p>
-                    </div>
-                  ))
-                : null}
+              {photoPreviews.map((photo) => (
+                <div key={photo.id} className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                  <img src={photo.url} alt={photo.name} className="aspect-[4/3] w-full object-cover" />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-2 rounded-full bg-slate-950/75 px-2 py-1 text-xs font-semibold text-white opacity-90 transition hover:bg-slate-950"
+                    onClick={() => handleRemovePhoto(photo.index)}
+                  >
+                    Удалить
+                  </button>
+                  <p className="truncate px-3 py-2 text-xs font-medium text-slate-600">{photo.name}</p>
+                </div>
+              ))}
 
               <label
                 htmlFor="task-photos"
@@ -110,36 +106,33 @@ export function CreateTaskModal({ open, onClose }: CreateTaskModalProps) {
 
           <div className="space-y-2">
             <Label htmlFor="task-priority">Приоритет</Label>
-            <select
+            <OptionSelect
               id="task-priority"
-              className="h-11 w-full rounded-2xl border border-border bg-white px-4 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              aria-invalid={Boolean(errors.priority)}
-              {...register("priority")}
-            >
-              {meta?.taskPriorities.map((priority) => (
-                <option key={priority} value={priority}>
-                  {priority}
-                </option>
-              )) ?? (
-                <>
-                  <option value="LOW">LOW</option>
-                  <option value="MEDIUM">MEDIUM</option>
-                  <option value="HIGH">HIGH</option>
-                  <option value="CRITICAL">CRITICAL</option>
-                </>
-              )}
-            </select>
+              selectionMode="single"
+              clearable={false}
+              value={priority}
+              onChange={(value) => setValue("priority", value as TaskPriority, { shouldDirty: true, shouldValidate: true })}
+              options={(meta?.taskPriorities ?? taskPriorityValues).map((item) => ({
+                value: item,
+                label: taskPriorityMeta[item].label,
+                color: taskPriorityMeta[item].color,
+              }))}
+              triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
+            />
             {errors.priority ? <p className="text-sm text-rose-600">{errors.priority.message}</p> : null}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="task-assignee">Исполнитель</Label>
-            <UserSelect
+            <OptionSelect
               id="task-assignee"
-              users={meta?.users ?? []}
-              {...register("assigneeId", {
-                setValueAs: (value) => (value === "" ? 0 : Number(value)),
-              })}
+              selectionMode="single"
+              clearable={false}
+              options={assigneeOptions.map((user) => ({ value: String(user.id), label: user.name }))}
+              emptyLabel="Выберите исполнителя"
+              value={assigneeId ? String(assigneeId) : ""}
+              onChange={(value) => setValue("assigneeId", Number(value), { shouldDirty: true, shouldValidate: true })}
+              triggerClassName="border-border bg-white hover:bg-white focus-visible:ring-primary/20"
             />
             {errors.assigneeId ? <p className="text-sm text-rose-600">{errors.assigneeId.message}</p> : null}
           </div>

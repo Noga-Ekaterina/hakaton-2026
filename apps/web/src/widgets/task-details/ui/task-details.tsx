@@ -1,7 +1,9 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import type { CreateTaskMeta } from "@/app/store/api/tasks-api";
+import { useAppSelector } from "@/app/store/hooks";
 import type { Task, TaskTimelineItem } from "@/entities/task";
+import { getUserDisplayName } from "@/entities/user";
 import { DeleteTaskModal, useDeleteTaskModal } from "@/features/task/delete-task";
 import { TaskActions } from "@/features/task/task-actions";
 import { useUpdateTaskForm } from "@/features/task/update-task";
@@ -22,20 +24,21 @@ type TaskDetailsProps = {
 
 export function TaskDetails({ isTimelineLoading, meta, projectId, task, timeline }: TaskDetailsProps) {
   const navigate = useNavigate();
+  const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
   const updateForm = useUpdateTaskForm(task);
   const deleteTaskModal = useDeleteTaskModal();
 
   const userNameById = useMemo(() => {
     const names = new Map<number, string>();
 
-    names.set(task.authorId, task.authorName);
-    names.set(task.assigneeId, task.assigneeName);
+    names.set(task.authorId, getUserDisplayName({ id: task.authorId, name: task.authorName }, currentUserId));
+    names.set(task.assigneeId, getUserDisplayName({ id: task.assigneeId, name: task.assigneeName }, currentUserId));
     meta?.users.forEach((user) => {
-      names.set(user.id, user.name);
+      names.set(user.id, getUserDisplayName(user, currentUserId));
     });
 
     return names;
-  }, [meta?.users, task]);
+  }, [currentUserId, meta?.users, task]);
 
   if (!updateForm.values) {
     return null;

@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { useDrag } from "react-dnd";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "@/app/store/hooks";
+import { getUserDisplayName } from "@/entities/user";
 import { TASK_DND_TYPE } from "../model/dnd";
 import { getTaskImageSrc } from "../model/task-images";
 import type { TaskListItem } from "../model/types";
@@ -13,6 +15,7 @@ type TaskCardProps = {
 };
 
 export function TaskCard({ actions, task }: TaskCardProps) {
+  const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
   const [{ isDragging }, dragRef] = useDrag(
     () => ({
       type: TASK_DND_TYPE,
@@ -28,6 +31,8 @@ export function TaskCard({ actions, task }: TaskCardProps) {
     ...image,
     src: getTaskImageSrc(image.url),
   }));
+  const assigneeName = getUserDisplayName({ id: task.assigneeId, name: task.assigneeName }, currentUserId);
+  const authorName = getUserDisplayName({ id: task.authorId, name: task.authorName }, currentUserId);
 
   return (
     <article
@@ -63,11 +68,11 @@ export function TaskCard({ actions, task }: TaskCardProps) {
       <dl className="mt-6 grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-slate-50 p-4">
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Исполнитель</dt>
-          <dd className="mt-2 text-sm font-medium text-slate-900">{task.assigneeName}</dd>
+          <dd className="mt-2 text-sm font-medium text-slate-900">{assigneeName}</dd>
         </div>
         <div className="rounded-2xl bg-slate-50 p-4">
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Автор</dt>
-          <dd className="mt-2 text-sm font-medium text-slate-900">{task.authorName}</dd>
+          <dd className="mt-2 text-sm font-medium text-slate-900">{authorName}</dd>
         </div>
       </dl>
       {taskImages.length > 0 ? (
