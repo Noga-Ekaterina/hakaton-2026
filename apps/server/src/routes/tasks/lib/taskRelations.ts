@@ -9,7 +9,6 @@ export const taskDetailSelect = {
   id: true,
   title: true,
   description: true,
-  shortDescription: true,
   status: true,
   priority: true,
   storyPoints: true,
@@ -23,7 +22,6 @@ export const taskDetailSelect = {
 export const taskListSelect = {
   id: true,
   title: true,
-  shortDescription: true,
   status: true,
   priority: true,
   createdAt: true,

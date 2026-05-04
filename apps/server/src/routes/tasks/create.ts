@@ -3,7 +3,7 @@ import { TaskPriority, TaskStatus } from "@prisma/client";
 import { createTaskServerSchema } from "@hakaton/shared";
 
 import { prisma } from "../../lib/prisma.js";
-import { buildShortDescription, serializeTaskListItem } from "./lib/serialize.js";
+import { serializeTaskListItem } from "./lib/serialize.js";
 import { requireSessionAdminOrProjectAccess } from "../../middleware/projectAccess.js";
 import { getTaskPhotoFiles, saveTaskPhotoFiles, validateTaskPhotoFiles } from "./lib/photoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
@@ -69,7 +69,6 @@ taskCreateRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) 
     data: {
       title: parsedBody.data.title,
       description: parsedBody.data.description,
-      shortDescription: buildShortDescription(parsedBody.data.description),
       priority: parsedBody.data.priority as TaskPriority,
       authorId,
       assigneeId,

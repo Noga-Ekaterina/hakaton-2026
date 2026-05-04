@@ -32,17 +32,11 @@ type TaskEventWithActor = Prisma.TaskEventGetPayload<{
   };
 }>;
 
-export function buildShortDescription(description: string) {
-  const trimmed = description.trim();
-  return trimmed.length <= 96 ? trimmed : `${trimmed.slice(0, 93)}...`;
-}
-
 export function serializeTask(task: TaskWithRelations): Task {
   return {
     id: task.id,
     title: task.title,
     description: task.description,
-    shortDescription: task.shortDescription,
     status: task.status as SharedTaskStatus,
     priority: task.priority as SharedTaskPriority,
     storyPoints: task.storyPoints,
@@ -70,7 +64,6 @@ export function serializeTaskListItem(task: TaskListItemWithRelations): TaskList
   return {
     id: task.id,
     title: task.title,
-    shortDescription: task.shortDescription,
     status: task.status as SharedTaskStatus,
     priority: task.priority as SharedTaskPriority,
     storyPoints: task.storyPoints,

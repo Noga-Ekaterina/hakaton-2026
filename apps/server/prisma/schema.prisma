@@ -64,7 +64,6 @@ model Task {
   id               Int                       @id @default(autoincrement())
   title            String
   description      String                    @db.Text
-  shortDescription String                    @db.Text
   status           TaskStatus                @default(NEW)
   priority         TaskPriority              @default(MEDIUM)
   storyPoints      Int?

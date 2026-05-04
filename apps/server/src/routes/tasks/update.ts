@@ -3,7 +3,7 @@ import { Prisma, TaskPriority, TaskStatus } from "@prisma/client";
 import { updateTaskServerSchema } from "@hakaton/shared";
 
 import { prisma } from "../../lib/prisma.js";
-import { buildShortDescription, serializeTask } from "./lib/serialize.js";
+import { serializeTask } from "./lib/serialize.js";
 import { requireSessionAdminOrTaskProjectAccess } from "../../middleware/projectAccess.js";
 import { buildSingleChange, buildTaskTagsChange, buildTaskUpdateChanges } from "./lib/changes.js";
 import {
@@ -120,7 +120,6 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
       data: {
         title: parsed.data.title,
         description: parsed.data.description,
-        shortDescription: typeof parsed.data.description === "string" ? buildShortDescription(parsed.data.description) : undefined,
         priority: parsed.data.priority as TaskPriority | undefined,
         status: parsed.data.status as TaskStatus | undefined,
         assigneeId: parsed.data.assigneeId,

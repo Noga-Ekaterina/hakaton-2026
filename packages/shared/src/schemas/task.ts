@@ -77,7 +77,6 @@ export const taskSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(1),
   description: z.string(),
-  shortDescription: z.string(),
   status: taskStatusSchema,
   priority: taskPrioritySchema,
   storyPoints: z.number().int().positive().nullable(),
@@ -94,7 +93,6 @@ export type Task = z.infer<typeof taskSchema>;
 export const taskListItemSchema = taskSchema.pick({
   id: true,
   title: true,
-  shortDescription: true,
   status: true,
   priority: true,
   createdAt: true,

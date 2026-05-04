@@ -78,7 +78,6 @@ async function main() {
       data: {
         title: "Подготовить отчет по продажам",
         description: "Собрать данные за месяц, сверить показатели с CRM и подготовить презентацию для руководства.",
-        shortDescription: "Собрать данные за месяц и подготовить презентацию.",
         status: TaskStatus.IN_PROGRESS,
         priority: TaskPriority.HIGH,
         storyPoints: 8,
@@ -91,7 +90,6 @@ async function main() {
       data: {
         title: "Обновить лендинг компании",
         description: "Добавить новый промо-блок, обновить CTA и передать изменения на публикацию.",
-        shortDescription: "Добавить новый блок с акцией.",
         status: TaskStatus.IN_PROGRESS,
         priority: TaskPriority.MEDIUM,
         storyPoints: 5,
@@ -104,7 +102,6 @@ async function main() {
       data: {
         title: "Подготовить договор для клиента ABC",
         description: "Проверить шаблон, внести реквизиты клиента и передать документ на подпись.",
-        shortDescription: "Проверить шаблон и отправить на согласование.",
         status: TaskStatus.NEW,
         priority: TaskPriority.HIGH,
         storyPoints: null,
@@ -117,7 +114,6 @@ async function main() {
       data: {
         title: "Подготовить welcome-план для нового сотрудника",
         description: "Сформировать программу адаптации на первую неделю и согласовать список встреч.",
-        shortDescription: "Сформировать план адаптации на первую неделю.",
         status: TaskStatus.AWAITING_INSPECTION,
         priority: TaskPriority.CRITICAL,
         storyPoints: 3,
@@ -130,7 +126,6 @@ async function main() {
       data: {
         title: "Подготовить список закупок на неделю",
         description: "Собрать потребности отделов и сформировать единый список на закупку.",
-        shortDescription: "Сформировать список закупок на неделю.",
         status: TaskStatus.DONE,
         priority: TaskPriority.LOW,
         storyPoints: 2,

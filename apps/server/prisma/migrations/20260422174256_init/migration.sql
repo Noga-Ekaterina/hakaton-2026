@@ -27,7 +27,6 @@ CREATE TABLE `Task` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
     `description` TEXT NOT NULL,
-    `shortDescription` TEXT NOT NULL,
     `status` ENUM('NEW', 'IN_PROGRESS', 'DONE', 'BLOCKED') NOT NULL DEFAULT 'NEW',
     `priority` ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL') NOT NULL DEFAULT 'MEDIUM',
     `deadline` DATETIME(3) NOT NULL,

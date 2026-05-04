@@ -64,8 +64,6 @@ export function TaskCard({ actions, footer, task }: TaskCardProps) {
         </div>
       </div>
 
-      {task.shortDescription ? <p className="mt-4 text-sm leading-6 text-slate-600">{task.shortDescription}</p> : null}
-
       <dl className="mt-6 grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-slate-50 p-4">
           <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Исполнитель</dt>
