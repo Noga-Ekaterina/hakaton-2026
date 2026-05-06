@@ -72,7 +72,7 @@ export function UserCard({ user, children, onClick }: UserCardProps) {
                 ))}
               </div>
             ) : (
-              <span className="text-sm font-medium text-slate-500">Не назначен</span>
+              <span className="text-sm font-medium text-slate-500">{user.role === "USER" ? "Нет проектов" : "Все проекты"}</span>
             )}
           </dd>
         </div>

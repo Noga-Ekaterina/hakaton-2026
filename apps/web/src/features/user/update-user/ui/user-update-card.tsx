@@ -3,8 +3,8 @@ import type { Project } from "@/entities/project";
 import { UserCard } from "@/entities/user";
 import type { User } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
-import { AssignUserProjectModal } from "@/features/user/assign-project";
 import { ChangeUserRoleModal } from "@/features/user/change-role";
+import { UserProjectsModal } from "@/features/user/manage-projects";
 
 type UserUpdateCardProps = {
   user: User;
@@ -24,7 +24,7 @@ export function UserUpdateCard({ user, projects }: UserUpdateCardProps) {
           </Button>
           {user.role === "ADMIN" ? null : (
             <Button type="button" variant="secondary" onClick={() => setIsProjectOpen(true)}>
-              Добавить проект
+              Проекты
             </Button>
           )}
         </div>
@@ -32,7 +32,7 @@ export function UserUpdateCard({ user, projects }: UserUpdateCardProps) {
 
       <ChangeUserRoleModal open={isRoleOpen} onClose={() => setIsRoleOpen(false)} user={user} />
       {user.role === "ADMIN" ? null : (
-        <AssignUserProjectModal
+        <UserProjectsModal
           open={isProjectOpen}
           onClose={() => setIsProjectOpen(false)}
           user={user}
