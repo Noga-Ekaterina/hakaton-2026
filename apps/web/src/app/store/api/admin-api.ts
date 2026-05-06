@@ -12,6 +12,10 @@ export type UpdateProjectInput = {
   name: string;
 };
 
+export type DeleteProjectInput = {
+  id: number;
+};
+
 export type CreateUserInput = {
   name: string;
   email: string;
@@ -111,6 +115,17 @@ export const adminApi = createApi({
         { type: "Users", id: "LIST" },
       ],
     }),
+    deleteProject: builder.mutation<void, DeleteProjectInput>({
+      query: ({ id }) => ({
+        url: `/projects/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Projects", id },
+        { type: "Projects", id: "LIST" },
+        { type: "Users", id: "LIST" },
+      ],
+    }),
     createUser: builder.mutation<User, CreateUserInput>({
       query: ({ projectId, ...body }) => ({
         url: "/users/register",
@@ -162,6 +177,7 @@ export const {
   useGetProjectsQuery,
   useCreateProjectMutation,
   useUpdateProjectMutation,
+  useDeleteProjectMutation,
   useCreateUserMutation,
   useChangeUserRoleMutation,
   useAssignUserProjectMutation,

@@ -1,20 +1,23 @@
 import { useState } from "react";
-import { Link, Navigate, Outlet, useMatch } from "react-router-dom";
-import { CreateTaskModal } from "@/features/task/create-task";
+import { Navigate, Outlet, useMatch, useNavigate } from "react-router-dom";
+import { ProjectNav } from "@/app/layout/ui/project-nav";
+import { DeleteProjectModal } from "@/features/project/delete-project";
 import { ProjectModal } from "@/features/project/manage-project";
 import { ProjectMembersModal } from "@/features/project/manage-project-members";
 import { ProjectTagsModal } from "@/features/project/manage-project-tags";
-import { Button } from "@/shared/ui/button";
+import { CreateTaskModal } from "@/features/task/create-task";
 import { paths } from "@/shared/config/routes";
-import { ProjectNav } from "./project-nav";
+import { Button } from "@/shared/ui/button";
 import { TaskFiltersPanel } from "@/widgets/task-filters";
 import { useProjectLayoutModel } from "../model";
 
 export function ProjectLayout() {
+  const navigate = useNavigate();
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isMembersOpen, setIsMembersOpen] = useState(false);
   const [isTagsOpen, setIsTagsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const isTaskPage = Boolean(useMatch(paths.taskDetail));
   const {
     currentUser,
@@ -50,58 +53,58 @@ export function ProjectLayout() {
   }
 
   if (!project) {
-    return (
-      <section className="rounded-[2rem] border border-slate-200/80 bg-white/80 p-8 shadow-[0_20px_80px_rgba(15,23,42,0.08)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Проект</p>
-        <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">Проект не найден</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-          Возможно, ссылка устарела или у вас нет доступа к этому проекту.
-        </p>
-        <div className="mt-6">
-          <Button asChild>
-            <Link to={paths.home}>Вернуться к списку</Link>
-          </Button>
-        </div>
-      </section>
-    );
+    return <Navigate to={paths.home} replace />;
   }
+
+  const handleProjectDeleted = () => {
+    setIsDeleteOpen(false);
+    navigate(paths.home, { replace: true });
+  };
 
   return (
     <>
       {!isTaskPage ? (
         <div className="space-y-6 border-b border-slate-200/70 pb-8">
-        <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary">Проект #{project.id}</p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">{project.name}</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-                Здесь собрана доска задач этого проекта. Фильтры сверху страницы продолжают работать как и раньше.
-              </p>
-            </div>
+          <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary">Проект #{project.id}</p>
+                <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">{project.name}</h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+                  Здесь собрана доска задач этого проекта. Фильтры сверху страницы продолжают работать как и раньше.
+                </p>
+              </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <Button variant="secondary" type="button" onClick={() => setIsMembersOpen(true)}>
-                Участники ({memberCount})
-              </Button>
-              <Button variant="secondary" type="button" onClick={() => setIsTagsOpen(true)}>
-                Теги
-              </Button>
-              {currentUser?.role === "ADMIN" ? (
-                <>
-                  <Button type="button" onClick={() => setIsRenameOpen(true)}>
-                    Переименовать проект
-                  </Button>
-                </>
-              ) : null}
+              <div className="flex flex-wrap items-center gap-3">
+                <Button variant="secondary" type="button" onClick={() => setIsMembersOpen(true)}>
+                  Участники ({memberCount})
+                </Button>
+                <Button variant="secondary" type="button" onClick={() => setIsTagsOpen(true)}>
+                  Теги
+                </Button>
+                {currentUser?.role === "ADMIN" ? (
+                  <>
+                    <Button type="button" onClick={() => setIsRenameOpen(true)}>
+                      Переименовать проект
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="border-rose-200 text-rose-700 hover:bg-rose-50"
+                      onClick={() => setIsDeleteOpen(true)}
+                    >
+                      Удалить проект
+                    </Button>
+                  </>
+                ) : null}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col-reverse flex-wrap-reverse gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <TaskFiltersPanel />
-          <ProjectNav currentProjectId={projectId} onCreateTask={() => setIsCreateTaskOpen(true)} />
-        </div>
+          <div className="flex flex-col-reverse flex-wrap-reverse gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <TaskFiltersPanel />
+            <ProjectNav currentProjectId={projectId} onCreateTask={() => setIsCreateTaskOpen(true)} />
+          </div>
         </div>
       ) : null}
 
@@ -111,6 +114,12 @@ export function ProjectLayout() {
 
       <CreateTaskModal open={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
       <ProjectModal open={isRenameOpen} onClose={() => setIsRenameOpen(false)} project={project} />
+      <DeleteProjectModal
+        open={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onDeleted={handleProjectDeleted}
+        project={project}
+      />
       <ProjectTagsModal open={isTagsOpen} onClose={() => setIsTagsOpen(false)} project={project} />
       <ProjectMembersModal
         open={isMembersOpen}

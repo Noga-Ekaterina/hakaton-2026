@@ -12,7 +12,7 @@ import {
   parseKeepImageIds,
   saveTaskPhotoFiles,
   validateTaskPhotoFiles,
-} from "./lib/photoFiles.js";
+} from "../../lib/taskPhotoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
 import { taskDetailSelect } from "./lib/taskRelations.js";
 import { getProjectTagsByIds, toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";

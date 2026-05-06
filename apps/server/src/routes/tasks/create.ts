@@ -5,7 +5,7 @@ import { createTaskServerSchema } from "@hakaton/shared";
 import { prisma } from "../../lib/prisma.js";
 import { serializeTaskListItem } from "./lib/serialize.js";
 import { requireSessionAdminOrProjectAccess } from "../../middleware/projectAccess.js";
-import { getTaskPhotoFiles, saveTaskPhotoFiles, validateTaskPhotoFiles } from "./lib/photoFiles.js";
+import { getTaskPhotoFiles, saveTaskPhotoFiles, validateTaskPhotoFiles } from "../../lib/taskPhotoFiles.js";
 import { getSessionUserId } from "./lib/session.js";
 import { taskListSelect } from "./lib/taskRelations.js";
 import { toTaskTagConnections, validateProjectTagIds } from "./lib/tags.js";

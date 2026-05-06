@@ -6,6 +6,7 @@ import { serializeProject } from "./lib/serialize.js";
 import { isSessionAdmin } from "../../middleware/auth.js";
 import { requireSessionAuth } from "../../middleware/auth.js";
 import { projectTagsRouter } from "./tags.js";
+import { deleteTaskUploadDir } from "../../lib/taskPhotoFiles.js";
 
 export const projectsRouter = Router();
 
@@ -73,4 +74,36 @@ projectsRouter.patch("/:id", isSessionAdmin, async (req, res) => {
   });
 
   res.json(serializeProject(project));
+});
+
+projectsRouter.delete("/:id", isSessionAdmin, async (req, res) => {
+  const projectId = Number(req.params.id);
+
+  if (!Number.isInteger(projectId)) {
+    res.status(400).json({ message: "Некорректный идентификатор проекта." });
+    return;
+  }
+
+  const existing = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: {
+      id: true,
+      tasks: {
+        select: { id: true },
+      },
+    },
+  });
+
+  if (!existing) {
+    res.status(404).json({ message: "Проект не найден." });
+    return;
+  }
+
+  await prisma.project.delete({
+    where: { id: projectId },
+  });
+
+  await Promise.all(existing.tasks.map((task) => deleteTaskUploadDir(task.id)));
+
+  res.status(204).send();
 });

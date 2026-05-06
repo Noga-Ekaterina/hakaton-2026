@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { prisma } from "../../lib/prisma.js";
 import { requireSessionAdminOrTaskProjectAccess } from "../../middleware/projectAccess.js";
-import { deleteTaskUploadDir } from "./lib/photoFiles.js";
+import { deleteTaskUploadDir } from "../../lib/taskPhotoFiles.js";
 
 export const taskDeleteRouter = Router();
 

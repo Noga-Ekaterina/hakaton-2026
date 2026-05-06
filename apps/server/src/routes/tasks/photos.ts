@@ -2,7 +2,7 @@ import { Router } from "express";
 import path from "node:path";
 
 import { requireSessionAdminOrTaskProjectAccess } from "../../middleware/projectAccess.js";
-import { taskUploadsRoot } from "./lib/photoFiles.js";
+import { taskUploadsRoot } from "../../lib/taskPhotoFiles.js";
 
 export const taskPhotosRouter = Router();
 
