@@ -17,7 +17,8 @@ export function DonePage() {
   const { data: projects } = useGetProjectsQuery();
   const currentUser = useAppSelector((state) => state.auth.user);
   const [searchParams] = useSearchParams();
-  const filters = useMemo(() => getTaskFilters(searchParams), [searchParams]);
+  const search = searchParams.toString();
+  const filters = useMemo(() => getTaskFilters(searchParams), [search, searchParams]);
   const projectIdNumber = Number(projectId);
   const shouldFetchTasks = Number.isInteger(projectIdNumber);
   const { data: tasks, isLoading, isError, error } = useGetTasksQuery(shouldFetchTasks ? projectIdNumber : skipToken);

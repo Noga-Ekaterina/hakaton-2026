@@ -16,7 +16,7 @@ export function TaskFiltersPanel() {
     hasActiveFilters,
     updateFilter,
     updateArrayFilter,
-    updateDateFilter,
+    updateDateFilters,
     updateVisibleDateFilter,
     clearDateFilters,
     removeFilter,
@@ -34,7 +34,7 @@ export function TaskFiltersPanel() {
         tagOptions={tagOptions}
         hasActiveFilters={hasActiveFilters}
         onDateClear={clearDateFilters}
-        onDateChange={updateDateFilter}
+        onDateRangeChange={updateDateFilters}
         onFilterChange={updateFilter}
         onResetFilters={resetFilters}
         onTagChange={(tagIds) => updateFilter("tagIds", tagIds)}

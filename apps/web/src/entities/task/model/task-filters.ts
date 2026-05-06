@@ -9,8 +9,14 @@ export type TaskFilters = {
   tagIds: number[];
 };
 
-function getTaskLocalDate(task: TaskListItem) {
-  const date = new Date(task.createdAt);
+function getTaskDate(value: string) {
+  const isoDateMatch = value.match(/^(\d{4}-\d{2}-\d{2})$/);
+
+  if (isoDateMatch) {
+    return isoDateMatch[1];
+  }
+
+  const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
     return "";
@@ -23,7 +29,7 @@ function getTaskLocalDate(task: TaskListItem) {
 
 export function filterTasks(tasks: TaskListItem[] | undefined, filters: TaskFilters) {
   return (tasks ?? []).filter((task) => {
-    const taskDate = getTaskLocalDate(task);
+    const taskDate = getTaskDate(task.createdAt);
 
     if (filters.priority.length > 0 && !filters.priority.includes(task.priority)) {
       return false;

@@ -5,7 +5,8 @@ import { getTaskFilters, taskFilterParamNames, type TaskArrayFilterParamName } f
 
 export function useTaskFilterUrlState() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const filters = useMemo<TaskFilters>(() => getTaskFilters(searchParams), [searchParams]);
+  const search = searchParams.toString();
+  const filters = useMemo<TaskFilters>(() => getTaskFilters(searchParams), [search, searchParams]);
 
   const updateFilter = (key: TaskArrayFilterParamName, value: string[] | number[]) => {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -22,6 +23,22 @@ export function useTaskFilterUrlState() {
     nextSearchParams.delete(taskFilterParamNames[key]);
     if (value) {
       nextSearchParams.set(taskFilterParamNames[key], value);
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  };
+
+  const updateDateFilters = (createdFrom: string, createdTo: string) => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    nextSearchParams.delete(taskFilterParamNames.createdFrom);
+    nextSearchParams.delete(taskFilterParamNames.createdTo);
+
+    if (createdFrom) {
+      nextSearchParams.set(taskFilterParamNames.createdFrom, createdFrom);
+    }
+    if (createdTo) {
+      nextSearchParams.set(taskFilterParamNames.createdTo, createdTo);
     }
 
     setSearchParams(nextSearchParams, { replace: true });
@@ -53,6 +70,7 @@ export function useTaskFilterUrlState() {
     filters,
     updateFilter,
     updateDateFilter,
+    updateDateFilters,
     clearDateFilters,
     clearFilters,
   };

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CheckIcon, ChevronRightIcon, Cross2Icon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import type { TaskFilters } from "@/entities/task";
@@ -33,7 +34,7 @@ type TaskFilterAddMenuProps = {
   tagOptions: TagOption[];
   hasActiveFilters: boolean;
   onDateClear: () => void;
-  onDateChange: (key: "createdFrom" | "createdTo", value: string) => void;
+  onDateRangeChange: (createdFrom: string, createdTo: string) => void;
   onFilterChange: (key: TaskArrayFilterParamName, value: string[] | number[]) => void;
   onResetFilters: () => void;
   onTagChange: (tagIds: number[]) => void;
@@ -126,11 +127,28 @@ export function TaskFilterAddMenu({
   tagOptions,
   hasActiveFilters,
   onDateClear,
-  onDateChange,
+  onDateRangeChange,
   onFilterChange,
   onResetFilters,
   onTagChange,
 }: TaskFilterAddMenuProps) {
+  const [dateDraft, setDateDraft] = useState({
+    createdFrom: filters.createdFrom,
+    createdTo: filters.createdTo,
+  });
+
+  useEffect(() => {
+    setDateDraft({
+      createdFrom: filters.createdFrom,
+      createdTo: filters.createdTo,
+    });
+  }, [filters.createdFrom, filters.createdTo]);
+
+  const clearDateDraft = () => {
+    setDateDraft({ createdFrom: "", createdTo: "" });
+    onDateClear();
+  };
+
   return (
     <div className="space-y-2">
       <p className="h-5 text-sm font-medium text-foreground" aria-hidden="true" />
@@ -257,17 +275,22 @@ export function TaskFilterAddMenu({
                       {filter === "date" ? (
                         <div className="grid gap-3 p-2">
                           <AllValuesItem
-                            checked={!filters.createdFrom && !filters.createdTo}
+                            checked={!dateDraft.createdFrom && !dateDraft.createdTo}
                             label="Все даты"
-                            onSelect={onDateClear}
+                            onSelect={clearDateDraft}
                           />
                           <div className="space-y-2">
                             <Label htmlFor="task-filter-add-created-from">Дата с</Label>
                             <Input
                               id="task-filter-add-created-from"
                               type="date"
-                              value={filters.createdFrom}
-                              onChange={(event) => onDateChange("createdFrom", event.target.value)}
+                              value={dateDraft.createdFrom}
+                              onChange={(event) =>
+                                setDateDraft((currentDraft) => ({
+                                  ...currentDraft,
+                                  createdFrom: event.target.value,
+                                }))
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -275,10 +298,22 @@ export function TaskFilterAddMenu({
                             <Input
                               id="task-filter-add-created-to"
                               type="date"
-                              value={filters.createdTo}
-                              onChange={(event) => onDateChange("createdTo", event.target.value)}
+                              value={dateDraft.createdTo}
+                              onChange={(event) =>
+                                setDateDraft((currentDraft) => ({
+                                  ...currentDraft,
+                                  createdTo: event.target.value,
+                                }))
+                              }
                             />
                           </div>
+                          <Button
+                            type="button"
+                            className="h-10 rounded-xl"
+                            onClick={() => onDateRangeChange(dateDraft.createdFrom, dateDraft.createdTo)}
+                          >
+                            Применить
+                          </Button>
                         </div>
                       ) : null}
                     </DropdownMenu.SubContent>

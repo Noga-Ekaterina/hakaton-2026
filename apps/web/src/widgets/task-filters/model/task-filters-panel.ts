@@ -14,7 +14,7 @@ export function useTaskFiltersPanel() {
   const projectIdNumber = Number(projectId);
   const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
   const { data: meta } = useGetCreateTaskMetaQuery(projectIdNumber, { skip: !Number.isInteger(projectIdNumber) });
-  const { filters, updateFilter, updateDateFilter, clearDateFilters, clearFilters } = useTaskFilterUrlState();
+  const { filters, updateFilter, updateDateFilter, updateDateFilters, clearDateFilters, clearFilters } = useTaskFilterUrlState();
   const { renderedFilters, menuFilters, hideFilter, resetVisibleFilters } = useVisibleTaskFilters(filters);
   const userOptions = useMemo(() => getUserDisplayOptions(meta?.users ?? [], currentUserId), [currentUserId, meta?.users]);
   const priorityOptions = useMemo(() => getTaskPriorityOptions(), []);
@@ -39,6 +39,7 @@ export function useTaskFiltersPanel() {
     hasActiveFilters: hasActiveTaskFilters(filters),
     updateFilter,
     updateDateFilter,
+    updateDateFilters,
     clearDateFilters,
     clearFilters,
     ...actions,

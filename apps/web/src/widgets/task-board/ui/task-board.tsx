@@ -16,7 +16,8 @@ export function TaskBoard({ projectId }: TaskBoardProps) {
   const { data: tasks, isLoading, isError, error } = useGetTasksQuery(projectId);
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
   const [searchParams] = useSearchParams();
-  const filters = useMemo(() => getTaskFilters(searchParams), [searchParams]);
+  const search = searchParams.toString();
+  const filters = useMemo(() => getTaskFilters(searchParams), [search, searchParams]);
   const deleteTaskModal = useDeleteTaskModal();
 
   const handleMoveTask = (taskId: number, status: TaskStatus) => {
