@@ -8,12 +8,12 @@ export function isSessionAdmin(req: express.Request, res: express.Response, next
   const role = getSessionUserRole(req);
 
   if (!role) {
-    res.status(401).json({ message: "Сессия не найдена." });
+    res.status(401).json({ message: "Session not found." });
     return;
   }
 
   if (role !== adminRole) {
-    res.status(403).json({ message: "Доступ запрещен." });
+    res.status(403).json({ message: "Access denied." });
     return;
   }
 
@@ -24,7 +24,6 @@ export async function requireSessionAuth(req: express.Request, res: express.Resp
   const user = await requireSessionUser(req, res);
 
   if (!user) {
-    res.status(401).json({ message: "Сессия не найдена." });
     return;
   }
 

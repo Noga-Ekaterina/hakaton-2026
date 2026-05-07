@@ -5,7 +5,6 @@ import { prisma } from "../lib/prisma.js";
 
 const adminRole = "ADMIN";
 
-// достаёт projectId, поддерживает разные форматы (число, строка, массив)
 function parseProjectId(value: unknown) {
   if (typeof value === "number" && Number.isInteger(value)) {
     return value;
@@ -23,7 +22,6 @@ function parseProjectId(value: unknown) {
   return null;
 }
 
-// определяет projectId из разных частей запроса (query, body)
 function getRequestedProjectId(req: express.Request) {
   const paramsProjectId = parseProjectId(req.params.projectId);
 
@@ -44,7 +42,6 @@ function getRequestedProjectId(req: express.Request) {
   return null;
 }
 
-// middleware для проверки доступа к проекту: админ или участник проекта
 async function requireProjectAccess(
   req: express.Request,
   res: express.Response,
@@ -54,12 +51,11 @@ async function requireProjectAccess(
   const user = await requireSessionUser(req, res);
 
   if (!user) {
-    res.status(401).json({ message: "Сессия не найдена." });
     return;
   }
 
   if (!projectId) {
-    res.status(400).json({ message: "Нужно указать projectId." });
+    res.status(400).json({ message: "projectId is required." });
     return;
   }
 
@@ -72,7 +68,7 @@ async function requireProjectAccess(
   const hasProjectAccess = user.projects.some((project) => project.id === projectId);
 
   if (!hasProjectAccess) {
-    res.status(403).json({ message: "Доступ запрещен." });
+    res.status(403).json({ message: "Access denied." });
     return;
   }
 
@@ -88,7 +84,7 @@ export async function requireSessionAdminOrTaskProjectAccess(req: express.Reques
   const taskId = Number(req.params.id);
 
   if (!Number.isInteger(taskId)) {
-    res.status(400).json({ message: "Некорректный идентификатор задачи." });
+    res.status(400).json({ message: "Invalid task id." });
     return;
   }
 
@@ -98,7 +94,7 @@ export async function requireSessionAdminOrTaskProjectAccess(req: express.Reques
   });
 
   if (!task) {
-    res.status(404).json({ message: "Задача не найдена." });
+    res.status(404).json({ message: "Task not found." });
     return;
   }
 

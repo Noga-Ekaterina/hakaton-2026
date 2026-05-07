@@ -4,6 +4,7 @@ import express from "express";
 import fileUpload from "express-fileupload";
 
 import { allowedOrigins } from "./lib/constants.js";
+import { requireAllowedOrigin } from "./middleware/originGuard.js";
 import { authRouter } from "./routes/auth.js";
 import { metaRouter } from "./routes/meta.js";
 import { projectsRouter } from "./routes/projects/projects.js";
@@ -26,6 +27,7 @@ export function createApp() {
       credentials: true,
     }),
   );
+  app.use(requireAllowedOrigin);
   app.use(express.json());
   app.use(
     fileUpload({

@@ -51,6 +51,7 @@ model User {
   password              String
   role                  UserRole                   @default(USER)
   projects              Project[]
+  refreshSessions       RefreshSession[]
   authoredTasks         Task[]                     @relation("TaskAuthor")
   assignedTasks         Task[]                     @relation("TaskAssignee")
   taskComments          TaskComment[]              @relation("TaskCommentAuthor")
@@ -58,6 +59,19 @@ model User {
   notificationsAssignee TaskNotificationAssignee[] @relation("TaskNotificationAssignee")
   createdAt             DateTime                   @default(now())
   updatedAt             DateTime                   @updatedAt
+}
+
+model RefreshSession {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Task {

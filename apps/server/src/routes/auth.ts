@@ -1,24 +1,34 @@
+import type express from "express";
 import { Router } from "express";
+import type { UserRole } from "@prisma/client";
 
 import { loginSchema } from "@hakaton/shared";
 
 import { verifyPassword } from "../lib/auth/passwords.js";
-import { createSessionToken, requireSessionUser } from "../lib/auth/session.js";
+import { accessTokenCookieName, accessTokenCookieOptions, refreshTokenCookieName, refreshTokenCookieOptions } from "../lib/auth/cookies.js";
+import { createRefreshSession, deleteRefreshSession, getRefreshToken, rotateRefreshSession } from "../lib/auth/refreshSession.js";
+import { createAccessToken, requireSessionUser } from "../lib/auth/session.js";
 import { requireSessionAuth } from "../middleware/auth.js";
-import { sessionCookieName } from "../lib/constants.js";
 import { prisma } from "../lib/prisma.js";
 import { serializeUser } from "./users/lib/serialize.js";
 import { userWithPasswordSelect } from "./users/lib/userRelations.js";
 
 export const authRouter = Router();
 
-const sessionCookieOptions = {
-  httpOnly: true,
-  sameSite: "lax" as const,
-  secure: false,
-  path: "/",
-  maxAge: 1000 * 60 * 60 * 24 * 7,
-};
+function getProjectIds(user: { projects: Array<{ id: number }> }) {
+  return user.projects.map((project) => project.id);
+}
+
+async function setAuthCookies(
+  res: express.Response,
+  user: { id: number; role: UserRole; projects: Array<{ id: number }> },
+) {
+  const accessToken = createAccessToken(user.id, user.role, getProjectIds(user));
+  const refreshToken = await createRefreshSession(user.id);
+
+  res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
+  res.cookie(refreshTokenCookieName, refreshToken, refreshTokenCookieOptions);
+}
 
 authRouter.post("/login", async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
@@ -38,11 +48,32 @@ authRouter.post("/login", async (req, res) => {
     return;
   }
 
-  const projectIds = user.projects.map((project) => project.id);  
+  await setAuthCookies(res, user);
+  res.json(serializeUser(user));
+});
 
-  const token = createSessionToken(user.id, user.role, projectIds);
+authRouter.post("/refresh", async (req, res) => {
+  const refreshToken = getRefreshToken(req);
 
-  res.cookie(sessionCookieName, token, sessionCookieOptions);
+  if (!refreshToken) {
+    res.status(401).json({ message: "Сессия не найдена." });
+    return;
+  }
+
+  const rotatedSession = await rotateRefreshSession(refreshToken);
+
+  if (!rotatedSession) {
+    res.clearCookie(accessTokenCookieName, accessTokenCookieOptions);
+    res.clearCookie(refreshTokenCookieName, refreshTokenCookieOptions);
+    res.status(401).json({ message: "Сессия не найдена." });
+    return;
+  }
+
+  const user = rotatedSession.user;
+  const accessToken = createAccessToken(user.id, user.role, getProjectIds(user));
+
+  res.cookie(accessTokenCookieName, accessToken, accessTokenCookieOptions);
+  res.cookie(refreshTokenCookieName, rotatedSession.refreshToken, refreshTokenCookieOptions);
   res.json(serializeUser(user));
 });
 
@@ -56,7 +87,9 @@ authRouter.get("/me", requireSessionAuth, async (req, res) => {
   res.json(serializeUser(user));
 });
 
-authRouter.post("/logout", (_req, res) => {
-  res.clearCookie(sessionCookieName, sessionCookieOptions);
+authRouter.post("/logout", async (req, res) => {
+  await deleteRefreshSession(getRefreshToken(req));
+  res.clearCookie(accessTokenCookieName, accessTokenCookieOptions);
+  res.clearCookie(refreshTokenCookieName, refreshTokenCookieOptions);
   res.status(204).end();
 });

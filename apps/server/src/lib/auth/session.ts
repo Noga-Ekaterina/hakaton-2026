@@ -2,18 +2,18 @@ import type { UserRole } from "@prisma/client";
 import type express from "express";
 import jwt from "jsonwebtoken";
 
-import { sessionCookieName } from "../constants.js";
+import { accessTokenCookieName } from "./cookies.js";
 import { prisma } from "../prisma.js";
 import { userSelect } from "../../routes/users/lib/userRelations.js";
 
-const sessionTokenTtl = "7d";
+const accessTokenTtl = "5m";
 
 function getJwtSecret() {
-  return process.env.JWT_SECRET ?? process.env.SESSION_JWT_SECRET ?? "qitask-dev-jwt-secret";
+  return process.env.JWT_SECRET ?? process.env.ACCESS_JWT_SECRET ?? "qitask-dev-jwt-secret";
 }
 
-function getSessionToken(req: express.Request) {
-  const token = req.cookies?.[sessionCookieName];
+function getAccessToken(req: express.Request) {
+  const token = req.cookies?.[accessTokenCookieName];
 
   if (typeof token !== "string" || token.trim() === "") {
     return null;
@@ -22,17 +22,17 @@ function getSessionToken(req: express.Request) {
   return token;
 }
 
-export function createSessionToken(userId: number, role: UserRole, projectIds: number[]) {
+export function createAccessToken(userId: number, role: UserRole, projectIds: number[]) {
   return jwt.sign({ role, projectIds }, getJwtSecret(), {
     subject: String(userId),
-    expiresIn: sessionTokenTtl,
+    expiresIn: accessTokenTtl,
   });
 }
 
-function getSessionPayload(req: express.Request) {
-  const rawValue = getSessionToken(req);
+function getAccessPayload(req: express.Request) {
+  const rawValue = getAccessToken(req);
 
-  if (typeof rawValue !== "string" || rawValue.trim() === "") {
+  if (!rawValue) {
     return null;
   }
 
@@ -50,7 +50,7 @@ function getSessionPayload(req: express.Request) {
 }
 
 export function getSessionUserId(req: express.Request) {
-  const payload = getSessionPayload(req);
+  const payload = getAccessPayload(req);
 
   if (!payload) {
     return null;
@@ -61,7 +61,7 @@ export function getSessionUserId(req: express.Request) {
 }
 
 export function getSessionUserRole(req: express.Request) {
-  const payload = getSessionPayload(req);
+  const payload = getAccessPayload(req);
 
   if (!payload || typeof payload.role !== "string") {
     return null;

@@ -1,7 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import type { Task, TaskComment, TaskListItem, TaskPriority, TaskStatus, TaskTag, TaskTimelineItem } from "@/entities/task";
 import type { UserRole } from "@/entities/user";
-import { API_URL } from "@/shared/config/api";
+import { baseQueryWithAuthRefresh } from "./base-query";
 
 export type CreateTaskUser = {
   id: number;
@@ -105,10 +105,7 @@ function buildUpdateTaskFormData(body: UpdateTaskInput) {
 export const tasksApi = createApi({
   reducerPath: "tasksApi",
   tagTypes: ["Tasks", "TaskTimeline", "TaskTags", "TaskMeta"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_URL,
-    credentials: "include",
-  }),
+  baseQuery: baseQueryWithAuthRefresh,
   endpoints: (builder) => ({
     getTasks: builder.query<TaskListItem[], number>({
       query: (projectId) => `/tasks?projectId=${projectId}`,

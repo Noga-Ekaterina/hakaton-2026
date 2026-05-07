@@ -1,7 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import type { Project } from "@/entities/project";
 import type { User, UserRole } from "@/entities/user";
-import { API_URL } from "@/shared/config/api";
+import { baseQueryWithAuthRefresh } from "./base-query";
 
 export type CreateProjectInput = {
   name: string;
@@ -43,10 +43,7 @@ export type RemoveUserProjectInput = {
 export const adminApi = createApi({
   reducerPath: "adminApi",
   tagTypes: ["Users", "Projects"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_URL,
-    credentials: "include",
-  }),
+  baseQuery: baseQueryWithAuthRefresh,
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
       query: () => "/users",

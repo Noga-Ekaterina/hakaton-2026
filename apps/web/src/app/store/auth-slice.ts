@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { User } from "@/entities/user";
 import type { LoginValues } from "@/features/auth/login-form";
-import { AUTH_LOGIN_URL, AUTH_LOGOUT_URL, AUTH_ME_URL } from "@/shared/config/api";
+import { AUTH_LOGIN_URL, AUTH_LOGOUT_URL, AUTH_REFRESH_URL } from "@/shared/config/api";
 
 type AuthState = {
   user: User | null;
@@ -93,8 +93,8 @@ export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: stri
   "auth/fetchCurrentUser",
   async (_arg, { rejectWithValue }) => {
     try {
-      const response = await fetch(AUTH_ME_URL, {
-        method: "GET",
+      const response = await fetch(AUTH_REFRESH_URL, {
+        method: "POST",
         credentials: "include",
       });
 
