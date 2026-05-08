@@ -83,7 +83,7 @@ export async function requireSessionUser(req: express.Request, res: express.Resp
     select: userSelect,
   });
 
-  if (!user) {
+  if (!user || user.archivedAt) {
     res.status(401).json({ message: "Сессия не найдена." });
     return null;
   }

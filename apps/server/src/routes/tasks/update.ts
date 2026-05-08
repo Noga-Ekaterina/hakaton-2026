@@ -53,7 +53,7 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
   }
 
   if (parsed.data.assigneeId) {
-    const assignee = await prisma.user.findUnique({ where: { id: parsed.data.assigneeId } });
+    const assignee = await prisma.user.findFirst({ where: { id: parsed.data.assigneeId, archivedAt: null } });
 
     if (!assignee) {
       res.status(404).json({ message: "Исполнитель не найден." });

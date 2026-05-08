@@ -1,14 +1,34 @@
 import { useState } from "react";
+import type { GetUsersInput } from "@/app/store/api/admin-api";
 import { useGetProjectsQuery, useGetUsersQuery } from "@/app/store/api/admin-api";
 import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/cn";
 import { UserModal } from "@/features/user/manage-user";
 import { UserUpdateCard } from "@/features/user/update-user";
 
+const userTabs: Array<{ value: GetUsersInput; label: string }> = [
+  { value: "active", label: "Активные" },
+  { value: "archived", label: "Архив" },
+];
+
 export function AdminUsersPage() {
-  const { data: users, isLoading: usersLoading, isError: usersError, error: usersFetchError } = useGetUsersQuery();
+  const [activeTab, setActiveTab] = useState<GetUsersInput>("active");
+  const { data: activeUsers, isLoading: activeUsersLoading, isError: activeUsersError, error: activeUsersFetchError } =
+    useGetUsersQuery("active");
+  const {
+    data: archivedUsers,
+    isLoading: archivedUsersLoading,
+    isError: archivedUsersError,
+    error: archivedUsersFetchError,
+  } = useGetUsersQuery("archived");
   const { data: projects, isLoading: projectsLoading, isError: projectsError, error: projectsFetchError } =
     useGetProjectsQuery();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  const users = activeTab === "active" ? activeUsers : archivedUsers;
+  const usersLoading = activeTab === "active" ? activeUsersLoading : archivedUsersLoading;
+  const usersError = activeTab === "active" ? activeUsersError : archivedUsersError;
+  const usersFetchError = activeTab === "active" ? activeUsersFetchError : archivedUsersFetchError;
 
   const getErrorMessage = (error: unknown) =>
     typeof error === "object" && error && "data" in error ? String((error as { data: unknown }).data) : null;
@@ -21,7 +41,7 @@ export function AdminUsersPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary">Администрирование</p>
             <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">Пользователи</h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-              Здесь можно управлять сотрудниками, их ролями и привязкой к проектам.
+              Здесь можно управлять сотрудниками, их ролями, проектами и архивом пользователей.
             </p>
           </div>
 
@@ -29,6 +49,22 @@ export function AdminUsersPage() {
             Создать пользователя
           </Button>
         </div>
+      </div>
+
+      <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+        {userTabs.map((tab) => (
+          <button
+            key={tab.value}
+            type="button"
+            className={cn(
+              "rounded-full px-4 py-2 text-sm font-semibold transition",
+              activeTab === tab.value ? "bg-primary text-white shadow-sm" : "text-slate-600 hover:text-slate-950",
+            )}
+            onClick={() => setActiveTab(tab.value)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {usersError || projectsError ? (
@@ -41,8 +77,16 @@ export function AdminUsersPage() {
 
       {usersLoading || projectsLoading ? <p className="text-sm text-slate-600">Загружаем данные...</p> : null}
 
+      {!usersLoading && users?.length === 0 ? (
+        <p className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
+          {activeTab === "active" ? "Активных пользователей пока нет." : "Архив пользователей пуст."}
+        </p>
+      ) : null}
+
       <div className="grid gap-4 md:grid-cols-3">
-        {users?.map((user) => <UserUpdateCard key={user.id} user={user} projects={projects ?? []} />)}
+        {users?.map((user) => (
+          <UserUpdateCard key={user.id} user={user} projects={projects ?? []} mode={activeTab} />
+        ))}
       </div>
 
       <UserModal open={isCreateOpen} onClose={() => setIsCreateOpen(false)} projects={projects ?? []} />

@@ -7,6 +7,7 @@ export const userSelect = {
   name: true,
   email: true,
   role: true,
+  archivedAt: true,
   ...userRelations,
 } as const;
 

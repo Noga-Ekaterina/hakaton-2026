@@ -57,6 +57,7 @@ model User {
   taskComments          TaskComment[]              @relation("TaskCommentAuthor")
   taskEvents            TaskEvent[]                @relation("TaskEventActor")
   notificationsAssignee TaskNotificationAssignee[] @relation("TaskNotificationAssignee")
+  archivedAt            DateTime?
   createdAt             DateTime                   @default(now())
   updatedAt             DateTime                   @updatedAt
 }

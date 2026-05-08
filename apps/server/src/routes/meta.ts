@@ -23,6 +23,7 @@ metaRouter.get("/meta", requireSessionAdminOrProjectAccess, async (req, res) => 
   const [users, tags] = await Promise.all([
     prisma.user.findMany({
       where: {
+        archivedAt: null,
         OR: [{ role: UserRole.ADMIN }, { projects: { some: { id: projectId } } }],
       },
       orderBy: { id: "asc" },

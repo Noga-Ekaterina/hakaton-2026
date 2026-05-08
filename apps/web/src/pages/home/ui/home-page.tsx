@@ -14,7 +14,7 @@ export function HomePage() {
 
   const { data: projects, isLoading: projectsLoading, isError: projectsError, error: projectsFetchError } =
     useGetProjectsQuery();
-  const { data: users } = useGetUsersQuery();
+  const { data: users } = useGetUsersQuery(undefined, { skip: currentUser?.role !== "ADMIN" });
 
   const memberCounts = useMemo(() => {
     const counts = new Map<number, number>();
@@ -114,7 +114,7 @@ export function HomePage() {
             <ProjectCard
               key={project.id}
               project={project}
-              memberCount={memberCounts.get(project.id) ?? 0}
+              memberCount={currentUser?.role === "ADMIN" ? (memberCounts.get(project.id) ?? 0) : undefined}
               onClick={() => navigate(projectPath(project.id))}
             />
           ))}

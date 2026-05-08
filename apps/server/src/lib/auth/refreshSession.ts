@@ -46,7 +46,7 @@ export async function rotateRefreshSession(token: string) {
     include: { user: { select: userSelect } },
   });
 
-  if (!refreshSession || refreshSession.expiresAt <= new Date()) {
+  if (!refreshSession || refreshSession.expiresAt <= new Date() || refreshSession.user.archivedAt) {
     if (refreshSession) {
       await prisma.refreshSession.delete({ where: { id: refreshSession.id } });
     }

@@ -1,22 +1,22 @@
 import type express from "express";
 
-import { getSessionUserRole, requireSessionUser } from "../lib/auth/session.js";
+import { requireSessionUser } from "../lib/auth/session.js";
 
 const adminRole = "ADMIN";
 
-export function isSessionAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
-  const role = getSessionUserRole(req);
+export async function isSessionAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const user = await requireSessionUser(req, res);
 
-  if (!role) {
-    res.status(401).json({ message: "Session not found." });
+  if (!user) {
     return;
   }
 
-  if (role !== adminRole) {
+  if (user.role !== adminRole) {
     res.status(403).json({ message: "Access denied." });
     return;
   }
 
+  res.locals.sessionUser = user;
   next();
 }
 

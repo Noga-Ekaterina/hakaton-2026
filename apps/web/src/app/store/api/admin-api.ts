@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import type { Project } from "@/entities/project";
 import type { User, UserRole } from "@/entities/user";
 import { baseQueryWithAuthRefresh } from "./base-query";
+import { tasksApi } from "./tasks-api";
 
 export type CreateProjectInput = {
   name: string;
@@ -15,6 +16,8 @@ export type UpdateProjectInput = {
 export type DeleteProjectInput = {
   id: number;
 };
+
+export type GetUsersInput = "active" | "archived";
 
 export type CreateUserInput = {
   name: string;
@@ -40,13 +43,21 @@ export type RemoveUserProjectInput = {
   projectId: number;
 };
 
+export type DeleteUserInput = {
+  id: number;
+};
+
+export type RestoreUserInput = {
+  id: number;
+};
+
 export const adminApi = createApi({
   reducerPath: "adminApi",
   tagTypes: ["Users", "Projects"],
   baseQuery: baseQueryWithAuthRefresh,
   endpoints: (builder) => ({
-    getUsers: builder.query<User[], void>({
-      query: () => "/users",
+    getUsers: builder.query<User[], GetUsersInput | void>({
+      query: (archived = "active") => `/users?archived=${archived}`,
       providesTags: (result) =>
         result
           ? [...result.map(({ id }) => ({ type: "Users" as const, id })), { type: "Users" as const, id: "LIST" }]
@@ -166,6 +177,42 @@ export const adminApi = createApi({
         { type: "Users", id: "LIST" },
       ],
     }),
+    deleteUser: builder.mutation<void, DeleteUserInput>({
+      query: ({ id }) => ({
+        url: `/users/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(_input, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(tasksApi.util.invalidateTags([{ type: "TaskMeta" }]));
+        } catch {
+          // The local Users cache is invalidated by RTK Query below when the request succeeds.
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Users", id },
+        { type: "Users", id: "LIST" },
+      ],
+    }),
+    restoreUser: builder.mutation<User, RestoreUserInput>({
+      query: ({ id }) => ({
+        url: `/users/${id}/restore`,
+        method: "POST",
+      }),
+      async onQueryStarted(_input, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(tasksApi.util.invalidateTags([{ type: "TaskMeta" }]));
+        } catch {
+          // The local Users cache is invalidated by RTK Query below when the request succeeds.
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Users", id },
+        { type: "Users", id: "LIST" },
+      ],
+    }),
   }),
 });
 
@@ -179,4 +226,6 @@ export const {
   useChangeUserRoleMutation,
   useAssignUserProjectMutation,
   useRemoveUserProjectMutation,
+  useDeleteUserMutation,
+  useRestoreUserMutation,
 } = adminApi;

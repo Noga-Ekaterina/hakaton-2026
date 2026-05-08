@@ -11,6 +11,7 @@ export const userSchema = z.object({
   projectId: z.number().int().positive().nullable().optional(),
   projectName: z.string().nullable().optional(),
   projects: projectSchema.array().optional(),
+  archivedAt: z.string().nullable().optional(),
 });
 export type User = z.infer<typeof userSchema>;
 

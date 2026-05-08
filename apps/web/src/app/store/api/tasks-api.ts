@@ -1,15 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { Task, TaskComment, TaskListItem, TaskPriority, TaskStatus, TaskTag, TaskTimelineItem } from "@/entities/task";
-import type { UserRole } from "@/entities/user";
+import type { User, UserRole } from "@/entities/user";
 import { baseQueryWithAuthRefresh } from "./base-query";
 
-export type CreateTaskUser = {
-  id: number;
-  name: string;
-  email: string;
-  role: UserRole;
-  projectId?: number | null;
-  projectName?: string | null;
+export type CreateTaskUser = User & {
   createdAt: string;
   active: boolean;
 };

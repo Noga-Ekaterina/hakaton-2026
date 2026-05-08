@@ -3,7 +3,7 @@ import type { Project } from "../model/types";
 
 type ProjectCardProps = {
   project: Project;
-  memberCount: number;
+  memberCount?: number;
   onClick?: () => void;
 };
 
@@ -31,9 +31,11 @@ export function ProjectCard({ project, memberCount, onClick }: ProjectCardProps)
     >
       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Проект #{project.id}</p>
       <h3 className="mt-3 text-xl font-bold tracking-tight text-slate-950">{project.name}</h3>
-      <div className="mt-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-        {memberCount} сотрудников
-      </div>
+      {typeof memberCount === "number" ? (
+        <div className="mt-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+          {memberCount} сотрудников
+        </div>
+      ) : null}
     </article>
   );
 }

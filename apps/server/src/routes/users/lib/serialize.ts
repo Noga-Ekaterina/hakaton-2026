@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import type { User, UserRole as SharedUserRole } from "@hakaton/shared";
 
+import { toIso } from "../../../lib/dates.js";
 import { serializeProject } from "../../projects/lib/serialize.js";
 import { userSelect } from "./userRelations.js";
 
@@ -20,5 +21,6 @@ export function serializeUser(user: UserWithProject): User {
     projectId: primaryProject?.id ?? null,
     projectName: primaryProject?.name ?? null,
     projects,
+    archivedAt: user.archivedAt ? toIso(user.archivedAt) : null,
   };
 }

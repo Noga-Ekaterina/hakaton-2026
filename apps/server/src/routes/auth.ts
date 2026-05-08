@@ -43,7 +43,7 @@ authRouter.post("/login", async (req, res) => {
     select: userWithPasswordSelect,
   });
 
-  if (!user || !(await verifyPassword(parsed.data.password, user.password))) {
+  if (!user || user.archivedAt || !(await verifyPassword(parsed.data.password, user.password))) {
     res.status(401).json({ message: "Неверный email или пароль." });
     return;
   }

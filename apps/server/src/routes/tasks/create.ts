@@ -38,8 +38,8 @@ taskCreateRouter.post("/", requireSessionAdminOrProjectAccess, async (req, res) 
   }
 
   const [author, assignee, project] = await Promise.all([
-    prisma.user.findUnique({ where: { id: authorId } }),
-    prisma.user.findUnique({ where: { id: assigneeId } }),
+    prisma.user.findFirst({ where: { id: authorId, archivedAt: null } }),
+    prisma.user.findFirst({ where: { id: assigneeId, archivedAt: null } }),
     prisma.project.findUnique({ where: { id: projectId } }),
   ]);
 
