@@ -12,5 +12,6 @@ export type TaskPriority = z.infer<typeof taskPrioritySchema>;
 export const projectSchema = z.object({
   id: z.number().int().positive(),
   name: z.string().min(1),
+  memberCount: z.number().int().nonnegative().optional(),
 });
 export type Project = z.infer<typeof projectSchema>;

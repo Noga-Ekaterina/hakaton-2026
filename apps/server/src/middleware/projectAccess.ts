@@ -1,9 +1,8 @@
 import type express from "express";
 
 import { requireSessionUser } from "../lib/auth/session.js";
+import { adminRole } from "../lib/constants.js";
 import { prisma } from "../lib/prisma.js";
-
-const adminRole = "ADMIN";
 
 function parseProjectId(value: unknown) {
   if (typeof value === "number" && Number.isInteger(value)) {

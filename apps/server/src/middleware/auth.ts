@@ -1,8 +1,7 @@
 import type express from "express";
 
 import { requireSessionUser } from "../lib/auth/session.js";
-
-const adminRole = "ADMIN";
+import { adminRole } from "../lib/constants.js";
 
 export async function isSessionAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
   const user = await requireSessionUser(req, res);

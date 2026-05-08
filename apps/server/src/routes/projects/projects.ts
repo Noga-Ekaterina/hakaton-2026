@@ -7,6 +7,7 @@ import { isSessionAdmin } from "../../middleware/auth.js";
 import { requireSessionAuth } from "../../middleware/auth.js";
 import { projectTagsRouter } from "./tags.js";
 import { deleteTaskUploadDir } from "../../lib/taskPhotoFiles.js";
+import { adminRole } from "../../lib/constants.js";
 
 export const projectsRouter = Router();
 
@@ -17,13 +18,45 @@ const projectSelect = {
   name: true,
 } as const;
 
-projectsRouter.get("/", requireSessionAuth, async (_req, res) => {
-  const projects = await prisma.project.findMany({
-    orderBy: { id: "asc" },
-    select: projectSelect,
-  });
+const projectListSelect = {
+  ...projectSelect,
+  users: {
+    where: {
+      archivedAt: null,
+    },
+    select: {
+      role: true,
+    },
+  },
+} as const;
 
-  res.json(projects.map(serializeProject));
+projectsRouter.get("/", requireSessionAuth, async (_req, res) => {
+  const sessionUser = res.locals.sessionUser;
+  const isAdmin = sessionUser?.role === adminRole;
+
+  const [adminCount, projects] = await Promise.all([
+    prisma.user.count({
+      where: {
+        role: adminRole,
+        archivedAt: null,
+      },
+    }),
+    prisma.project.findMany({
+      where: isAdmin ? undefined : { users: { some: { id: sessionUser.id } } },
+      orderBy: { id: "asc" },
+      select: projectListSelect,
+    }),
+  ]);
+
+  res.json(
+    projects.map((project) =>
+      serializeProject({
+        id: project.id,
+        name: project.name,
+        memberCount: adminCount + project.users.filter((user) => user.role !== adminRole).length,
+      }),
+    ),
+  );
 });
 
 projectsRouter.post("/", isSessionAdmin, async (req, res) => {

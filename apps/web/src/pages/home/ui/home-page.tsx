@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetProjectsQuery, useGetUsersQuery } from "@/app/store/api/admin-api";
+import { useGetProjectsQuery } from "@/app/store/api/admin-api";
 import { useAppSelector } from "@/app/store/hooks";
 import { ProjectCard } from "@/entities/project";
 import { ProjectModal } from "@/features/project/manage-project";
@@ -14,40 +14,7 @@ export function HomePage() {
 
   const { data: projects, isLoading: projectsLoading, isError: projectsError, error: projectsFetchError } =
     useGetProjectsQuery();
-  const { data: users } = useGetUsersQuery(undefined, { skip: currentUser?.role !== "ADMIN" });
-
-  const memberCounts = useMemo(() => {
-    const counts = new Map<number, number>();
-    const adminCount = users?.filter((user) => user.role === "ADMIN").length ?? 0;
-
-    projects?.forEach((project) => {
-      counts.set(project.id, adminCount);
-    });
-
-    users?.forEach((user) => {
-      if (user.role === "ADMIN") {
-        return;
-      }
-
-      user.projects?.forEach((project) => {
-        counts.set(project.id, (counts.get(project.id) ?? 0) + 1);
-      });
-    });
-    return counts;
-  }, [projects, users]);
-
-  const visibleProjects = useMemo(() => {
-    if (!projects) {
-      return [];
-    }
-
-    if (currentUser?.role === "ADMIN") {
-      return projects;
-    }
-
-    const allowedProjectIds = new Set(currentUser?.projects?.map((project) => project.id) ?? []);
-    return projects.filter((project) => allowedProjectIds.has(project.id));
-  }, [currentUser?.projects, currentUser?.role, projects]);
+  const visibleProjects = projects ?? [];
 
   const totalVisibleProjects = visibleProjects.length;
 
@@ -114,7 +81,7 @@ export function HomePage() {
             <ProjectCard
               key={project.id}
               project={project}
-              memberCount={currentUser?.role === "ADMIN" ? (memberCounts.get(project.id) ?? 0) : undefined}
+              memberCount={project.memberCount}
               onClick={() => navigate(projectPath(project.id))}
             />
           ))}
