@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { GetUsersInput } from "@/app/store/api/admin-api";
 import { useGetProjectsQuery, useGetUsersQuery } from "@/app/store/api/admin-api";
 import { Button } from "@/shared/ui/button";
-import { cn } from "@/shared/lib/cn";
+import { SegmentedControl, SegmentedControlItem } from "@/shared/ui/segmented-control";
 import { UserModal } from "@/features/user/manage-user";
 import { UserUpdateCard } from "@/features/user/update-user";
 
@@ -51,21 +51,18 @@ export function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+      <SegmentedControl>
         {userTabs.map((tab) => (
-          <button
+          <SegmentedControlItem
             key={tab.value}
             type="button"
-            className={cn(
-              "rounded-full px-4 py-2 text-sm font-semibold transition",
-              activeTab === tab.value ? "bg-primary text-white shadow-sm" : "text-slate-600 hover:text-slate-950",
-            )}
+            active={activeTab === tab.value}
             onClick={() => setActiveTab(tab.value)}
           >
             {tab.label}
-          </button>
+          </SegmentedControlItem>
         ))}
-      </div>
+      </SegmentedControl>
 
       {usersError || projectsError ? (
         <section className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 shadow-sm">

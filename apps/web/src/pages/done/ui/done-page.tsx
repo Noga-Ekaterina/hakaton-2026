@@ -10,7 +10,7 @@ import { TaskActions } from "@/features/task/task-actions";
 import { Button } from "@/shared/ui/button";
 import { paths, projectPath } from "@/shared/config/routes";
 import { getDoneTasks } from "@/widgets/task-board";
-import { getTaskFilters } from "@/widgets/task-filters";
+import { getTaskFilters, getTaskSort } from "@/widgets/task-filters";
 
 export function DonePage() {
   const { projectId } = useParams();
@@ -19,6 +19,7 @@ export function DonePage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.toString();
   const filters = useMemo(() => getTaskFilters(searchParams), [search, searchParams]);
+  const sort = useMemo(() => getTaskSort(searchParams), [search, searchParams]);
   const projectIdNumber = Number(projectId);
   const shouldFetchTasks = Number.isInteger(projectIdNumber);
   const { data: tasks, isLoading, isError, error } = useGetTasksQuery(shouldFetchTasks ? projectIdNumber : skipToken);
@@ -37,7 +38,7 @@ export function DonePage() {
     return new Set(currentUser?.projects?.map((item) => item.id) ?? []);
   }, [currentUser?.projects, currentUser?.role, projects]);
 
-  const doneTasks = useMemo(() => getDoneTasks(tasks, filters), [filters, tasks]);
+  const doneTasks = useMemo(() => getDoneTasks(tasks, filters, sort), [filters, sort, tasks]);
 
   if (shouldFetchTasks && project && !accessibleProjectIds.has(project.id)) {
     return <Navigate to={paths.home} replace />;

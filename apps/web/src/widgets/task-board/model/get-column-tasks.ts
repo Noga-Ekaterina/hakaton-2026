@@ -1,10 +1,16 @@
-import type { TaskListItem, TaskStatus } from "@/entities/task";
-import { filterTasks, type TaskFilters } from "@/entities/task";
+import type { TaskListItem, TaskSort, TaskStatus } from "@/entities/task";
+import { filterTasks, sortTasks, type TaskFilters } from "@/entities/task";
 
-export function getColumnTasks(tasks: TaskListItem[] | undefined, statuses: TaskStatus[], filters: TaskFilters) {
-  return filterTasks(tasks, filters).filter((task) => statuses.includes(task.status));
+export function getColumnTasks(tasks: TaskListItem[] | undefined, statuses: TaskStatus[], filters: TaskFilters, sort: TaskSort | null) {
+  return sortTasks(
+    filterTasks(tasks, filters).filter((task) => statuses.includes(task.status)),
+    sort,
+  );
 }
 
-export function getDoneTasks(tasks: TaskListItem[] | undefined, filters: TaskFilters) {
-  return filterTasks(tasks, filters).filter((task) => task.status === "DONE");
+export function getDoneTasks(tasks: TaskListItem[] | undefined, filters: TaskFilters, sort: TaskSort | null) {
+  return sortTasks(
+    filterTasks(tasks, filters).filter((task) => task.status === "DONE"),
+    sort,
+  );
 }

@@ -48,7 +48,7 @@ export function AppLayout() {
                     to={paths.adminUsers}
                     className={({ isActive }) =>
                       `${linkBaseClass} ${
-                        isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "bg-white/70 text-slate-700 hover:bg-white"
+                        isActive ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" : "bg-white/70 text-slate-700 hover:bg-white"
                       }`
                     }
                   >

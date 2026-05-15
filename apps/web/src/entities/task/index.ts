@@ -4,8 +4,8 @@ export { TaskTagSelect } from "./ui/task-tag-select";
 export { TaskChangeLine } from "./ui/task-change";
 export { TaskEventTitle } from "./ui/task-event-title";
 export type { Task, TaskChange, TaskComment, TaskEvent, TaskEventType, TaskListItem, TaskPriority, TaskStatus, TaskTag, TaskTimelineItem } from "./model/types";
-export { filterTasks } from "./model/task-filters";
-export type { TaskFilters } from "./model/task-filters";
+export { filterTasks, sortTasks } from "./model/task-filters";
+export type { TaskFilters, TaskSort, TaskSortDirection, TaskSortField } from "./model/task-filters";
 export { TASK_DND_TYPE } from "./model/dnd";
 export type { TaskDragItem } from "./model/dnd";
 export {

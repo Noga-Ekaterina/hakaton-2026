@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { TaskFilters } from "@/entities/task";
-import { getTaskFilters, taskFilterParamNames, type TaskArrayFilterParamName } from "./task-filters";
+import type { TaskFilters, TaskSort } from "@/entities/task";
+import { getTaskFilters, getTaskSort, taskFilterParamNames, type TaskArrayFilterParamName } from "./task-filters";
 
 export function useTaskFilterUrlState() {
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.toString();
   const filters = useMemo<TaskFilters>(() => getTaskFilters(searchParams), [search, searchParams]);
+  const sort = useMemo<TaskSort | null>(() => getTaskSort(searchParams), [search, searchParams]);
 
   const updateFilter = (key: TaskArrayFilterParamName, value: string[] | number[]) => {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -66,12 +67,28 @@ export function useTaskFilterUrlState() {
     setSearchParams(nextSearchParams, { replace: true });
   };
 
+  const updateSort = (nextSort: TaskSort | null) => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    nextSearchParams.delete(taskFilterParamNames.sortField);
+    nextSearchParams.delete(taskFilterParamNames.sortDirection);
+
+    if (nextSort) {
+      nextSearchParams.set(taskFilterParamNames.sortField, nextSort.field);
+      nextSearchParams.set(taskFilterParamNames.sortDirection, nextSort.direction);
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  };
+
   return {
     filters,
+    sort,
     updateFilter,
     updateDateFilter,
     updateDateFilters,
     clearDateFilters,
     clearFilters,
+    updateSort,
   };
 }

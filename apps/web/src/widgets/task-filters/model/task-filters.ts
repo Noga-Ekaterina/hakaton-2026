@@ -1,4 +1,4 @@
-import { taskPriorityValues, type TaskFilters } from "@/entities/task";
+import { taskPriorityValues, type TaskFilters, type TaskSort, type TaskSortDirection, type TaskSortField } from "@/entities/task";
 
 export const taskFilterParamNames = {
   priority: "priority",
@@ -7,9 +7,18 @@ export const taskFilterParamNames = {
   createdFrom: "createdFrom",
   createdTo: "createdTo",
   tagIds: "tagIds",
+  sortField: "sortField",
+  sortDirection: "sortDirection",
 } as const;
 
 export type TaskArrayFilterParamName = "priority" | "assigneeId" | "authorId" | "tagIds";
+
+const taskSortFields = ["createdAt", "priority"] as const satisfies readonly TaskSortField[];
+const taskSortDirections = ["asc", "desc"] as const satisfies readonly TaskSortDirection[];
+const defaultTaskSort = {
+  field: "createdAt",
+  direction: "desc",
+} as const satisfies TaskSort;
 
 function getDateParam(searchParams: URLSearchParams, key: "createdFrom" | "createdTo") {
   const value = searchParams.get(taskFilterParamNames[key]) ?? "";
@@ -34,6 +43,23 @@ export function getTaskFilters(searchParams: URLSearchParams): TaskFilters {
     createdTo: getDateParam(searchParams, "createdTo"),
     tagIds,
   };
+}
+
+export function getTaskSort(searchParams: URLSearchParams): TaskSort | null {
+  const field = searchParams.get(taskFilterParamNames.sortField);
+  const direction = searchParams.get(taskFilterParamNames.sortDirection);
+
+  if (
+    taskSortFields.includes(field as TaskSortField) &&
+    taskSortDirections.includes(direction as TaskSortDirection)
+  ) {
+    return {
+      field: field as TaskSortField,
+      direction: direction as TaskSortDirection,
+    };
+  }
+
+  return defaultTaskSort;
 }
 
 export function hasActiveTaskFilters(filters: TaskFilters) {

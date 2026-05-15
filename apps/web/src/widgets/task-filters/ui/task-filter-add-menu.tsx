@@ -151,7 +151,6 @@ export function TaskFilterAddMenu({
 
   return (
     <div className="space-y-2">
-      <p className="h-5 text-sm font-medium text-foreground" aria-hidden="true" />
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <Button type="button" variant="secondary" className="h-11 gap-2 rounded-2xl ">

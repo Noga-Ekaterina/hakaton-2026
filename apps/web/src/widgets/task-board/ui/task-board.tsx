@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useGetTasksQuery, useUpdateTaskStatusMutation } from "@/app/store/api/tasks-api";
 import type { TaskStatus } from "@/entities/task";
 import { DeleteTaskModal, useDeleteTaskModal } from "@/features/task/delete-task";
-import { getTaskFilters } from "@/widgets/task-filters";
+import { getTaskFilters, getTaskSort } from "@/widgets/task-filters";
 import { columnConfig } from "../model/column-config";
 import { getColumnTasks } from "../model/get-column-tasks";
 import { TaskColumn } from "./task-column";
@@ -18,6 +18,7 @@ export function TaskBoard({ projectId }: TaskBoardProps) {
   const [searchParams] = useSearchParams();
   const search = searchParams.toString();
   const filters = useMemo(() => getTaskFilters(searchParams), [search, searchParams]);
+  const sort = useMemo(() => getTaskSort(searchParams), [search, searchParams]);
   const deleteTaskModal = useDeleteTaskModal();
 
   const handleMoveTask = (taskId: number, status: TaskStatus) => {
@@ -48,7 +49,7 @@ export function TaskBoard({ projectId }: TaskBoardProps) {
               description={column.description}
               statuses={column.statuses}
               accent={column.accent}
-              tasks={getColumnTasks(tasks, column.statuses, filters)}
+              tasks={getColumnTasks(tasks, column.statuses, filters, sort)}
               onMoveTask={handleMoveTask}
               onDeleteTask={deleteTaskModal.open}
             />

@@ -3,10 +3,12 @@ import { useTaskFiltersPanel } from "../model";
 import { TaskDateFilter } from "./task-date-filter";
 import { TaskFilterAddMenu } from "./task-filter-add-menu";
 import { TaskFilterField } from "./task-filter-field";
+import { TaskSortMenu } from "./task-sort-menu";
 
 export function TaskFiltersPanel() {
   const {
     filters,
+    sort,
     renderedFilters,
     menuFilters,
     assigneeOptions,
@@ -21,10 +23,13 @@ export function TaskFiltersPanel() {
     clearDateFilters,
     removeFilter,
     resetFilters,
+    updateSort,
   } = useTaskFiltersPanel();
 
   return (
-    <div className="flex w-full flex-wrap items-end gap-4 lg:w-[70%]">
+    <div className="flex w-full flex-wrap items-end gap-4 xl:w-[82%]">
+      <TaskSortMenu sort={sort} onChange={updateSort} />
+
       <TaskFilterAddMenu
         hiddenFilters={menuFilters}
         filters={filters}
@@ -41,7 +46,7 @@ export function TaskFiltersPanel() {
       />
 
       {renderedFilters.includes("priority") ? (
-        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-priority" label="Приоритет" onRemove={() => removeFilter("priority")}>
+        <TaskFilterField className="w-full md:w-[12rem]" htmlFor="task-filter-priority" label="Приоритет" onRemove={() => removeFilter("priority")}>
           <OptionSelect
             id="task-filter-priority"
             selectionMode="multiple"
@@ -56,7 +61,7 @@ export function TaskFiltersPanel() {
       ) : null}
 
       {renderedFilters.includes("assignee") ? (
-        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-assignee" label="Исполнитель" onRemove={() => removeFilter("assignee")}>
+        <TaskFilterField className="w-full md:w-[12rem]" htmlFor="task-filter-assignee" label="Исполнитель" onRemove={() => removeFilter("assignee")}>
           <OptionSelect
             id="task-filter-assignee"
             selectionMode="multiple"
@@ -71,7 +76,7 @@ export function TaskFiltersPanel() {
       ) : null}
 
       {renderedFilters.includes("author") ? (
-        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-author" label="Автор" onRemove={() => removeFilter("author")}>
+        <TaskFilterField className="w-full md:w-[12rem]" htmlFor="task-filter-author" label="Автор" onRemove={() => removeFilter("author")}>
           <OptionSelect
             id="task-filter-author"
             selectionMode="multiple"
@@ -86,7 +91,7 @@ export function TaskFiltersPanel() {
       ) : null}
 
       {renderedFilters.includes("tags") ? (
-        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-tags" label="Теги" onRemove={() => removeFilter("tags")}>
+        <TaskFilterField className="w-full md:w-[12rem]" htmlFor="task-filter-tags" label="Теги" onRemove={() => removeFilter("tags")}>
           <OptionSelect
             id="task-filter-tags"
             selectionMode="multiple"
@@ -101,7 +106,7 @@ export function TaskFiltersPanel() {
       ) : null}
 
       {renderedFilters.includes("date") ? (
-        <TaskFilterField className="w-[10.5rem]" htmlFor="task-filter-date" label="Дата" onRemove={() => removeFilter("date")}>
+        <TaskFilterField className="w-full md:w-[12rem]" htmlFor="task-filter-date" label="Дата" onRemove={() => removeFilter("date")}>
           <TaskDateFilter
             createdFrom={filters.createdFrom}
             createdTo={filters.createdTo}

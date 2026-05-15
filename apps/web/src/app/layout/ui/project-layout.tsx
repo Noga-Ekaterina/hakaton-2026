@@ -1,4 +1,6 @@
 import { useState } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Navigate, Outlet, useMatch, useNavigate } from "react-router-dom";
 import { ProjectNav } from "@/app/layout/ui/project-nav";
 import { DeleteProjectModal } from "@/features/project/delete-project";
@@ -66,7 +68,7 @@ export function ProjectLayout() {
       {!isTaskPage ? (
         <div className="space-y-6 border-b border-slate-200/70 pb-8">
           <div className="rounded-[2rem] border border-white/70 bg-white/75 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-y-4 gap-x-2">
               <div className="flex-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary">Проект #{project.id}</p>
                 <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">{project.name}</h2>
@@ -82,20 +84,42 @@ export function ProjectLayout() {
                 <Button variant="secondary" type="button" onClick={() => setIsTagsOpen(true)}>
                   Теги
                 </Button>
+                <Button type="button" onClick={() => setIsCreateTaskOpen(true)}>
+                  Создать задачу
+                </Button>
                 {currentUser?.role === "ADMIN" ? (
-                  <>
-                    <Button type="button" onClick={() => setIsRenameOpen(true)}>
-                      Переименовать проект
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="border-rose-200 text-rose-700 hover:bg-rose-50"
-                      onClick={() => setIsDeleteOpen(true)}
-                    >
-                      Удалить проект
-                    </Button>
-                  </>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="h-10 w-10 px-0"
+                        aria-label="Действия проекта"
+                      >
+                        <DotsHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        align="end"
+                        sideOffset={8}
+                        className="z-[60] min-w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_20px_70px_rgba(15,23,42,0.18)]"
+                      >
+                        <DropdownMenu.Item
+                          className="cursor-pointer rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 outline-none transition hover:bg-slate-50 focus:bg-slate-50"
+                          onSelect={() => setIsRenameOpen(true)}
+                        >
+                          Переименовать проект
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          className="cursor-pointer rounded-xl px-3 py-2 text-sm font-semibold text-rose-700 outline-none transition hover:bg-rose-50 focus:bg-rose-50"
+                          onSelect={() => setIsDeleteOpen(true)}
+                        >
+                          Удалить проект
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 ) : null}
               </div>
             </div>
@@ -103,7 +127,7 @@ export function ProjectLayout() {
 
           <div className="flex flex-col-reverse flex-wrap-reverse gap-5 lg:flex-row lg:items-start lg:justify-between">
             <TaskFiltersPanel />
-            <ProjectNav currentProjectId={projectId} onCreateTask={() => setIsCreateTaskOpen(true)} />
+            <ProjectNav currentProjectId={projectId} />
           </div>
         </div>
       ) : null}

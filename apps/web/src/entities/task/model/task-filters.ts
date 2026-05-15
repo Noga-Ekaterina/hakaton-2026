@@ -1,3 +1,4 @@
+import { taskPriorityValues } from "./task-meta";
 import type { TaskListItem, TaskPriority } from "./types";
 
 export type TaskFilters = {
@@ -9,7 +10,15 @@ export type TaskFilters = {
   tagIds: number[];
 };
 
-function getTaskDate(value: string) {
+export type TaskSortField = "createdAt" | "priority";
+export type TaskSortDirection = "asc" | "desc";
+
+export type TaskSort = {
+  field: TaskSortField;
+  direction: TaskSortDirection;
+};
+
+export function getTaskDate(value: string) {
   const isoDateMatch = value.match(/^(\d{4}-\d{2}-\d{2})$/);
 
   if (isoDateMatch) {
@@ -25,6 +34,16 @@ function getTaskDate(value: string) {
   const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
 
   return localDate.toISOString().slice(0, 10);
+}
+
+function getTaskTime(value: string) {
+  const time = new Date(value).getTime();
+
+  return Number.isNaN(time) ? 0 : time;
+}
+
+function compareTaskPriority(a: TaskPriority, b: TaskPriority) {
+  return taskPriorityValues.indexOf(a) - taskPriorityValues.indexOf(b);
 }
 
 export function filterTasks(tasks: TaskListItem[] | undefined, filters: TaskFilters) {
@@ -56,5 +75,26 @@ export function filterTasks(tasks: TaskListItem[] | undefined, filters: TaskFilt
     }
 
     return true;
+  });
+}
+
+export function sortTasks(tasks: TaskListItem[], sort: TaskSort | null) {
+  if (!sort) {
+    return tasks;
+  }
+
+  const directionMultiplier = sort.direction === "asc" ? 1 : -1;
+
+  return [...tasks].sort((a, b) => {
+    const result =
+      sort.field === "createdAt"
+        ? getTaskTime(a.createdAt) - getTaskTime(b.createdAt)
+        : compareTaskPriority(a.priority, b.priority);
+
+    if (result !== 0) {
+      return result * directionMultiplier;
+    }
+
+    return a.id - b.id;
   });
 }
