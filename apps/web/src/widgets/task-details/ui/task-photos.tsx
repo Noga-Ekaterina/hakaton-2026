@@ -3,6 +3,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { getTaskImageSrc, type EditableTaskValues, type Task } from "@/entities/task";
 import type { NewTaskPhotoPreview } from "@/features/task/update-task";
 import { Button } from "@/shared/ui/button";
+import { PhotoSwipeGallery } from "@/shared/ui/photo-swipe-gallery";
 
 type TaskPhotosProps = {
   isEditing: boolean;
@@ -44,24 +45,28 @@ export function TaskPhotos({
 
       {visibleImages.length > 0 || newPhotoPreviews.length > 0 ? (
         <div className={`mt-5 grid gap-4 ${hasSingleImage ? "grid-cols-1" : "lg:grid-cols-2"}`}>
-          {visibleImages.map((image) => (
-            <figure key={image.id} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-              <a href={image.src} target="_blank" rel="noreferrer">
-                <img src={image.src} alt={image.name} className="aspect-[16/10] w-full object-cover" loading="lazy" />
-              </a>
-              {isEditing ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="absolute right-3 top-3 h-10 w-10 px-0 py-0 text-rose-600 shadow-lg"
-                  aria-label="Удалить фото"
-                  onClick={() => onRemoveExistingPhoto(image.id)}
-                >
-                  <Cross2Icon className="h-5 w-5" aria-hidden="true" />
-                </Button>
-              ) : null}
-            </figure>
-          ))}
+          <PhotoSwipeGallery
+            images={visibleImages}
+            className="contents"
+            renderImage={({ image, imageProps, linkProps }) => (
+              <figure key={image.id} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                <a {...linkProps}>
+                  <img {...imageProps} className="aspect-[16/10] w-full object-cover" />
+                </a>
+                {isEditing ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="absolute right-3 top-3 h-10 w-10 px-0 py-0 text-rose-600 shadow-lg"
+                    aria-label="Удалить фото"
+                    onClick={() => onRemoveExistingPhoto(image.id)}
+                  >
+                    <Cross2Icon className="h-5 w-5" aria-hidden="true" />
+                  </Button>
+                ) : null}
+              </figure>
+            )}
+          />
           {newPhotoPreviews.map((photo) => (
             <figure key={photo.id} className="relative overflow-hidden rounded-2xl border border-primary/30 bg-orange-50">
               <img src={photo.url} alt={photo.name} className="aspect-[16/10] w-full object-cover" />

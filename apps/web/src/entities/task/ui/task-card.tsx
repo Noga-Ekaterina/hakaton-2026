@@ -8,6 +8,7 @@ import { getTaskImageSrc } from "../model/task-images";
 import type { TaskListItem } from "../model/types";
 import { TaskPriorityBadge, TaskTagBadge } from "./task-badge";
 import { taskPath } from "@/shared/config/routes";
+import { PhotoSwipeGallery } from "@/shared/ui/photo-swipe-gallery";
 
 type TaskCardProps = {
   actions?: ReactNode;
@@ -76,13 +77,15 @@ export function TaskCard({ actions, footer, task }: TaskCardProps) {
       </dl>
       {footer}
       {taskImages.length > 0 ? (
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          {taskImages.map((image) => (
-            <a key={image.id} href={image.src} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-2xl bg-slate-100">
-              <img src={image.src} alt={image.name} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+        <PhotoSwipeGallery
+          images={taskImages}
+          className="mt-4 grid grid-cols-3 gap-2"
+          renderImage={({ image, imageProps, linkProps }) => (
+            <a key={image.id} {...linkProps} className="block overflow-hidden rounded-2xl bg-slate-100">
+              <img {...imageProps} className="aspect-[4/3] w-full object-cover" />
             </a>
-          ))}
-        </div>
+          )}
+        />
       ) : null}
     </article>
   );
