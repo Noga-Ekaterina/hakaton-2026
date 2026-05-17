@@ -8,14 +8,15 @@ export type ProtectedImage = {
 };
 
 type CachedImage = {
-  expiresAt: number;
+  activeCount: number;
+  lastUsedAt: number;
   objectUrl: string;
-  revokeTimeoutId: number;
 };
 
-const imageCacheTtlMs = 120_000;
 const imageLoadRootMarginPx = 300;
+const imageObjectUrlCacheLimit = 40;
 const imageObjectUrlCache = new Map<string, CachedImage>();
+const activeImageSrcUsageCount = new Map<string, number>();
 
 export const protectedImagePlaceholder =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -33,17 +34,60 @@ export function shouldFetchProtectedImage(src: string) {
 }
 
 // Загружает защищенное изображение и переиспользует короткий кеш object URL.
+function pruneImageObjectUrlCache() {
+  if (imageObjectUrlCache.size <= imageObjectUrlCacheLimit) {
+    return;
+  }
+
+  const removableImages = [...imageObjectUrlCache.entries()]
+    .filter(([, cachedImage]) => cachedImage.activeCount === 0)
+    .sort(([, firstImage], [, secondImage]) => firstImage.lastUsedAt - secondImage.lastUsedAt);
+
+  for (const [src, cachedImage] of removableImages) {
+    if (imageObjectUrlCache.size <= imageObjectUrlCacheLimit) {
+      return;
+    }
+
+    URL.revokeObjectURL(cachedImage.objectUrl);
+    imageObjectUrlCache.delete(src);
+  }
+}
+
+function retainProtectedImageSrc(src: string) {
+  activeImageSrcUsageCount.set(src, (activeImageSrcUsageCount.get(src) ?? 0) + 1);
+
+  const cachedImage = imageObjectUrlCache.get(src);
+
+  if (cachedImage) {
+    cachedImage.activeCount += 1;
+    cachedImage.lastUsedAt = Date.now();
+  }
+}
+
+function releaseProtectedImageSrc(src: string) {
+  const nextUsageCount = Math.max(0, (activeImageSrcUsageCount.get(src) ?? 0) - 1);
+
+  if (nextUsageCount === 0) {
+    activeImageSrcUsageCount.delete(src);
+  } else {
+    activeImageSrcUsageCount.set(src, nextUsageCount);
+  }
+
+  const cachedImage = imageObjectUrlCache.get(src);
+
+  if (cachedImage) {
+    cachedImage.activeCount = nextUsageCount;
+  }
+
+  pruneImageObjectUrlCache();
+}
+
 async function fetchProtectedImageObjectUrl(src: string) {
   const cachedImage = imageObjectUrlCache.get(src);
 
-  if (cachedImage && cachedImage.expiresAt > Date.now()) {
-    return cachedImage.objectUrl;
-  }
-
   if (cachedImage) {
-    window.clearTimeout(cachedImage.revokeTimeoutId);
-    URL.revokeObjectURL(cachedImage.objectUrl);
-    imageObjectUrlCache.delete(src);
+    cachedImage.lastUsedAt = Date.now();
+    return cachedImage.objectUrl;
   }
 
   const response = await fetchWithAuthRefresh(src);
@@ -53,16 +97,13 @@ async function fetchProtectedImageObjectUrl(src: string) {
   }
 
   const objectUrl = URL.createObjectURL(await response.blob());
-  const revokeTimeoutId = window.setTimeout(() => {
-    URL.revokeObjectURL(objectUrl);
-    imageObjectUrlCache.delete(src);
-  }, imageCacheTtlMs);
 
   imageObjectUrlCache.set(src, {
-    expiresAt: Date.now() + imageCacheTtlMs,
+    activeCount: activeImageSrcUsageCount.get(src) ?? 0,
+    lastUsedAt: Date.now(),
     objectUrl,
-    revokeTimeoutId,
   });
+  pruneImageObjectUrlCache();
 
   return objectUrl;
 }
@@ -83,13 +124,45 @@ export function useProtectedImageSources<TImage extends ProtectedImage>(images: 
   const imagesRef = useRef(images);
   const imageAnchorsRef = useRef<Record<string, HTMLElement | null>>({});
   const imageSourcesRef = useRef<Record<string, string>>({});
+  const activeImageSrcsRef = useRef(new Set<string>());
   const loadingImageKeysRef = useRef(new Set<string>());
+  const isMountedRef = useRef(true);
   const imageSourceKey = useMemo(() => images.map((image) => `${image.id}:${image.src}`).join("\n"), [images]);
   const [visibleImageKeys, setVisibleImageKeys] = useState<Record<string, boolean>>({});
   const [imageSources, setImageSources] = useState<Record<string, string>>({});
 
   imagesRef.current = images;
   imageSourcesRef.current = imageSources;
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+      activeImageSrcsRef.current.forEach(releaseProtectedImageSrc);
+      activeImageSrcsRef.current.clear();
+    };
+  }, []);
+
+  useEffect(() => {
+    const nextActiveImageSrcs = new Set(
+      imagesRef.current.filter((image) => shouldFetchProtectedImage(image.src)).map((image) => image.src),
+    );
+
+    nextActiveImageSrcs.forEach((src) => {
+      if (!activeImageSrcsRef.current.has(src)) {
+        retainProtectedImageSrc(src);
+      }
+    });
+
+    activeImageSrcsRef.current.forEach((src) => {
+      if (!nextActiveImageSrcs.has(src)) {
+        releaseProtectedImageSrc(src);
+      }
+    });
+
+    activeImageSrcsRef.current = nextActiveImageSrcs;
+  }, [imageSourceKey]);
 
   useEffect(() => {
     setVisibleImageKeys({});
@@ -193,8 +266,6 @@ export function useProtectedImageSources<TImage extends ProtectedImage>(images: 
   }, [imageSourceKey]);
 
   useEffect(() => {
-    let isMounted = true;
-
     imagesRef.current.forEach((image) => {
       const imageKey = String(image.id);
 
@@ -206,7 +277,9 @@ export function useProtectedImageSources<TImage extends ProtectedImage>(images: 
 
       fetchProtectedImageObjectUrl(image.src)
         .then((objectUrl) => {
-          if (!isMounted) {
+          const isCurrentImage = imagesRef.current.some((currentImage) => String(currentImage.id) === imageKey && currentImage.src === image.src);
+
+          if (!isMountedRef.current || !isCurrentImage) {
             return;
           }
 
@@ -216,7 +289,9 @@ export function useProtectedImageSources<TImage extends ProtectedImage>(images: 
           }));
         })
         .catch(() => {
-          if (!isMounted) {
+          const isCurrentImage = imagesRef.current.some((currentImage) => String(currentImage.id) === imageKey && currentImage.src === image.src);
+
+          if (!isMountedRef.current || !isCurrentImage) {
             return;
           }
 
@@ -229,10 +304,6 @@ export function useProtectedImageSources<TImage extends ProtectedImage>(images: 
           loadingImageKeysRef.current.delete(imageKey);
         });
     });
-
-    return () => {
-      isMounted = false;
-    };
   }, [imageSourceKey, visibleImageKeys]);
 
   return {
