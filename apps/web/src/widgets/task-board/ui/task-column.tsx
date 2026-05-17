@@ -1,5 +1,6 @@
+import { useAppSelector } from "@/app/store/hooks";
 import { TaskCard } from "@/entities/task";
-import type { TaskListItem, TaskStatus } from "@/entities/task";
+import { canEditTaskStoryPoints, type TaskListItem, type TaskStatus } from "@/entities/task";
 import { TaskActions } from "@/features/task/task-actions";
 import { UpdateStoryPointsForm } from "@/features/task/update-story-points";
 import { useTaskColumnDrop } from "../model/use-task-column-drop";
@@ -15,6 +16,7 @@ type TaskColumnProps = {
 };
 
 export function TaskColumn({ title, description, statuses, accent, tasks, onMoveTask, onDeleteTask }: TaskColumnProps) {
+  const currentUserId = useAppSelector((state) => state.auth.user?.id ?? null);
   const targetStatus = statuses[0];
   const [{ isOver, canDrop }, dropRef] = useTaskColumnDrop({ targetStatus, onMoveTask });
 
@@ -45,7 +47,11 @@ export function TaskColumn({ title, description, statuses, accent, tasks, onMove
                 footer={
                   <div className="mt-4 rounded-2xl bg-slate-50 p-4">
                     <h4 className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Story points</h4>
-                    <UpdateStoryPointsForm task={task} />
+                    {canEditTaskStoryPoints(task, currentUserId) ? (
+                      <UpdateStoryPointsForm task={task} />
+                    ) : (
+                      <p className="mt-3 text-lg font-black text-slate-950">{task.storyPoints ?? "Не указаны"}</p>
+                    )}
                   </div>
                 }
               />

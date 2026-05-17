@@ -81,7 +81,6 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
 
   const changes = buildTaskUpdateChanges(existing, parsed.data);
   const statusChange = buildSingleChange("status", existing.status, parsed.data.status);
-  const storyPointsChange = buildSingleChange("storyPoints", existing.storyPoints, parsed.data.storyPoints);
   const tagsChange = requestedTags ? buildTaskTagsChange(existing.tags, requestedTags) : null;
   const photoNames = await saveTaskPhotoFiles(taskId, photoFiles);
 
@@ -123,7 +122,6 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
         priority: parsed.data.priority as TaskPriority | undefined,
         status: parsed.data.status as TaskStatus | undefined,
         assigneeId: parsed.data.assigneeId,
-        storyPoints: parsed.data.storyPoints,
         tags: parsed.data.tagIds
           ? {
               set: toTaskTagConnections(parsed.data.tagIds),
@@ -151,17 +149,6 @@ taskUpdateRouter.patch("/:id", requireSessionAdminOrTaskProjectAccess, async (re
           actorId: getSessionUserId(res),
           type: "STATUS_UPDATED",
           changes: [statusChange] as Prisma.InputJsonValue,
-        },
-      });
-    }
-
-    if (storyPointsChange) {
-      await tx.taskEvent.create({
-        data: {
-          taskId,
-          actorId: getSessionUserId(res),
-          type: "STORY_POINTS_UPDATED",
-          changes: [storyPointsChange] as Prisma.InputJsonValue,
         },
       });
     }

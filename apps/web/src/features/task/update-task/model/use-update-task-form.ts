@@ -4,7 +4,6 @@ import { useUpdateTaskMutation } from "@/app/store/api/tasks-api";
 import {
   buildUpdateTaskInput,
   getEditableTaskValues,
-  parseTaskStoryPoints,
   type EditableTaskValues,
   type Task,
 } from "@/entities/task";
@@ -90,15 +89,8 @@ export function useUpdateTaskForm(task?: Task) {
       return;
     }
 
-    const storyPoints = parseTaskStoryPoints(values.storyPoints);
-
     if (values.title.trim().length < 3) {
       setSubmitError("Название должно быть не короче 3 символов.");
-      return;
-    }
-
-    if (storyPoints !== null && (!Number.isInteger(storyPoints) || storyPoints <= 0)) {
-      setSubmitError("Story points должны быть положительным целым числом.");
       return;
     }
 

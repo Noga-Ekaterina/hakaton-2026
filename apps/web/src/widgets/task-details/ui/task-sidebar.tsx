@@ -7,6 +7,7 @@ import {
   TaskStatusBadge,
   TaskTagBadge,
   TaskTagSelect,
+  canEditTaskStoryPoints,
   taskPriorityMeta,
   taskStatusMeta,
   type EditableTaskValues,
@@ -18,7 +19,6 @@ import { getUserDisplayName, getUserDisplayOptions } from "@/entities/user";
 import { UpdateStoryPointsForm } from "@/features/task/update-story-points";
 import { projectPath } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
 import { OptionSelect } from "@/shared/ui/option-select";
 
 type TaskSidebarProps = {
@@ -35,9 +35,20 @@ export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, 
   const userOptions = useMemo(() => getUserDisplayOptions(meta?.users ?? [], currentUserId), [currentUserId, meta?.users]);
   const assigneeName = getUserDisplayName({ id: task.assigneeId, name: task.assigneeName }, currentUserId);
   const authorName = getUserDisplayName({ id: task.authorId, name: task.authorName }, currentUserId);
+  const canEditStoryPoints = canEditTaskStoryPoints(task, currentUserId);
 
   return (
     <aside className="space-y-6">
+      <section className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+        <h3 className="text-lg font-black tracking-tight text-slate-950">Story points</h3>
+        {canEditStoryPoints ? (
+          <UpdateStoryPointsForm task={task} />
+        ) : (
+          <div className="mt-4 rounded-2xl bg-slate-50 p-4">
+            <span className="text-2xl font-black text-slate-950">{task.storyPoints ?? "Не указаны"}</span>
+          </div>
+        )}
+      </section>
       <section className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
         <h3 className="text-lg font-black tracking-tight text-slate-950">Детали</h3>
         <dl className="mt-5 space-y-4">
@@ -109,22 +120,6 @@ export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, 
             <dd className="mt-2 text-sm font-semibold text-slate-900">{new Date(task.createdAt).toLocaleDateString("ru-RU")}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Story points</dt>
-            <dd className="mt-2">
-              {isEditing ? (
-                <Input
-                  type="number"
-                  min={1}
-                  step={1}
-                  value={values.storyPoints}
-                  onChange={(event) => onValuesChange({ ...values, storyPoints: event.target.value })}
-                />
-              ) : (
-                <span className="text-sm font-semibold text-slate-900">{task.storyPoints ?? "Не указаны"}</span>
-              )}
-            </dd>
-          </div>
-          <div>
             <dt className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Теги</dt>
             <dd className="mt-2">
               {isEditing ? (
@@ -146,13 +141,6 @@ export function TaskSidebar({ isEditing, meta, onValuesChange, projectId, task, 
           </div>
         </dl>
       </section>
-
-      {!isEditing ? (
-        <section className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-          <h3 className="text-lg font-black tracking-tight text-slate-950">Story points</h3>
-          <UpdateStoryPointsForm task={task} />
-        </section>
-      ) : null}
 
       <Button asChild variant="secondary" className="w-full">
         <Link to={projectPath(projectId)}>Вернуться на доску</Link>

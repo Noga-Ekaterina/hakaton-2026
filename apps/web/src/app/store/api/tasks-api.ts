@@ -32,7 +32,6 @@ export type UpdateTaskInput = {
   priority: TaskPriority;
   status: TaskStatus;
   assigneeId: number;
-  storyPoints: number | null;
   tagIds: number[];
   keepImageIds: number[];
   photos: File[];
@@ -80,7 +79,6 @@ function buildUpdateTaskFormData(body: UpdateTaskInput) {
   formData.append("priority", body.priority);
   formData.append("status", body.status);
   formData.append("assigneeId", String(body.assigneeId));
-  formData.append("storyPoints", body.storyPoints === null ? "" : String(body.storyPoints));
   if (body.tagIds.length === 0) {
     formData.append("tagIds", "");
   } else {
@@ -204,7 +202,7 @@ export const tasksApi = createApi({
     }),
     updateTaskStoryPoints: builder.mutation<Task, UpdateTaskStoryPointsInput>({
       query: ({ id, storyPoints }) => ({
-        url: `/tasks/${id}`,
+        url: `/tasks/${id}/story-points`,
         method: "PATCH",
         body: { storyPoints },
       }),

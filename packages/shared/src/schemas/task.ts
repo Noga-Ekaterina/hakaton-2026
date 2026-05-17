@@ -143,8 +143,11 @@ export const updateTaskServerSchema = z.object({
   priority: taskPrioritySchema.optional(),
   status: taskStatusSchema.optional(),
   assigneeId: z.coerce.number().int().positive().optional(),
-  storyPoints: nullableStoryPointsSchema.optional(),
   tagIds: taskTagIdsSchema.optional(),
+});
+
+export const updateTaskStoryPointsSchema = z.object({
+  storyPoints: nullableStoryPointsSchema,
 });
 
 export const taskTagInputSchema = z.object({

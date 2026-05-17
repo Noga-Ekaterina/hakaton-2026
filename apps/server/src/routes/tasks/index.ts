@@ -6,6 +6,7 @@ import { taskDeleteRouter } from "./delete.js";
 import { taskGetRouter } from "./get.js";
 import { taskListRouter } from "./list.js";
 import { taskPhotosRouter } from "./photos.js";
+import { taskStoryPointsRouter } from "./storyPoints.js";
 import { taskTimelineRouter } from "./timeline.js";
 import { taskUpdateRouter } from "./update.js";
 
@@ -14,6 +15,7 @@ export const tasksRouter = Router();
 tasksRouter.use(taskTimelineRouter);
 tasksRouter.use(taskCommentsRouter);
 tasksRouter.use(taskPhotosRouter);
+tasksRouter.use(taskStoryPointsRouter);
 tasksRouter.use(taskListRouter);
 tasksRouter.use(taskCreateRouter);
 tasksRouter.use(taskGetRouter);

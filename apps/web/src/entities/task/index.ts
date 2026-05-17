@@ -23,4 +23,5 @@ export {
 } from "./model/task-meta";
 export { getTaskImageSrc } from "./model/task-images";
 export { buildUpdateTaskInput, getEditableTaskValues, parseTaskStoryPoints } from "./model/update-task-form";
+export { canEditTaskStoryPoints } from "./model/task-permissions";
 export type { EditableTaskValues, UpdateTaskFormInput } from "./model/update-task-form";
